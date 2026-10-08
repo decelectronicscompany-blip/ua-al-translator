@@ -352,6 +352,7 @@
                 <option value="uk">🇺🇦 Українська</option>
                 <option value="sq">🇦🇱 Shqip</option>
                 <option value="en">🇬🇧 English</option>
+                <option value="fr">🇫🇷 Français</option>
                 <option value="it">🇮🇹 Italiano</option>
                 <option value="pl">🇵🇱 Polski</option>
                 <option value="de">🇩🇪 Deutsch</option>
@@ -363,6 +364,7 @@
                 <option value="sq">🇦🇱 Shqip</option>
                 <option value="uk">🇺🇦 Українська</option>
                 <option value="en">🇬🇧 English</option>
+                <option value="fr">🇫🇷 Français</option>
                 <option value="it">🇮🇹 Italiano</option>
                 <option value="pl">🇵🇱 Polski</option>
                 <option value="de">🇩🇪 Deutsch</option>
@@ -450,6 +452,20 @@
                 error: "Translation error",
                 connectionError: "Connection error"
             },
+            'fr': {
+                placeholder: "Saisissez ou dictez le texte...",
+                mic: "🎤 Parler",
+                translate: "Traduire",
+                resultPlaceholder: "La traduction apparaîtra ici...",
+                speak: "🔊 Voix",
+                copy: "📋 Copier",
+                share: "📲 Partager",
+                history: "Traductions récentes",
+                clearHistory: "Effacer",
+                loading: "Veuillez patienter...",
+                error: "Erreur de traduction",
+                connectionError: "Erreur de connexion"
+            },
             'it': {
                 placeholder: "Scrivi o detta il testo...",
                 mic: "🎤 Parla",
@@ -498,6 +514,7 @@
             'uk': 'uk-UA',
             'sq': 'sq-AL',
             'en': 'en-US',
+            'fr': 'fr-FR',
             'it': 'it-IT',
             'pl': 'pl-PL',
             'de': 'de-DE'
@@ -516,7 +533,7 @@
             document.getElementById('translateBtn').innerText = t.translate;
             
             const currentOutput = document.getElementById('outputText').innerText;
-            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("apparirà") || currentOutput.includes("pojawia") || currentOutput.includes("erscheint")) {
+            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("apparaîtra") || currentOutput.includes("apparirà") || currentOutput.includes("pojawia") || currentOutput.includes("erscheint")) {
                 document.getElementById('outputText').innerText = t.resultPlaceholder;
             }
 
@@ -627,12 +644,35 @@
         }
 
         function speakResult() {
+            if (!('speechSynthesis' in window)) return;
+
+            window.speechSynthesis.cancel(); // Скидаємо застряглі завдання
+
             const text = document.getElementById('outputText').innerText;
-            if (!text) return;
+            if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear") || text.includes("Зачекайте") || text.includes("prisni") || text.includes("patienter") || text.includes("Attendere") || text.includes("Czekaj") || text.includes("warten")) {
+                return;
+            }
+
             const targetLangCode = document.getElementById('tgtLang').value;
+            const langCode = langSpeechCodes[targetLangCode] || 'en-US';
+
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = langSpeechCodes[targetLangCode] || 'en-US';
+            utterance.lang = langCode;
+            utterance.rate = 0.95;
+
+            const voices = window.speechSynthesis.getVoices();
+            const matchingVoice = voices.find(v => v.lang.startsWith(langCode.split('-')[0]));
+            if (matchingVoice) {
+                utterance.voice = matchingVoice;
+            }
+
             window.speechSynthesis.speak(utterance);
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
         }
 
         function copyResult() {
