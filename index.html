@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Українсько-Албанський Перекладач</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .card { background: white; max-width: 500px; width: 100%; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { font-size: 20px; text-align: center; color: #333; margin-top: 0; }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        button { padding: 12px 20px; font-size: 16px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-primary { background: #007aff; color: white; }
+        .btn-primary:active { background: #0056b3; }
+        .btn-mic { background: #ff3b30; color: white; width: 100%; margin-bottom: 15px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; }
+        .btn-mic.recording { animation: pulse 1.5s infinite; background: #cc2b23; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        textarea { width: 100%; height: 100px; border: 1px solid #ddd; border-radius: 12px; padding: 12px; box-sizing: border-box; font-size: 16px; resize: none; margin-bottom: 15px; }
+        .result-box { background: #f8f9fa; border-radius: 12px; padding: 15px; border: 1px solid #e9ecef; min-height: 80px; font-size: 18px; color: #212529; position: relative; }
+        .speak-btn { position: absolute; right: 10px; bottom: 10px; background: #e9ecef; color: #495057; border: none; padding: 6px 12px; border-radius: 8px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Перекладач UA ⇄ AL</h1>
+
+        <div class="controls">
+            <button id="langToggle" class="btn-primary" onclick="toggleLanguage()">Українська ➔ Албанська</button>
+        </div>
+
+        <button id="micBtn" class="btn-mic" onclick="toggleRecognition()">
+            🎤 Говорити
+        </button>
+
+        <textarea id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
+        <button class="btn-primary" style="width: 100%; margin-bottom: 20px;" onclick="translateText()">Перекласти</button>
+
+        <div class="result-box">
+            <div id="outputText">Переклад з'явиться тут...</div>
+            <button class="speak-btn" onclick="speakResult()">🔊 Озвучити</button>
+        </div>
+    </div>
+
+    <script>
+        let currentTargetLang = 'sq';
+        let isRecording = false;
+        let recognition = null;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                document.getElementById('inputText').value = text;
+                stopRecording();
+                translateText();
+            };
+
+            recognition.onerror = () => stopRecording();
+            recognition.onend = () => stopRecording();
+        }
+
+        function toggleLanguage() {
+            if (currentTargetLang === 'sq') {
+                currentTargetLang = 'uk';
+                document.getElementById('langToggle').innerText = 'Албанська ➔ Українська';
+            } else {
+                currentTargetLang = 'sq';
+                document.getElementById('langToggle').innerText = 'Українська ➔ Албанська';
+            }
+        }
+
+        function toggleRecognition() {
+            if (!recognition) {
+                alert('Голосове введення не підтримується у цьому браузері');
+                return;
+            }
+            if (isRecording) {
+                recognition.stop();
+                stopRecording();
+            } else {
+                recognition.lang = currentTargetLang === 'sq' ? 'uk-UA' : 'sq-AL';
+                recognition.start();
+                isRecording = true;
+                const btn = document.getElementById('micBtn');
+                btn.classList.add('recording');
+                btn.innerText = '⏹ Запис... Торкніться для зупинки';
+            }
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            const btn = document.getElementById('micBtn');
+            btn.classList.remove('recording');
+            btn.innerText = '🎤 Говорити';
+        }
+
+        async function translateText() {
+            const text = document.getElementById('inputText').value;
+            if (!text.trim()) return;
+
+            const outputDiv = document.getElementById('outputText');
+            outputDiv.innerText = 'Перекладаємо...';
+
+            try {
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, targetLang: currentTargetLang })
+                });
+                const data = await response.json();
+                outputDiv.innerText = data.translation || 'Помилка перекладу';
+                speakResult();
+            } catch (err) {
+                outputDiv.innerText = 'Помилка з’єднання з сервером';
+            }
+        }
+
+        function speakResult() {
+            const text = document.getElementById('outputText').innerText;
+            if (!text || text === 'Переклад з’явиться тут...') return;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = currentTargetLang === 'sq' ? 'sq-AL' : 'uk-UA';
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
