@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>UA ⇄ AL Translator</title>
+    <title>Multi-Language Voice Translator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -119,14 +119,23 @@
             margin-bottom: 14px;
         }
 
-        .lang-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-weight: 600;
+        select.lang-select {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-family: inherit;
             font-size: 14px;
+            font-weight: 600;
             padding: 6px;
+            outline: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        select.lang-select option {
+            background: #1e293b;
+            color: #f8fafc;
         }
 
         .swap-btn {
@@ -274,15 +283,26 @@
         <div class="header">
             <div class="title-block">
                 <div class="status-dot"></div>
-                <h1 class="title">UA ⇄ AL Translator</h1>
+                <h1 class="title">Voice Translator</h1>
             </div>
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
 
+        <!-- Селектори вибору мови -->
         <div class="lang-switcher">
-            <div class="lang-box" id="srcLang">🇺🇦 UA</div>
+            <select class="lang-select" id="srcLang">
+                <option value="uk">🇺🇦 Українська</option>
+                <option value="sq">🇦🇱 Албанська</option>
+                <option value="en">🇬🇧 Англійська</option>
+            </select>
+            
             <button class="swap-btn" onclick="swapLanguages()">⇄</button>
-            <div class="lang-box" id="tgtLang">🇦🇱 AL</div>
+            
+            <select class="lang-select" id="tgtLang">
+                <option value="sq">🇦🇱 Албанська</option>
+                <option value="uk">🇺🇦 Українська</option>
+                <option value="en">🇬🇧 Англійська</option>
+            </select>
         </div>
 
         <div class="input-card">
@@ -315,9 +335,14 @@
     </div>
 
     <script>
-        let currentTargetLang = 'sq';
         let isRecording = false;
         let recognition = null;
+
+        const langSpeechCodes = {
+            'uk': 'uk-UA',
+            'sq': 'sq-AL',
+            'en': 'en-US'
+        };
 
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -332,16 +357,12 @@
         document.getElementById('themeBtn').innerText = savedTheme === 'light' ? '☀️' : '🌙';
 
         function swapLanguages() {
-            if (currentTargetLang === 'sq') {
-                currentTargetLang = 'uk';
-                document.getElementById('srcLang').innerText = '🇦🇱 AL';
-                document.getElementById('tgtLang').innerText = '🇺🇦 UA';
-            } else {
-                currentTargetLang = 'sq';
-                document.getElementById('srcLang').innerText = '🇺🇦 UA';
-                document.getElementById('tgtLang').innerText = '🇦🇱 AL';
-            }
-            if(document.getElementById('inputText').value.trim()) translateText();
+            const src = document.getElementById('srcLang');
+            const tgt = document.getElementById('tgtLang');
+            const temp = src.value;
+            src.value = tgt.value;
+            tgt.value = temp;
+            if (document.getElementById('inputText').value.trim()) translateText();
         }
 
         function clearInput() {
@@ -371,7 +392,8 @@
                 recognition.stop();
                 stopRecording();
             } else {
-                recognition.lang = currentTargetLang === 'sq' ? 'uk-UA' : 'sq-AL';
+                const srcLangCode = document.getElementById('srcLang').value;
+                recognition.lang = langSpeechCodes[srcLangCode] || 'en-US';
                 recognition.start();
                 isRecording = true;
                 document.getElementById('micBtn').innerText = '⏹ Запис...';
@@ -385,6 +407,9 @@
 
         async function translateText() {
             const text = document.getElementById('inputText').value.trim();
+            const sourceLang = document.getElementById('srcLang').value;
+            const targetLang = document.getElementById('tgtLang').value;
+
             if (!text) return;
 
             const outputDiv = document.getElementById('outputText');
@@ -394,7 +419,7 @@
                 const response = await fetch('/api/translate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, targetLang: currentTargetLang })
+                    body: JSON.stringify({ text, sourceLang, targetLang })
                 });
                 const data = await response.json();
                 const resText = data.translation || 'Помилка перекладу';
@@ -412,8 +437,9 @@
         function speakResult() {
             const text = document.getElementById('outputText').innerText;
             if (!text || text.startsWith('Переклад') || text.startsWith('Зачекайте')) return;
+            const targetLangCode = document.getElementById('tgtLang').value;
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = currentTargetLang === 'sq' ? 'sq-AL' : 'uk-UA';
+            utterance.lang = langSpeechCodes[targetLangCode] || 'en-US';
             window.speechSynthesis.speak(utterance);
         }
 
