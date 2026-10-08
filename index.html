@@ -3,45 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Voice Translator</title>
+    <title>Voice Translator Premium</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
-            --card-bg: rgba(30, 41, 59, 0.85);
+            --bg-gradient: linear-gradient(-45deg, #090d16, #111827, #1e1b4b, #2e1065);
+            --card-bg: rgba(255, 255, 255, 0.05);
             --card-border: rgba(255, 255, 255, 0.12);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --input-bg: rgba(15, 23, 42, 0.6);
-            --accent-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            --accent-danger: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%);
-            --btn-secondary: rgba(255, 255, 255, 0.08);
-            --btn-secondary-hover: rgba(255, 255, 255, 0.15);
-            --box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+            --accent-glow: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --accent-danger: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            --btn-glass: rgba(255, 255, 255, 0.07);
+            --btn-glass-hover: rgba(255, 255, 255, 0.15);
+            --box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         [data-theme="light"] {
-            --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fce7f3 100%);
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --card-border: rgba(255, 255, 255, 0.6);
+            --bg-gradient: linear-gradient(-45deg, #e0e7ff, #f3e8ff, #fce7f3, #e0f2fe);
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(255, 255, 255, 0.8);
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --input-bg: rgba(255, 255, 255, 0.95);
-            --btn-secondary: rgba(0, 0, 0, 0.05);
-            --btn-secondary-hover: rgba(0, 0, 0, 0.1);
-            --box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            --input-bg: rgba(255, 255, 255, 0.85);
+            --btn-glass: rgba(0, 0, 0, 0.05);
+            --btn-glass-hover: rgba(0, 0, 0, 0.1);
+            --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
         }
 
         * {
             box-sizing: border-box;
-            transition: all 0.2s ease;
+            transition: background 0.25s ease, border-color 0.25s ease, transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             min-height: 100vh;
             margin: 0;
             padding: 12px;
@@ -51,15 +53,21 @@
             color: var(--text-main);
         }
 
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .container {
             width: 100%;
             max-width: 420px;
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
             border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 16px;
+            border-radius: 28px;
+            padding: 18px;
             box-shadow: var(--box-shadow);
         }
 
@@ -67,7 +75,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .title-block {
@@ -81,30 +89,30 @@
             height: 8px;
             background: #22c55e;
             border-radius: 50%;
-            box-shadow: 0 0 8px #22c55e;
+            box-shadow: 0 0 10px #22c55e;
         }
 
         .title {
-            font-size: 17px;
+            font-size: 18px;
             font-weight: 700;
             margin: 0;
-            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            background: linear-gradient(135deg, #38bdf8, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .theme-toggle {
-            background: var(--btn-secondary);
+            background: var(--btn-glass);
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 16px;
         }
 
         .lang-switcher {
@@ -114,7 +122,7 @@
             gap: 8px;
             background: var(--input-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 4px 8px;
             margin-bottom: 12px;
         }
@@ -126,7 +134,7 @@
             font-family: inherit;
             font-size: 14px;
             font-weight: 600;
-            padding: 6px 2px;
+            padding: 8px 2px;
             outline: none;
             cursor: pointer;
             width: 100%;
@@ -139,30 +147,35 @@
         }
 
         .swap-btn {
-            background: var(--btn-secondary);
+            background: var(--btn-glass);
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 14px;
+        }
+
+        .swap-btn:active {
+            transform: rotate(180deg) scale(0.9);
         }
 
         .input-card, .result-card {
             background: var(--input-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
+            border-radius: 18px;
             padding: 12px;
             margin-bottom: 12px;
+            position: relative;
         }
 
         textarea {
             width: 100%;
-            height: 90px;
+            height: 85px;
             background: transparent;
             border: none;
             color: var(--text-main);
@@ -185,37 +198,82 @@
 
         .btn {
             border: none;
-            border-radius: 14px;
-            padding: 10px 4px;
+            border-radius: 16px;
+            padding: 11px 4px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             color: white;
-            background: var(--btn-secondary);
+            background: var(--btn-glass);
             border: 1px solid var(--card-border);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
         }
 
         .btn-mic {
             background: var(--accent-danger);
             border: none;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35);
         }
 
         .btn-translate {
-            background: var(--accent-primary);
+            background: var(--accent-glow);
             border: none;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
         }
+
+        /* Анімація звукової хвилі */
+        .waveform {
+            display: none;
+            align-items: center;
+            gap: 3px;
+            height: 16px;
+        }
+
+        .waveform span {
+            width: 3px;
+            height: 100%;
+            background: white;
+            border-radius: 3px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .waveform span:nth-child(2) { animation-delay: 0.15s; }
+        .waveform span:nth-child(3) { animation-delay: 0.3s; }
+        .waveform span:nth-child(4) { animation-delay: 0.45s; }
+
+        @keyframes wave {
+            0%, 100% { height: 4px; }
+            50% { height: 16px; }
+        }
+
+        .recording .waveform { display: flex; }
+        .recording .mic-label { display: none; }
 
         .result-text {
             font-size: 15px;
             line-height: 1.4;
             min-height: 50px;
-            max-height: 100px;
+            max-height: 95px;
             overflow-y: auto;
             word-break: break-word;
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
         .result-actions {
@@ -228,11 +286,11 @@
         }
 
         .icon-btn {
-            background: var(--btn-secondary);
+            background: var(--btn-glass);
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            border-radius: 10px;
-            padding: 6px 2px;
+            border-radius: 12px;
+            padding: 7px 2px;
             font-size: 11px;
             font-weight: 500;
             cursor: pointer;
@@ -260,12 +318,12 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            max-height: 100px;
+            max-height: 90px;
             overflow-y: auto;
         }
 
         .history-item {
-            background: var(--btn-secondary);
+            background: var(--btn-glass);
             border-radius: 8px;
             padding: 6px 8px;
             font-size: 12px;
@@ -287,19 +345,19 @@
                 <div class="status-dot"></div>
                 <h1 class="title">Voice Translator</h1>
             </div>
-            <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
+            <button class="theme-toggle" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
         </div>
 
         <div class="lang-switcher">
-            <select class="lang-select" id="srcLang" onchange="updateUI()">
+            <select class="lang-select" id="srcLang" onchange="vibrate(); updateUI();">
                 <option value="uk">🇺🇦 Українська</option>
                 <option value="sq">🇦🇱 Shqip</option>
                 <option value="en">🇬🇧 English</option>
             </select>
             
-            <button class="swap-btn" onclick="swapLanguages()">⇄</button>
+            <button class="swap-btn" onclick="vibrate(); swapLanguages();">⇄</button>
             
-            <select class="lang-select" id="tgtLang">
+            <select class="lang-select" id="tgtLang" onchange="vibrate();">
                 <option value="sq">🇦🇱 Shqip</option>
                 <option value="uk">🇺🇦 Українська</option>
                 <option value="en">🇬🇧 English</option>
@@ -311,25 +369,30 @@
         </div>
 
         <div class="controls-grid">
-            <button class="btn" onclick="clearInput()" title="Clear">🗑️</button>
-            <button class="btn btn-mic" id="micBtn" onclick="toggleRecognition()"><span id="micTxt">🎤 Говорити</span></button>
-            <button class="btn btn-translate" id="translateBtn" onclick="translateText()">Перекласти</button>
+            <button class="btn" onclick="vibrate(); clearInput();" title="Clear">🗑️</button>
+            <button class="btn btn-mic" id="micBtn" onclick="vibrate(); toggleRecognition();">
+                <span class="mic-label" id="micTxt">🎤 Говорити</span>
+                <div class="waveform">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+            </button>
+            <button class="btn btn-translate" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
         </div>
 
-        <div class="result-card">
+        <div class="result-card" id="resultCard">
             <div class="result-text" id="outputText">Переклад з'явиться тут...</div>
             
             <div class="result-actions">
-                <button class="icon-btn" onclick="speakResult()"><span id="speakTxt">🔊 Голос</span></button>
-                <button class="icon-btn" onclick="copyResult()"><span id="copyTxt">📋 Копіювати</span></button>
-                <button class="icon-btn" onclick="shareResult()"><span id="shareTxt">📲 Поділитись</span></button>
+                <button class="icon-btn" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Голос</span></button>
+                <button class="icon-btn" onclick="vibrate(); copyResult();"><span id="copyTxt">📋 Копіювати</span></button>
+                <button class="icon-btn" onclick="vibrate(); shareResult();"><span id="shareTxt">📲 Поділитись</span></button>
             </div>
         </div>
 
         <div class="history-section">
             <div class="history-header">
                 <span id="historyTitle">Останні переклади</span>
-                <span id="clearHistoryTxt" style="cursor:pointer;" onclick="clearHistory()">Очистити</span>
+                <span id="clearHistoryTxt" style="cursor:pointer;" onclick="vibrate(); clearHistory();">Очистити</span>
             </div>
             <div class="history-list" id="historyList"></div>
         </div>
@@ -343,7 +406,6 @@
             'uk': {
                 placeholder: "Введіть або продиктуйте текст...",
                 mic: "🎤 Говорити",
-                recording: "⏹ Запис...",
                 translate: "Перекласти",
                 resultPlaceholder: "Переклад з'явиться тут...",
                 speak: "🔊 Голос",
@@ -358,7 +420,6 @@
             'sq': {
                 placeholder: "Shkruani ose flisni tekstin...",
                 mic: "🎤 Flisni",
-                recording: "⏹ Regjistrim...",
                 translate: "Përkthe",
                 resultPlaceholder: "Përkthimi do të shfaqet këtu...",
                 speak: "🔊 Zëri",
@@ -373,7 +434,6 @@
             'en': {
                 placeholder: "Type or dictate text...",
                 mic: "🎤 Speak",
-                recording: "⏹ Recording...",
                 translate: "Translate",
                 resultPlaceholder: "Translation will appear here...",
                 speak: "🔊 Voice",
@@ -393,12 +453,16 @@
             'en': 'en-US'
         };
 
+        function vibrate() {
+            if (navigator.vibrate) navigator.vibrate(12);
+        }
+
         function updateUI() {
             const srcLang = document.getElementById('srcLang').value;
             const t = uiTranslations[srcLang] || uiTranslations['uk'];
 
             document.getElementById('inputText').placeholder = t.placeholder;
-            if (!isRecording) document.getElementById('micTxt').innerText = t.mic;
+            document.getElementById('micTxt').innerText = t.mic;
             document.getElementById('translateBtn').innerText = t.translate;
             
             const currentOutput = document.getElementById('outputText').innerText;
@@ -465,19 +529,16 @@
                 stopRecording();
             } else {
                 const srcLangCode = document.getElementById('srcLang').value;
-                const t = uiTranslations[srcLangCode] || uiTranslations['uk'];
                 recognition.lang = langSpeechCodes[srcLangCode] || 'en-US';
                 recognition.start();
                 isRecording = true;
-                document.getElementById('micTxt').innerText = t.recording;
+                document.getElementById('micBtn').classList.add('recording');
             }
         }
 
         function stopRecording() {
             isRecording = false;
-            const srcLangCode = document.getElementById('srcLang').value;
-            const t = uiTranslations[srcLangCode] || uiTranslations['uk'];
-            document.getElementById('micTxt').innerText = t.mic;
+            document.getElementById('micBtn').classList.remove('recording');
         }
 
         async function translateText() {
@@ -489,7 +550,10 @@
             if (!text) return;
 
             const outputDiv = document.getElementById('outputText');
+            const resultCard = document.getElementById('resultCard');
+            
             outputDiv.innerText = t.loading;
+            resultCard.classList.add('shimmer');
 
             try {
                 const response = await fetch('/api/translate', {
@@ -498,6 +562,7 @@
                     body: JSON.stringify({ text, sourceLang, targetLang })
                 });
                 const data = await response.json();
+                resultCard.classList.remove('shimmer');
                 const resText = data.translation || t.error;
                 outputDiv.innerText = resText;
                 
@@ -506,6 +571,7 @@
                     speakResult();
                 }
             } catch (err) {
+                resultCard.classList.remove('shimmer');
                 outputDiv.innerText = t.connectionError;
             }
         }
@@ -548,7 +614,7 @@
             const history = JSON.parse(localStorage.getItem('history') || '[]');
             const list = document.getElementById('historyList');
             list.innerHTML = history.map(item => `
-                <div class="history-item" onclick="loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
+                <div class="history-item" onclick="vibrate(); loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
                     <div class="history-orig">${item.orig}</div>
                     <div>${item.trans}</div>
                 </div>
