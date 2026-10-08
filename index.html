@@ -643,36 +643,36 @@
             }
         }
 
-        function speakResult() {
-            if (!('speechSynthesis' in window)) return;
-
-            window.speechSynthesis.cancel(); // Скидаємо застряглі завдання
-
-            const text = document.getElementById('outputText').innerText;
+        // Озвучення через OpenAI TTS API
+        async function speakResult() {
+            const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear") || text.includes("Зачекайте") || text.includes("prisni") || text.includes("patienter") || text.includes("Attendere") || text.includes("Czekaj") || text.includes("warten")) {
                 return;
             }
 
-            const targetLangCode = document.getElementById('tgtLang').value;
-            const langCode = langSpeechCodes[targetLangCode] || 'en-US';
+            const speakBtn = document.getElementById('speakTxt');
+            const originalText = speakBtn.innerText;
+            speakBtn.innerText = "⏳ ...";
 
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = langCode;
-            utterance.rate = 0.95;
+            try {
+                const response = await fetch('/api/tts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
 
-            const voices = window.speechSynthesis.getVoices();
-            const matchingVoice = voices.find(v => v.lang.startsWith(langCode.split('-')[0]));
-            if (matchingVoice) {
-                utterance.voice = matchingVoice;
+                if (!response.ok) throw new Error('TTS network request failed');
+
+                const blob = await response.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                const audio = new Audio(audioUrl);
+                
+                await audio.play();
+            } catch (err) {
+                console.error("Помилка відтворення звуку:", err);
+            } finally {
+                speakBtn.innerText = originalText;
             }
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
         }
 
         function copyResult() {
