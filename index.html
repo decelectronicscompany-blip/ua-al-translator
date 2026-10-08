@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Voice Translator Premium</title>
+    
+    <!-- PWA та Іконки -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#090d16">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -642,7 +649,7 @@
             }
         }
 
-        // Озвучення ТІЛЬКИ при натисканні кнопки "Голос"
+        // Озвучення через OpenAI TTS за кнопкою
         async function speakResult() {
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear") || text.includes("Зачекайте") || text.includes("prisni") || text.includes("patienter") || text.includes("Attendere") || text.includes("Czekaj") || text.includes("warten")) {
