@@ -24,11 +24,11 @@
 
         [data-theme="light"] {
             --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fce7f3 100%);
-            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-bg: rgba(255, 255, 255, 0.85);
             --card-border: rgba(255, 255, 255, 0.6);
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --input-bg: rgba(255, 255, 255, 0.85);
+            --input-bg: rgba(255, 255, 255, 0.9);
             --btn-secondary: rgba(0, 0, 0, 0.05);
             --btn-secondary-hover: rgba(0, 0, 0, 0.1);
             --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
@@ -36,7 +36,7 @@
 
         * {
             box-sizing: border-box;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
@@ -53,7 +53,7 @@
 
         .container {
             width: 100%;
-            max-width: 460px;
+            max-width: 440px;
             background: var(--card-bg);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
@@ -63,7 +63,6 @@
             box-shadow: var(--box-shadow);
         }
 
-        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
@@ -108,7 +107,6 @@
             font-size: 16px;
         }
 
-        /* Симетрична панель мов */
         .lang-switcher {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -117,7 +115,7 @@
             background: var(--input-bg);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            padding: 8px 12px;
+            padding: 6px 10px;
             margin-bottom: 16px;
         }
 
@@ -125,11 +123,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             font-weight: 600;
             font-size: 14px;
             padding: 8px;
-            border-radius: 12px;
         }
 
         .swap-btn {
@@ -137,27 +134,21 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
         }
 
-        .swap-btn:active {
-            transform: rotate(180deg) scale(0.95);
-        }
-
-        /* Полі введення */
         .input-card, .result-card {
             background: var(--input-bg);
             border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 16px;
             margin-bottom: 16px;
-            position: relative;
         }
 
         textarea {
@@ -176,10 +167,9 @@
             color: var(--text-muted);
         }
 
-        /* Симетричні кнопки дій */
         .controls-grid {
             display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-columns: 48px 1fr 1fr;
             gap: 10px;
             margin-bottom: 16px;
         }
@@ -194,7 +184,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             color: white;
             background: var(--btn-secondary);
             border: 1px solid var(--card-border);
@@ -203,7 +193,6 @@
         .btn-mic {
             background: var(--accent-danger);
             border: none;
-            font-size: 15px;
         }
 
         .btn-translate {
@@ -211,21 +200,10 @@
             border: none;
         }
 
-        .btn-mic.recording {
-            animation: pulse 1.2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-
-        /* Результат */
         .result-text {
-            font-size: 17px;
+            font-size: 16px;
             line-height: 1.5;
-            min-height: 60px;
+            min-height: 50px;
             word-break: break-word;
         }
 
@@ -249,10 +227,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
         }
 
-        /* Історія */
         .history-section {
             border-top: 1px solid var(--card-border);
             padding-top: 16px;
@@ -292,7 +269,6 @@
 <body>
 
     <div class="container">
-        <!-- Шапка -->
         <div class="header">
             <div class="title-block">
                 <div class="status-dot"></div>
@@ -301,37 +277,32 @@
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
 
-        <!-- Симетричний перемикач мов -->
         <div class="lang-switcher">
-            <div class="lang-box" id="srcLang">🇺🇦 UA</div>
+            <div class="lang-box" id="srcLang">🇺🇦 Українська</div>
             <button class="swap-btn" onclick="swapLanguages()">⇄</button>
-            <div class="lang-box" id="tgtLang">🇦🇱 AL</div>
+            <div class="lang-box" id="tgtLang">🇦🇱 Албанська</div>
         </div>
 
-        <!-- Текстове поле -->
         <div class="input-card">
             <textarea id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
         </div>
 
-        <!-- Симетрична сітка кнопок дій -->
         <div class="controls-grid">
-            <button class="btn" onclick="clearInput()">🗑️</button>
+            <button class="btn" onclick="clearInput()" title="Очистити">🗑️</button>
             <button class="btn btn-mic" id="micBtn" onclick="toggleRecognition()">🎤 Говорити</button>
             <button class="btn btn-translate" onclick="translateText()">Перекласти</button>
         </div>
 
-        <!-- Картка результату -->
         <div class="result-card">
             <div class="result-text" id="outputText">Переклад з'явиться тут...</div>
             
             <div class="result-actions">
-                <button class="icon-btn" onclick="speakResult()">🔊 Голос</button>
+                <button class="icon-btn" onclick="speakResult()">🔊 Озвучити</button>
                 <button class="icon-btn" onclick="copyResult()">📋 Копія</button>
                 <button class="icon-btn" onclick="shareResult()">📲 Поділитись</button>
             </div>
         </div>
 
-        <!-- Історія -->
         <div class="history-section">
             <div class="history-header">
                 <span>Останні переклади</span>
@@ -345,9 +316,7 @@
         let currentTargetLang = 'sq';
         let isRecording = false;
         let recognition = null;
-        let debounceTimer;
 
-        // Теми
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -360,16 +329,15 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('themeBtn').innerText = savedTheme === 'light' ? '☀️' : '🌙';
 
-        // Перемикання мов
         function swapLanguages() {
             if (currentTargetLang === 'sq') {
                 currentTargetLang = 'uk';
-                document.getElementById('srcLang').innerText = '🇦🇱 AL';
-                document.getElementById('tgtLang').innerText = '🇺🇦 UA';
+                document.getElementById('srcLang').innerText = '🇦🇱 Албанська';
+                document.getElementById('tgtLang').innerText = '🇺🇦 Українська';
             } else {
                 currentTargetLang = 'sq';
-                document.getElementById('srcLang').innerText = '🇺🇦 UA';
-                document.getElementById('tgtLang').innerText = '🇦🇱 AL';
+                document.getElementById('srcLang').innerText = '🇺🇦 Українська';
+                document.getElementById('tgtLang').innerText = '🇦🇱 Албанська';
             }
             if(document.getElementById('inputText').value.trim()) translateText();
         }
@@ -379,17 +347,6 @@
             document.getElementById('outputText').innerText = "Переклад з'явиться тут...";
         }
 
-        // Автопереклад під час введення
-        document.getElementById('inputText').addEventListener('input', () => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                if (document.getElementById('inputText').value.trim().length > 2) {
-                    translateText();
-                }
-            }, 800);
-        });
-
-        // Голосове введення
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
@@ -415,18 +372,15 @@
                 recognition.lang = currentTargetLang === 'sq' ? 'uk-UA' : 'sq-AL';
                 recognition.start();
                 isRecording = true;
-                document.getElementById('micBtn').classList.add('recording');
                 document.getElementById('micBtn').innerText = '⏹ Запис...';
             }
         }
 
         function stopRecording() {
             isRecording = false;
-            document.getElementById('micBtn').classList.remove('recording');
             document.getElementById('micBtn').innerText = '🎤 Говорити';
         }
 
-        // Переклад
         async function translateText() {
             const text = document.getElementById('inputText').value.trim();
             if (!text) return;
@@ -477,7 +431,6 @@
             }
         }
 
-        // Історія
         function saveToHistory(orig, trans) {
             let history = JSON.parse(localStorage.getItem('history') || '[]');
             if (history.length > 0 && history[0].orig === orig) return;
