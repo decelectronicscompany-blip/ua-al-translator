@@ -3,35 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Multi-Language Voice Translator</title>
+    <title>Voice Translator</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
-            --card-bg: rgba(30, 41, 59, 0.85);
+            --card-bg: rgba(30, 41, 59, 0.9);
             --card-border: rgba(255, 255, 255, 0.12);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-bg: rgba(15, 23, 42, 0.7);
             --accent-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             --accent-danger: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%);
             --btn-secondary: rgba(255, 255, 255, 0.08);
             --btn-secondary-hover: rgba(255, 255, 255, 0.15);
-            --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         [data-theme="light"] {
             --bg-gradient: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 50%, #fce7f3 100%);
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.95);
             --card-border: rgba(255, 255, 255, 0.6);
             --text-main: #0f172a;
             --text-muted: #64748b;
             --input-bg: rgba(255, 255, 255, 0.95);
             --btn-secondary: rgba(0, 0, 0, 0.05);
             --btn-secondary-hover: rgba(0, 0, 0, 0.1);
-            --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
         }
 
         * {
@@ -39,12 +37,16 @@
             transition: all 0.2s ease;
         }
 
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             background: var(--bg-gradient);
-            min-height: 100vh;
-            margin: 0;
-            padding: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -52,22 +54,23 @@
         }
 
         .container {
-            width: 100%;
-            max-width: 420px;
+            width: 100vw;
+            height: 100vh;
+            max-width: 600px;
             background: var(--card-bg);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 18px;
-            box-shadow: var(--box-shadow);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
 
         .title-block {
@@ -85,7 +88,7 @@
         }
 
         .title {
-            font-size: 17px;
+            font-size: 18px;
             font-weight: 700;
             margin: 0;
             background: linear-gradient(135deg, #38bdf8, #818cf8);
@@ -98,13 +101,13 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 16px;
         }
 
         .lang-switcher {
@@ -116,7 +119,8 @@
             border: 1px solid var(--card-border);
             border-radius: 18px;
             padding: 6px 10px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
 
         select.lang-select {
@@ -124,7 +128,7 @@
             border: none;
             color: var(--text-main);
             font-family: inherit;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             padding: 6px;
             outline: none;
@@ -143,30 +147,34 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 14px;
         }
 
-        .input-card, .result-card {
+        /* Поле введення займає максимум місця */
+        .input-card {
             background: var(--input-bg);
             border: 1px solid var(--card-border);
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 14px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         textarea {
             width: 100%;
-            height: 80px;
+            height: 100%;
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 15px;
+            font-size: 16px;
             font-family: inherit;
             resize: none;
             outline: none;
@@ -178,22 +186,23 @@
 
         .controls-grid {
             display: grid;
-            grid-template-columns: 44px 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 14px;
+            grid-template-columns: 50px 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
 
         .btn {
             border: none;
-            border-radius: 14px;
-            padding: 10px 6px;
-            font-size: 13px;
+            border-radius: 16px;
+            padding: 14px 8px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 6px;
             color: white;
             background: var(--btn-secondary);
             border: 1px solid var(--card-border);
@@ -209,29 +218,44 @@
             border: none;
         }
 
+        /* Картка результату займає максимум місця */
+        .result-card {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
         .result-text {
-            font-size: 15px;
-            line-height: 1.4;
-            min-height: 48px;
+            font-size: 16px;
+            line-height: 1.5;
+            overflow-y: auto;
             word-break: break-word;
+            height: 100%;
         }
 
         .result-actions {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
+            gap: 8px;
             margin-top: 10px;
             border-top: 1px solid var(--card-border);
             padding-top: 10px;
+            flex-shrink: 0;
         }
 
         .icon-btn {
             background: var(--btn-secondary);
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            border-radius: 10px;
-            padding: 8px 4px;
-            font-size: 11px;
+            border-radius: 12px;
+            padding: 10px 4px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             display: flex;
@@ -243,7 +267,8 @@
 
         .history-section {
             border-top: 1px solid var(--card-border);
-            padding-top: 14px;
+            padding-top: 10px;
+            flex-shrink: 0;
         }
 
         .history-header {
@@ -251,29 +276,29 @@
             justify-content: space-between;
             font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .history-list {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 120px;
-            overflow-y: auto;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
         }
 
         .history-item {
             background: var(--btn-secondary);
             border-radius: 10px;
-            padding: 8px 10px;
+            padding: 8px 12px;
             font-size: 12px;
             cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .history-orig {
             color: var(--text-muted);
             font-size: 10px;
-            margin-bottom: 2px;
         }
     </style>
 </head>
@@ -288,7 +313,6 @@
             <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
         </div>
 
-        <!-- Селектори вибору мови -->
         <div class="lang-switcher">
             <select class="lang-select" id="srcLang">
                 <option value="uk">🇺🇦 Українська</option>
@@ -473,8 +497,7 @@
             const list = document.getElementById('historyList');
             list.innerHTML = history.map(item => `
                 <div class="history-item" onclick="loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
-                    <div class="history-orig">${item.orig}</div>
-                    <div>${item.trans}</div>
+                    <span class="history-orig">${item.orig}:</span> ${item.trans}
                 </div>
             `).join('');
         }
