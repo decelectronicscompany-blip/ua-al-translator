@@ -635,7 +635,6 @@
                 
                 if (data.translation) {
                     saveToHistory(text, resText);
-                    speakResult();
                 }
             } catch (err) {
                 resultCard.classList.remove('shimmer');
@@ -643,7 +642,7 @@
             }
         }
 
-        // Озвучення через OpenAI TTS API
+        // Озвучення ТІЛЬКИ при натисканні кнопки "Голос"
         async function speakResult() {
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear") || text.includes("Зачекайте") || text.includes("prisni") || text.includes("patienter") || text.includes("Attendere") || text.includes("Czekaj") || text.includes("warten")) {
