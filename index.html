@@ -22,7 +22,7 @@
             --text-title: #ffffff;
             --text-muted: #64748b;
             --accent-emerald: #34d399;
-            --emerald-glow: rgba(16, 185, 129, 0.35);
+            --emerald-glow: rgba(16, 185, 129, 0.4);
             --grad-primary: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
             --grad-mic: linear-gradient(135deg, #047857 0%, #10b981 100%);
             --glass-btn: rgba(255, 255, 255, 0.05);
@@ -51,8 +51,8 @@
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             background: var(--bg-main);
             background-image: 
-                radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 55%),
-                radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.08) 0px, transparent 50%);
+                radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 55%),
+                radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.1) 0px, transparent 50%);
             min-height: 100vh;
             margin: 0;
             padding: 16px 14px;
@@ -256,21 +256,22 @@
             color: var(--accent-emerald);
         }
 
-        /* Аудіохвиля */
+        /* Анімована Еквалайзерна Хвиля */
         .wave-container {
             display: none;
             justify-content: center;
             align-items: center;
-            gap: 3px;
-            height: 16px;
-            margin-bottom: 2px;
+            gap: 4px;
+            height: 20px;
+            margin: 4px 0 -4px 0;
         }
 
         .wave-container span {
-            width: 3px;
+            width: 3.5px;
             height: 100%;
-            background: #10b981;
+            background: #34d399;
             border-radius: 3px;
+            box-shadow: 0 0 8px #34d399;
             animation: wave 1s ease-in-out infinite;
         }
 
@@ -280,80 +281,80 @@
 
         @keyframes wave {
             0%, 100% { height: 4px; }
-            50% { height: 16px; }
+            50% { height: 20px; }
         }
 
         /* Панель Керування */
         .controls-bar {
             display: grid;
-            grid-template-columns: 1fr 64px 1fr;
-            gap: 10px;
+            grid-template-columns: 68px 1fr;
+            gap: 12px;
             align-items: center;
+            margin-top: 4px;
         }
 
-        .btn-action-side {
-            background: var(--card-glass);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 18px;
-            height: 56px;
-            font-size: 13px;
-            font-weight: 700;
+        .btn-mic-main {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--grad-mic);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 8px 25px var(--emerald-glow);
+            position: relative;
+        }
+
+        .btn-mic-main svg {
+            width: 26px;
+            height: 26px;
+            fill: white;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
         }
 
         .btn-translate-main {
             background: var(--grad-primary);
             border: none;
             color: white;
-            border-radius: 18px;
-            height: 56px;
-            font-size: 14px;
-            font-weight: 700;
+            border-radius: 22px;
+            height: 68px;
+            font-size: 16px;
+            font-weight: 800;
             cursor: pointer;
             box-shadow: 0 8px 20px var(--emerald-glow);
             width: 100%;
+            letter-spacing: 0.3px;
         }
 
-        .btn-mic-main {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: var(--grad-mic);
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 25px var(--emerald-glow);
-            justify-self: center;
-            position: relative;
+        .btn-mic-main:active, .btn-translate-main:active {
+            transform: scale(0.95);
         }
 
-        .btn-mic-main:active, .btn-translate-main:active, .btn-action-side:active {
-            transform: scale(0.96);
-        }
-
+        /* Неоновий пульс під час розмови */
         .btn-mic-main.recording {
-            animation: pulse-emerald 1.5s infinite;
+            animation: pulse-glow 1.2s infinite alternate;
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
         }
 
-        @keyframes pulse-emerald {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { box-shadow: 0 0 0 16px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 15px rgba(52, 211, 153, 0.6), 0 0 30px rgba(16, 185, 129, 0.4);
+                transform: scale(1);
+            }
+            100% {
+                box-shadow: 0 0 25px rgba(52, 211, 153, 0.9), 0 0 50px rgba(16, 185, 129, 0.7);
+                transform: scale(1.06);
+            }
         }
 
-        /* Модальна Шторка для Фраз */
+        /* Модальна Шторка */
         .sheet-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(10px);
             display: none;
             justify-content: center;
@@ -430,10 +431,6 @@
             align-items: center;
         }
 
-        .sheet-phrase-item:active {
-            background: var(--glass-btn-hover);
-        }
-
         /* Історія */
         .history-card {
             background: var(--card-glass);
@@ -487,10 +484,9 @@
             </div>
         </div>
 
-        <!-- Список Мов -->
+        <!-- Перемикач мов -->
         <div class="lang-bar">
             <select class="lang-select" id="srcLang" onchange="vibrate(); updateUI();">
-                <!-- Основні мови зверху -->
                 <option value="sq">🇦🇱 Shqip (Албанська)</option>
                 <option value="en">🇬🇧 English (Англійська)</option>
                 <option value="uk" selected>🇺🇦 Українська</option>
@@ -583,8 +579,13 @@
 
         <!-- Нижній Блок Керування -->
         <div class="controls-bar">
-            <button class="btn-action-side" onclick="vibrate(); clearInput();">Очистити</button>
-            <button class="btn-mic-main" id="micBtn" onclick="vibrate(); toggleRecognition();">🎤</button>
+            <!-- Векторний плаский мікрофон -->
+            <button class="btn-mic-main" id="micBtn" onclick="vibrate(); toggleRecognition();">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                </svg>
+            </button>
             <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
         </div>
 
@@ -598,7 +599,7 @@
         </div>
     </div>
 
-    <!-- Модальна Шторка з розширеним словничком -->
+    <!-- Модальна Шторка -->
     <div class="sheet-overlay" id="sheetOverlay" onclick="closePhrasesSheet(event)">
         <div class="sheet-content" onclick="event.stopPropagation()">
             <div class="sheet-header">
@@ -626,98 +627,20 @@
         const uiTranslations = {
             'uk': { placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання" },
             'sq': { placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje" },
-            'en': { placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error" },
-            'de': { placeholder: "Text eingeben oder diktieren...", translate: "Übersetzen", resultPlaceholder: "Übersetzung erscheint hier...", speak: "🔊 Anhören", history: "Verlauf", clearHistory: "Löschen", loading: "Bitte warten...", error: "Übersetzungsfehler", connectionError: "Verbindungsfehler" },
-            'it': { placeholder: "Scrivi o detta il testo...", translate: "Traduci", resultPlaceholder: "La traduzione apparirà qui...", speak: "🔊 Ascolta", history: "Cronologia", clearHistory: "Cancella", loading: "Attendere...", error: "Errore di traduzione", connectionError: "Errore di connessione" },
-            'fr': { placeholder: "Saisissez ou dictez le texte...", translate: "Traduire", resultPlaceholder: "La traduction apparaîtra ici...", speak: "🔊 Écouter", history: "Historique", clearHistory: "Effacer", loading: "Veuillez patienter...", error: "Erreur de traduction", connectionError: "Erreur de connexion" },
-            'pl': { placeholder: "Wpisz lub podyktuj tekst...", translate: "Przetłumacz", resultPlaceholder: "Tłumaczenie pojawi się tutaj...", speak: "🔊 Słuchaj", history: "Historia", clearHistory: "Wyczyść", loading: "Czekaj...", error: "Błąd tłumaczenia", connectionError: "Błąd połączenia" }
+            'en': { placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error" }
         };
 
         const langSpeechCodes = { 
-            'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE', 'it': 'it-IT', 'fr': 'fr-FR', 'pl': 'pl-PL',
-            'es': 'es-ES', 'pt': 'pt-PT', 'tr': 'tr-TR', 'ro': 'ro-RO', 'el': 'el-GR', 'hr': 'hr-HR', 'sr': 'sr-RS',
-            'bg': 'bg-BG', 'nl': 'nl-NL', 'sv': 'sv-SE', 'no': 'nb-NO', 'fi': 'fi-FI', 'da': 'da-DK', 'cs': 'cs-CZ',
-            'hu': 'hu-HU', 'sk': 'sk-SK', 'ar': 'ar-SA', 'he': 'he-IL', 'ja': 'ja-JP', 'ko': 'ko-KR', 'zh': 'zh-CN', 'hi': 'hi-IN'
+            'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE', 'it': 'it-IT', 'fr': 'fr-FR', 'pl': 'pl-PL'
         };
 
-        // Розширений словничок фраз
         const quickData = {
-            cafe: [
-                "Рахунок, будь ласка",
-                "Це було дуже смачно, дякую!",
-                "Принесіть меню, будь ласка",
-                "Воду без газу, будь ласка",
-                "Дві кави еспресо",
-                "Капучино з рослинним молоком",
-                "Чи є у вас морепродукти?",
-                "Чи є вегетаріанські страви?",
-                "Де знаходиться вбиральня?",
-                "Чи можна розрахуватися карткою?",
-                "Ми б хотіли замовити десерт",
-                "Принесіть ще один келих вина"
-            ],
-            market: [
-                "Скільки це коштує?",
-                "Чи можна оплатити карткою?",
-                "Ви приймаєте євро?",
-                "Зробіть невеличку знижку, будь ласка",
-                "Дайте пакет, будь ласка",
-                "Я просто дивлюся, дякую",
-                "Де найближчий банкомат?",
-                "Це свіжі продукти?",
-                "Можна це приміряти?",
-                "Є інший розмір або колір?",
-                "Зважте кілограм цього, будь ласка",
-                "Чи є у вас свіжі фрукти?"
-            ],
-            taxi: [
-                "Скільки коштує поїздка до центра?",
-                "Зупиніться тут, будь ласка",
-                "Увімкніть лічильник, будь ласка",
-                "Скільки до аеропорту?",
-                "Зачекайте мене тут 5 хвилин",
-                "Як дістатися до найближчого пляжу?",
-                "Відчиніть багажник, будь ласка",
-                "Відвезіть мене за цією адресою",
-                "Відкрийте вікно, будь ласка",
-                "Увімкніть кондиціонер"
-            ],
-            hotel: [
-                "Я бронював номер на своє ім'я",
-                "Який пароль від Wi-Fi?",
-                "В номері не працює кондиціонер",
-                "О котрій годині сніданок?",
-                "Коли час виселення (check-out)?",
-                "Чи можна залишити багаж на рецепції?",
-                "Принесіть додатковий рушник, будь ласка",
-                "Гаряча вода не працює",
-                "Викличте мені таксі, будь ласка",
-                "Чи є басейн у готелі?"
-            ],
-            sos: [
-                "Де найближча аптека?",
-                "Дайте ліки від головного болю",
-                "Терміново викличте швидку допомогу!",
-                "Мені погано, допоможіть будь ласка",
-                "Потрібен пластир та антисептик",
-                "Засіб від сонячних опіків",
-                "У мене алергія",
-                "Де знаходиться найближча лікарня?",
-                "Викличте поліцію!",
-                "Я загубив свої документи"
-            ],
-            basic: [
-                "Добрий день!",
-                "Дуже дякую за допомогу!",
-                "Будь ласка",
-                "Ви розмовляєте англійською?",
-                "Я вас не розумію",
-                "Вибачте",
-                "Як вас звати?",
-                "Гарного вам дня!",
-                "Все чудово!",
-                "До побачення!"
-            ]
+            cafe: [ "Рахунок, будь ласка", "Це було дуже смачно, дякую!", "Принесіть меню, будь ласка", "Воду без газу, будь ласка", "Дві кави еспресо", "Капучино з рослинним молоком", "Чи є у вас морепродукти?", "Чи є вегетаріанські страви?", "Де знаходиться вбиральня?", "Чи можна розрахуватися карткою?" ],
+            market: [ "Скільки це коштує?", "Чи можна оплатити карткою?", "Ви приймаєте євро?", "Зробіть невеличку знижку, будь ласка", "Дайте пакет, будь ласка", "Я просто дивлюся, дякую", "Де найближчий банкомат?", "Можна це приміряти?" ],
+            taxi: [ "Скільки коштує поїздка до центра?", "Зупиніться тут, будь ласка", "Увімкніть лічильник, будь ласка", "Скільки до аеропорту?", "Зачекайте мене тут 5 хвилин", "Як дістатися до найближчого пляжу?" ],
+            hotel: [ "Я бронював номер на своє ім'я", "Який пароль від Wi-Fi?", "В номері не працює кондиціонер", "О котрій годині сніданок?", "Коли час виселення (check-out)?", "Чи можна залишити багаж на рецепції?" ],
+            sos: [ "Де найближча аптека?", "Дайте ліки від головного болю", "Терміново викличте швидку допомогу!", "Мені погано, допоможіть будь ласка", "Потрібен пластир та антисептик" ],
+            basic: [ "Добрий день!", "Дуже дякую за допомогу!", "Будь ласка", "Ви розмовляєте англійською?", "Я вас не розумію", "Вибачте", "Як вас звати?", "Гарного вам дня!" ]
         };
 
         function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
