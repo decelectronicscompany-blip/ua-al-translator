@@ -17,33 +17,33 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(-45deg, #090d16, #111827, #1e1b4b, #2e1065);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.12);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-bg: rgba(15, 23, 42, 0.5);
             --accent-glow: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
             --accent-danger: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-            --btn-glass: rgba(255, 255, 255, 0.07);
-            --btn-glass-hover: rgba(255, 255, 255, 0.15);
-            --box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            --btn-glass: rgba(255, 255, 255, 0.06);
+            --btn-glass-hover: rgba(255, 255, 255, 0.12);
+            --box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
 
         [data-theme="light"] {
             --bg-gradient: linear-gradient(-45deg, #e0e7ff, #f3e8ff, #fce7f3, #e0f2fe);
-            --card-bg: rgba(255, 255, 255, 0.7);
-            --card-border: rgba(255, 255, 255, 0.8);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.85);
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --input-bg: rgba(255, 255, 255, 0.85);
-            --btn-glass: rgba(0, 0, 0, 0.05);
-            --btn-glass-hover: rgba(0, 0, 0, 0.1);
-            --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --btn-glass: rgba(0, 0, 0, 0.04);
+            --btn-glass-hover: rgba(0, 0, 0, 0.08);
+            --box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
         }
 
         * {
             box-sizing: border-box;
-            transition: background 0.25s ease, border-color 0.25s ease, transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
         }
 
         body {
@@ -53,7 +53,7 @@
             animation: gradientBG 15s ease infinite;
             min-height: 100vh;
             margin: 0;
-            padding: 12px;
+            padding: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -68,13 +68,13 @@
 
         .container {
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
             background: var(--card-bg);
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--card-border);
-            border-radius: 28px;
-            padding: 18px;
+            border-radius: 24px;
+            padding: 14px;
             box-shadow: var(--box-shadow);
         }
 
@@ -82,25 +82,25 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
         }
 
         .title-block {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: #22c55e;
             border-radius: 50%;
-            box-shadow: 0 0 10px #22c55e;
+            box-shadow: 0 0 8px #22c55e;
         }
 
         .title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             margin: 0;
             background: linear-gradient(135deg, #38bdf8, #c084fc);
@@ -113,25 +113,25 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 50%;
-            width: 38px;
-            height: 38px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .lang-switcher {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: var(--input-bg);
             border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 4px 8px;
-            margin-bottom: 12px;
+            border-radius: 14px;
+            padding: 2px 6px;
+            margin-bottom: 8px;
         }
 
         select.lang-select {
@@ -139,9 +139,9 @@
             border: none;
             color: var(--text-main);
             font-family: inherit;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            padding: 8px 2px;
+            padding: 6px 2px;
             outline: none;
             cursor: pointer;
             width: 100%;
@@ -158,35 +158,31 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        .swap-btn:active {
-            transform: rotate(180deg) scale(0.9);
+        /* Компактний чистий розмовник */
+        .quick-section {
+            margin-bottom: 8px;
         }
 
-        /* Стилі швидкого розмовника (Лід-магніт) */
-        .quick-phrases-container {
-            background: var(--input-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 10px 12px;
-            margin-bottom: 12px;
-        }
-
-        .quick-header {
+        .quick-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            margin-bottom: 5px;
+            padding: 0 2px;
+        }
+
+        .quick-title {
+            font-size: 11px;
             font-weight: 600;
-            margin-bottom: 8px;
             color: var(--text-muted);
         }
 
@@ -194,8 +190,8 @@
             background: var(--btn-glass);
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            border-radius: 10px;
-            padding: 4px 8px;
+            border-radius: 8px;
+            padding: 2px 6px;
             font-size: 11px;
             outline: none;
             cursor: pointer;
@@ -208,109 +204,98 @@
 
         .quick-chips {
             display: flex;
-            gap: 6px;
+            gap: 5px;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding-bottom: 2px;
             scrollbar-width: none;
         }
 
-        .quick-chips::-webkit-scrollbar {
-            display: none;
-        }
+        .quick-chips::-webkit-scrollbar { display: none; }
 
         .chip-btn {
             background: var(--btn-glass);
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            border-radius: 12px;
-            padding: 6px 10px;
+            border-radius: 10px;
+            padding: 4px 8px;
             font-size: 11px;
             white-space: nowrap;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
-        .chip-btn:active {
-            transform: scale(0.95);
-            background: var(--btn-glass-hover);
-        }
+        .chip-btn:active { transform: scale(0.95); }
 
         .input-card, .result-card {
             background: var(--input-bg);
             border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 12px;
-            margin-bottom: 12px;
-            position: relative;
+            border-radius: 16px;
+            padding: 10px;
+            margin-bottom: 8px;
         }
 
         textarea {
             width: 100%;
-            height: 85px;
+            height: 65px;
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 15px;
+            font-size: 14px;
             font-family: inherit;
             resize: none;
             outline: none;
         }
 
-        textarea::placeholder {
-            color: var(--text-muted);
-        }
+        textarea::placeholder { color: var(--text-muted); }
 
         .controls-grid {
             display: grid;
-            grid-template-columns: 44px 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
+            grid-template-columns: 38px 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 8px;
         }
 
         .btn {
             border: none;
-            border-radius: 16px;
-            padding: 11px 4px;
-            font-size: 13px;
+            border-radius: 12px;
+            padding: 9px 4px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 4px;
             color: white;
             background: var(--btn-glass);
             border: 1px solid var(--card-border);
         }
 
-        .btn:active {
-            transform: scale(0.96);
-        }
+        .btn:active { transform: scale(0.96); }
 
         .btn-mic {
             background: var(--accent-danger);
             border: none;
-            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.35);
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
         }
 
         .btn-translate {
             background: var(--accent-glow);
             border: none;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
         .waveform {
             display: none;
             align-items: center;
-            gap: 3px;
-            height: 16px;
+            gap: 2px;
+            height: 14px;
         }
 
         .waveform span {
-            width: 3px;
+            width: 2.5px;
             height: 100%;
             background: white;
-            border-radius: 3px;
+            border-radius: 2px;
             animation: wave 1s ease-in-out infinite;
         }
 
@@ -319,24 +304,24 @@
         .waveform span:nth-child(4) { animation-delay: 0.45s; }
 
         @keyframes wave {
-            0%, 100% { height: 4px; }
-            50% { height: 16px; }
+            0%, 100% { height: 3px; }
+            50% { height: 14px; }
         }
 
         .recording .waveform { display: flex; }
         .recording .mic-label { display: none; }
 
         .result-text {
-            font-size: 15px;
-            line-height: 1.4;
-            min-height: 50px;
-            max-height: 95px;
+            font-size: 14px;
+            line-height: 1.35;
+            min-height: 42px;
+            max-height: 75px;
             overflow-y: auto;
             word-break: break-word;
         }
 
         .shimmer {
-            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
         }
@@ -349,61 +334,60 @@
         .result-actions {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            margin-top: 8px;
+            gap: 5px;
+            margin-top: 6px;
             border-top: 1px solid var(--card-border);
-            padding-top: 8px;
+            padding-top: 6px;
         }
 
         .icon-btn {
             background: var(--btn-glass);
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            border-radius: 12px;
-            padding: 7px 2px;
+            border-radius: 10px;
+            padding: 5px 2px;
             font-size: 11px;
             font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            white-space: nowrap;
+            gap: 3px;
         }
 
         .history-section {
             border-top: 1px solid var(--card-border);
-            padding-top: 10px;
+            padding-top: 8px;
         }
 
         .history-header {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            max-height: 90px;
+            gap: 4px;
+            max-height: 70px;
             overflow-y: auto;
         }
 
         .history-item {
             background: var(--btn-glass);
             border-radius: 8px;
-            padding: 6px 8px;
-            font-size: 12px;
+            padding: 5px 7px;
+            font-size: 11px;
             cursor: pointer;
         }
 
         .history-orig {
             color: var(--text-muted);
-            font-size: 10px;
-            margin-bottom: 2px;
+            font-size: 9px;
+            margin-bottom: 1px;
         }
     </style>
 </head>
@@ -442,10 +426,10 @@
             </select>
         </div>
 
-        <!-- Інтерактивний лід-магніт: Швидкі фрази -->
-        <div class="quick-phrases-container">
-            <div class="quick-header">
-                <span>🎁 Експрес-розмовник:</span>
+        <!-- Оптимізований мінімалістичний розмовник -->
+        <div class="quick-section">
+            <div class="quick-top">
+                <span class="quick-title">⚡ Швидкі фрази:</span>
                 <select id="quickCategory" onchange="vibrate(); changeQuickCategory(this.value);" class="quick-select">
                     <option value="cafe">☕ Кафе / Ресторан</option>
                     <option value="market">🛒 Ринок / Магазини</option>
@@ -455,9 +439,7 @@
                     <option value="basic">👋 Етикет / Базові</option>
                 </select>
             </div>
-            <div class="quick-chips" id="quickChips">
-                <!-- Фрази підвантажуються динамічно через JS -->
-            </div>
+            <div class="quick-chips" id="quickChips"></div>
         </div>
 
         <div class="input-card">
