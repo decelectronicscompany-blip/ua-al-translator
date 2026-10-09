@@ -2,136 +2,129 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Voice Translator Premium</title>
     
     <!-- PWA та Іконки -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#090d16">
+    <meta name="theme-color" content="#080b14">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient: linear-gradient(-45deg, #090d16, #111827, #1e1b4b, #2e1065);
-            --card-bg: rgba(255, 255, 255, 0.04);
+            --bg-dark: #080b14;
+            --card-glass: rgba(255, 255, 255, 0.03);
             --card-border: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --input-bg: rgba(15, 23, 42, 0.5);
-            --accent-glow: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            --accent-danger: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-            --btn-glass: rgba(255, 255, 255, 0.06);
-            --btn-glass-hover: rgba(255, 255, 255, 0.12);
-            --box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            --text-muted: #64748b;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-pink: #ec4899;
+            --grad-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --grad-mic: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+            --glass-btn: rgba(255, 255, 255, 0.05);
+            --glass-btn-hover: rgba(255, 255, 255, 0.12);
         }
 
         [data-theme="light"] {
-            --bg-gradient: linear-gradient(-45deg, #e0e7ff, #f3e8ff, #fce7f3, #e0f2fe);
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: rgba(255, 255, 255, 0.85);
+            --bg-dark: #f1f5f9;
+            --card-glass: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(255, 255, 255, 0.9);
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --input-bg: rgba(255, 255, 255, 0.9);
-            --btn-glass: rgba(0, 0, 0, 0.04);
-            --btn-glass-hover: rgba(0, 0, 0, 0.08);
-            --box-shadow: 0 15px 30px rgba(0, 0, 0, 0.06);
+            --glass-btn: rgba(0, 0, 0, 0.04);
+            --glass-btn-hover: rgba(0, 0, 0, 0.08);
         }
 
         * {
             box-sizing: border-box;
-            transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background: var(--bg-gradient);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.12) 0px, transparent 50%);
             min-height: 100vh;
             margin: 0;
-            padding: 10px;
+            padding: 16px 14px;
             display: flex;
             justify-content: center;
             align-items: center;
             color: var(--text-main);
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .container {
+        .app-viewport {
             width: 100%;
-            max-width: 400px;
-            background: var(--card-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 14px;
-            box-shadow: var(--box-shadow);
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
+        /* Хедер */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            padding: 4px 2px;
         }
 
-        .title-block {
+        .brand {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            background: #22c55e;
+        .brand-badge {
+            width: 9px;
+            height: 9px;
+            background: #10b981;
             border-radius: 50%;
-            box-shadow: 0 0 8px #22c55e;
+            box-shadow: 0 0 12px #10b981;
         }
 
-        .title {
-            font-size: 16px;
-            font-weight: 700;
-            margin: 0;
-            background: linear-gradient(135deg, #38bdf8, #c084fc);
+        .brand-title {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--text-muted));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .theme-toggle {
-            background: var(--btn-glass);
+        .theme-btn {
+            background: var(--glass-btn);
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            border-radius: 14px;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 15px;
         }
 
-        .lang-switcher {
+        /* Вибір мови */
+        .lang-bar {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            gap: 6px;
-            background: var(--input-bg);
+            gap: 8px;
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 2px 6px;
-            margin-bottom: 8px;
+            border-radius: 20px;
+            padding: 6px 10px;
         }
 
         select.lang-select {
@@ -139,9 +132,8 @@
             border: none;
             color: var(--text-main);
             font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px 2px;
+            font-size: 14px;
+            font-weight: 700;
             outline: none;
             cursor: pointer;
             width: 100%;
@@ -149,260 +141,316 @@
         }
 
         select.lang-select option {
-            background: #1e293b;
+            background: #0f172a;
             color: #f8fafc;
         }
 
         .swap-btn {
-            background: var(--btn-glass);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
+            background: var(--grad-primary);
+            border: none;
+            color: white;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 13px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
-        /* Компактний чистий розмовник */
-        .quick-section {
-            margin-bottom: 8px;
+        /* Преміум Розмовник */
+        .express-bar {
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .quick-top {
+        .express-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 5px;
-            padding: 0 2px;
         }
 
-        .quick-title {
+        .express-label {
             font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            background: linear-gradient(135deg, #38bdf8, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .quick-select {
-            background: var(--btn-glass);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 8px;
-            padding: 2px 6px;
-            font-size: 11px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .quick-select option {
-            background: #1e293b;
-            color: #f8fafc;
-        }
-
-        .quick-chips {
-            display: flex;
-            gap: 5px;
-            overflow-x: auto;
-            padding-bottom: 2px;
-            scrollbar-width: none;
-        }
-
-        .quick-chips::-webkit-scrollbar { display: none; }
-
-        .chip-btn {
-            background: var(--btn-glass);
+        .express-select {
+            background: var(--glass-btn);
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 10px;
-            padding: 4px 8px;
+            padding: 3px 8px;
             font-size: 11px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .express-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+
+        .express-chips::-webkit-scrollbar { display: none; }
+
+        .chip {
+            background: var(--glass-btn);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
             white-space: nowrap;
             cursor: pointer;
         }
 
-        .chip-btn:active { transform: scale(0.95); }
-
-        .input-card, .result-card {
-            background: var(--input-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 10px;
-            margin-bottom: 8px;
+        .chip:active {
+            background: var(--glass-btn-hover);
+            transform: scale(0.96);
         }
 
-        textarea {
+        /* Головна Скляна Картка Перекладу */
+        .translation-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        textarea.input-area {
             width: 100%;
-            height: 65px;
+            height: 75px;
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 500;
             font-family: inherit;
             resize: none;
             outline: none;
+            line-height: 1.4;
         }
 
-        textarea::placeholder { color: var(--text-muted); }
+        textarea.input-area::placeholder {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
 
-        .controls-grid {
-            display: grid;
-            grid-template-columns: 38px 1fr 1fr;
+        .card-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--card-border), transparent);
+            margin: 2px 0;
+        }
+
+        .output-area {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            min-height: 55px;
+            color: #38bdf8;
+            word-break: break-word;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 4px;
+        }
+
+        .action-group {
+            display: flex;
             gap: 6px;
-            margin-bottom: 8px;
         }
 
-        .btn {
-            border: none;
+        .icon-btn {
+            background: var(--glass-btn);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
             border-radius: 12px;
-            padding: 9px 4px;
+            padding: 7px 12px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 4px;
-            color: white;
-            background: var(--btn-glass);
+            gap: 5px;
+        }
+
+        .icon-btn:active {
+            background: var(--glass-btn-hover);
+        }
+
+        /* Панель керування (Дії) */
+        .controls-bar {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+            margin: 4px 0;
+        }
+
+        .btn-secondary {
+            background: var(--card-glass);
             border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 18px;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .btn:active { transform: scale(0.96); }
-
-        .btn-mic {
-            background: var(--accent-danger);
+        .btn-mic-main {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: var(--grad-mic);
             border: none;
-            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(244, 63, 94, 0.4);
+            justify-self: center;
+            position: relative;
         }
 
-        .btn-translate {
-            background: var(--accent-glow);
+        .btn-mic-main:active {
+            transform: scale(0.92);
+        }
+
+        .btn-translate-main {
+            background: var(--grad-primary);
             border: none;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            color: white;
+            border-radius: 18px;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
         }
 
-        .waveform {
+        /* Анімація хвилі для мікрофона */
+        .mic-waves {
             display: none;
             align-items: center;
-            gap: 2px;
-            height: 14px;
+            gap: 3px;
+            height: 18px;
         }
 
-        .waveform span {
-            width: 2.5px;
+        .mic-waves span {
+            width: 3px;
             height: 100%;
             background: white;
-            border-radius: 2px;
+            border-radius: 3px;
             animation: wave 1s ease-in-out infinite;
         }
 
-        .waveform span:nth-child(2) { animation-delay: 0.15s; }
-        .waveform span:nth-child(3) { animation-delay: 0.3s; }
-        .waveform span:nth-child(4) { animation-delay: 0.45s; }
+        .mic-waves span:nth-child(2) { animation-delay: 0.15s; }
+        .mic-waves span:nth-child(3) { animation-delay: 0.3s; }
 
         @keyframes wave {
-            0%, 100% { height: 3px; }
-            50% { height: 14px; }
+            0%, 100% { height: 4px; }
+            50% { height: 18px; }
         }
 
-        .recording .waveform { display: flex; }
-        .recording .mic-label { display: none; }
-
-        .result-text {
-            font-size: 14px;
-            line-height: 1.35;
-            min-height: 42px;
-            max-height: 75px;
-            overflow-y: auto;
-            word-break: break-word;
+        .recording .mic-icon { display: none; }
+        .recording .mic-waves { display: flex; }
+        .recording {
+            animation: pulse-ring 1.5s infinite;
         }
 
-        .shimmer {
-            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(244, 63, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
         }
 
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        .result-actions {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            margin-top: 6px;
-            border-top: 1px solid var(--card-border);
-            padding-top: 6px;
-        }
-
-        .icon-btn {
-            background: var(--btn-glass);
+        /* Історія */
+        .history-card {
+            background: var(--card-glass);
             border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 10px;
-            padding: 5px 2px;
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
+            border-radius: 20px;
+            padding: 12px 14px;
         }
 
-        .history-section {
-            border-top: 1px solid var(--card-border);
-            padding-top: 8px;
-        }
-
-        .history-header {
+        .history-top {
             display: flex;
             justify-content: space-between;
             font-size: 11px;
+            font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .history-list {
+        .history-items {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            max-height: 70px;
+            gap: 6px;
+            max-height: 80px;
             overflow-y: auto;
         }
 
-        .history-item {
-            background: var(--btn-glass);
-            border-radius: 8px;
-            padding: 5px 7px;
-            font-size: 11px;
+        .history-row {
+            font-size: 12px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             cursor: pointer;
         }
 
-        .history-orig {
+        .history-row-orig {
             color: var(--text-muted);
-            font-size: 9px;
-            margin-bottom: 1px;
+            font-size: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <div class="app-viewport">
+        <!-- Шапка -->
         <div class="header">
-            <div class="title-block">
-                <div class="status-dot"></div>
-                <h1 class="title">Voice Translator</h1>
+            <div class="brand">
+                <div class="brand-badge"></div>
+                <div class="brand-title">Voice Translator</div>
             </div>
-            <button class="theme-toggle" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
+            <button class="theme-btn" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
         </div>
 
-        <div class="lang-switcher">
+        <!-- Мови -->
+        <div class="lang-bar">
             <select class="lang-select" id="srcLang" onchange="vibrate(); updateUI();">
                 <option value="uk">🇺🇦 Українська</option>
                 <option value="sq">🇦🇱 Shqip</option>
@@ -426,53 +474,61 @@
             </select>
         </div>
 
-        <!-- Оптимізований мінімалістичний розмовник -->
-        <div class="quick-section">
-            <div class="quick-top">
-                <span class="quick-title">⚡ Швидкі фрази:</span>
-                <select id="quickCategory" onchange="vibrate(); changeQuickCategory(this.value);" class="quick-select">
-                    <option value="cafe">☕ Кафе / Ресторан</option>
-                    <option value="market">🛒 Ринок / Магазини</option>
-                    <option value="taxi">🚖 Таксі / Дорога</option>
-                    <option value="hotel">🏠 Готель / Оренда</option>
-                    <option value="sos">💊 Аптека / SOS</option>
-                    <option value="basic">👋 Етикет / Базові</option>
+        <!-- Експрес Розмовник -->
+        <div class="express-bar">
+            <div class="express-top">
+                <span class="express-label">⚡ Швидкий розмовник</span>
+                <select id="quickCategory" onchange="vibrate(); changeQuickCategory(this.value);" class="express-select">
+                    <option value="cafe">☕ Кафе</option>
+                    <option value="market">🛒 Ринок</option>
+                    <option value="taxi">🚖 Таксі</option>
+                    <option value="hotel">🏠 Готель</option>
+                    <option value="sos">💊 SOS</option>
+                    <option value="basic">👋 Базові</option>
                 </select>
             </div>
-            <div class="quick-chips" id="quickChips"></div>
+            <div class="express-chips" id="quickChips"></div>
         </div>
 
-        <div class="input-card">
-            <textarea id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
+        <!-- Головне Вікно Перекладу -->
+        <div class="translation-card" id="mainCard">
+            <textarea class="input-area" id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
+            
+            <div class="card-divider"></div>
+            
+            <div class="output-area" id="outputText">Переклад з'явиться тут...</div>
+            
+            <div class="action-row">
+                <button class="icon-btn" onclick="vibrate(); clearInput();">🗑️</button>
+                <div class="action-group">
+                    <button class="icon-btn" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
+                    <button class="icon-btn" onclick="vibrate(); copyResult();"><span id="copyTxt">📋</span></button>
+                    <button class="icon-btn" onclick="vibrate(); shareResult();"><span id="shareTxt">📲</span></button>
+                </div>
+            </div>
         </div>
 
-        <div class="controls-grid">
-            <button class="btn" onclick="vibrate(); clearInput();" title="Clear">🗑️</button>
-            <button class="btn btn-mic" id="micBtn" onclick="vibrate(); toggleRecognition();">
-                <span class="mic-label" id="micTxt">🎤 Говорити</span>
-                <div class="waveform">
-                    <span></span><span></span><span></span><span></span>
+        <!-- Панель Керування -->
+        <div class="controls-bar">
+            <button class="btn-secondary" onclick="vibrate(); clearInput();">Очистити</button>
+            
+            <button class="btn-mic-main" id="micBtn" onclick="vibrate(); toggleRecognition();">
+                <span class="mic-icon">🎤</span>
+                <div class="mic-waves">
+                    <span></span><span></span><span></span>
                 </div>
             </button>
-            <button class="btn btn-translate" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
-        </div>
-
-        <div class="result-card" id="resultCard">
-            <div class="result-text" id="outputText">Переклад з'явиться тут...</div>
             
-            <div class="result-actions">
-                <button class="icon-btn" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Голос</span></button>
-                <button class="icon-btn" onclick="vibrate(); copyResult();"><span id="copyTxt">📋 Копіювати</span></button>
-                <button class="icon-btn" onclick="vibrate(); shareResult();"><span id="shareTxt">📲 Поділитись</span></button>
-            </div>
+            <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
         </div>
 
-        <div class="history-section">
-            <div class="history-header">
-                <span id="historyTitle">Останні переклади</span>
+        <!-- Історія -->
+        <div class="history-card">
+            <div class="history-top">
+                <span id="historyTitle">Історія</span>
                 <span id="clearHistoryTxt" style="cursor:pointer;" onclick="vibrate(); clearHistory();">Очистити</span>
             </div>
-            <div class="history-list" id="historyList"></div>
+            <div class="history-items" id="historyList"></div>
         </div>
     </div>
 
@@ -481,187 +537,34 @@
         let recognition = null;
 
         const uiTranslations = {
-            'uk': {
-                placeholder: "Введіть або продиктуйте текст...",
-                mic: "🎤 Говорити",
-                translate: "Перекласти",
-                resultPlaceholder: "Переклад з'явиться тут...",
-                speak: "🔊 Голос",
-                copy: "📋 Копіювати",
-                share: "📲 Поділитись",
-                history: "Останні переклади",
-                clearHistory: "Очистити",
-                loading: "Зачекайте...",
-                error: "Помилка перекладу",
-                connectionError: "Помилка з’єднання"
-            },
-            'sq': {
-                placeholder: "Shkruani ose flisni tekstin...",
-                mic: "🎤 Flisni",
-                translate: "Përkthe",
-                resultPlaceholder: "Përkthimi do të shfaqet këtu...",
-                speak: "🔊 Zëri",
-                copy: "📋 Kopjo",
-                share: "📲 Ndaj",
-                history: "Përkthimet e fundit",
-                clearHistory: "Pastro",
-                loading: "Ju lutem prisni...",
-                error: "Gabim në përkthim",
-                connectionError: "Gabim në lidhje"
-            },
-            'en': {
-                placeholder: "Type or dictate text...",
-                mic: "🎤 Speak",
-                translate: "Translate",
-                resultPlaceholder: "Translation will appear here...",
-                speak: "🔊 Voice",
-                copy: "📋 Copy",
-                share: "📲 Share",
-                history: "Recent translations",
-                clearHistory: "Clear",
-                loading: "Please wait...",
-                error: "Translation error",
-                connectionError: "Connection error"
-            },
-            'fr': {
-                placeholder: "Saisissez ou dictez le texte...",
-                mic: "🎤 Parler",
-                translate: "Traduire",
-                resultPlaceholder: "La traduction apparaîtra ici...",
-                speak: "🔊 Voix",
-                copy: "📋 Copier",
-                share: "📲 Partager",
-                history: "Traductions récentes",
-                clearHistory: "Effacer",
-                loading: "Veuillez patienter...",
-                error: "Erreur de traduction",
-                connectionError: "Erreur de connexion"
-            },
-            'it': {
-                placeholder: "Scrivi o detta il testo...",
-                mic: "🎤 Parla",
-                translate: "Traduci",
-                resultPlaceholder: "La traduzione apparirà qui...",
-                speak: "🔊 Voce",
-                copy: "📋 Copia",
-                share: "📲 Condividi",
-                history: "Traduzioni recenti",
-                clearHistory: "Cancella",
-                loading: "Attendere...",
-                error: "Errore di traduzione",
-                connectionError: "Errore di connessione"
-            },
-            'pl': {
-                placeholder: "Wpisz lub podyktuj tekst...",
-                mic: "🎤 Mów",
-                translate: "Przetłumacz",
-                resultPlaceholder: "Tłumaczenie pojawi się tutaj...",
-                speak: "🔊 Głos",
-                copy: "📋 Kopiuj",
-                share: "📲 Udostępnij",
-                history: "Ostatnie tłumaczenia",
-                clearHistory: "Wyczyść",
-                loading: "Czekaj...",
-                error: "Błąd tłumaczenia",
-                connectionError: "Błąd połączenia"
-            },
-            'de': {
-                placeholder: "Text eingeben oder diktieren...",
-                mic: "🎤 Sprechen",
-                translate: "Übersetzen",
-                resultPlaceholder: "Übersetzung erscheint hier...",
-                speak: "🔊 Stimme",
-                copy: "📋 Kopieren",
-                share: "📲 Teilen",
-                history: "Letzte Übersetzungen",
-                clearHistory: "Löschen",
-                loading: "Bitte warten...",
-                error: "Übersetzungsfehler",
-                connectionError: "Verbindungsfehler"
-            }
+            'uk': { placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання" },
+            'sq': { placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje" },
+            'en': { placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error" }
         };
 
-        const langSpeechCodes = {
-            'uk': 'uk-UA',
-            'sq': 'sq-AL',
-            'en': 'en-US',
-            'fr': 'fr-FR',
-            'it': 'it-IT',
-            'pl': 'pl-PL',
-            'de': 'de-DE'
-        };
+        const langSpeechCodes = { 'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'fr': 'fr-FR', 'it': 'it-IT', 'pl': 'pl-PL', 'de': 'de-DE' };
 
         const quickData = {
-            cafe: [
-                { uk: "Рахунок, будь ласка", sq: "Fatura, ju lutem" },
-                { uk: "Це було дуже смачно!", sq: "Ishte shumë e shijshme!" },
-                { uk: "Воду без газу, будь ласка", sq: "Ujë pa gaz, ju lutem" },
-                { uk: "Дві кави еспресо", sq: "Dy kafe ekspres" },
-                { uk: "Чи є у вас морепродукти?", sq: "A keni ushqime deti?" },
-                { uk: "Де знаходиться вбиральня?", sq: "Ku është tualeti?" },
-                { uk: "Принесіть меню, будь ласка", sq: "Më sillni menynë, ju lutem" }
-            ],
-            market: [
-                { uk: "Скільки це коштує?", sq: "Sa kushton kjo?" },
-                { uk: "Чи можна оплатити карткою?", sq: "A mund të paguaj me kartë?" },
-                { uk: "Ви приймаєте євро?", sq: "A pranoni euro?" },
-                { uk: "Зробіть знижку, будь ласка", sq: "Më bëni një zbritje, ju lutem" },
-                { uk: "Дайте пакет, будь ласка", sq: "Më jepni një qese, ju lutem" },
-                { uk: "Я просто дивлюся, дякую", sq: "Po shikoj vetëm, faleminderit" },
-                { uk: "Де найближчий банкомат?", sq: "Ku është bankomati më i afërt?" }
-            ],
-            taxi: [
-                { uk: "Скільки до центра?", sq: "Sa kushton për në qendër?" },
-                { uk: "Зупиніться тут, будь ласка", sq: "Ndaloni këtu, ju lutem" },
-                { uk: "Увімкніть лічильник", sq: "Ulni taksimetrin, ju lutem" },
-                { uk: "Скільки до аеропорту?", sq: "Sa kushton për në aeroport?" },
-                { uk: "Зачекайте мене 5 хвилин", sq: "Më prisni këtu 5 minuta" },
-                { uk: "Як дістатися до пляжу?", sq: "Si të shkoj në plazh?" }
-            ],
-            hotel: [
-                { uk: "Я бронював номер", sq: "Kam rezervuar një dhomë" },
-                { uk: "Який пароль від Wi-Fi?", sq: "Cili është fjalëkalimi i Wi-Fi?" },
-                { uk: "Не працює кондиціонер", sq: "Nuk punon kondicioneri" },
-                { uk: "Коли час виселення?", sq: "Kur është koha e daljes?" },
-                { uk: "Чи можна залишити багаж?", sq: "A mund t'i lë bagazhet?" }
-            ],
-            sos: [
-                { uk: "Де найближча аптека?", sq: "Ku është farmacia më i afërt?" },
-                { uk: "Ліки від головного болю", sq: "Barna për dhimbje koke" },
-                { uk: "Викличте швидку допомогу", sq: "Thirrni ndihmën e shpejtë" },
-                { uk: "Мені погано, допоможіть", sq: "Ndihem keq, më ndihmoni" },
-                { uk: "Потрібен пластир", sq: "Më nevojitet plastur" }
-            ],
-            basic: [
-                { uk: "Добрий день", sq: "Mirëdita" },
-                { uk: "Дякую", sq: "Faleminderit" },
-                { uk: "Будь ласка", sq: "Ju lutem" },
-                { uk: "Ви розмовляєте англійською?", sq: "A flisni anglisht?" },
-                { uk: "Я не розумію албанської", sq: "Nuk kuptoj shqip" },
-                { uk: "Вибачте", sq: "Më falni" }
-            ]
+            cafe: [ { uk: "Рахунок, будь ласка", sq: "Fatura, ju lutem" }, { uk: "Це було дуже смачно!", sq: "Ishte shumë e shijshme!" }, { uk: "Воду без газу", sq: "Ujë pa gaz, ju lutem" }, { uk: "Дві кави еспресо", sq: "Dy kafe ekspres" } ],
+            market: [ { uk: "Скільки це коштує?", sq: "Sa kushton kjo?" }, { uk: "Чи можна оплатити карткою?", sq: "A mund të paguaj me kartë?" }, { uk: "Ви приймаєте євро?", sq: "A pranoni euro?" } ],
+            taxi: [ { uk: "Скільки до центра?", sq: "Sa kushton për në qendër?" }, { uk: "Зупиніться тут", sq: "Ndaloni këtu, ju lutem" }, { uk: "Увімкніть лічильник", sq: "Ulni taksimetrin, ju lutem" } ],
+            hotel: [ { uk: "Я бронював номер", sq: "Kam rezervuar një dhomë" }, { uk: "Який пароль від Wi-Fi?", sq: "Cili është fjalëkalimi i Wi-Fi?" } ],
+            sos: [ { uk: "Де найближча аптека?", sq: "Ku është farmacia më i afërt?" }, { uk: "Ліки від головного болю", sq: "Barna për dhimbje koke" } ],
+            basic: [ { uk: "Добрий день", sq: "Mirëdita" }, { uk: "Дякую", sq: "Faleminderit" }, { uk: "Будь ласка", sq: "Ju lutem" } ]
         };
 
-        function vibrate() {
-            if (navigator.vibrate) navigator.vibrate(12);
-        }
+        function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
 
         function updateUI() {
             const srcLang = document.getElementById('srcLang').value;
             const t = uiTranslations[srcLang] || uiTranslations['uk'];
-
             document.getElementById('inputText').placeholder = t.placeholder;
-            document.getElementById('micTxt').innerText = t.mic;
             document.getElementById('translateBtn').innerText = t.translate;
-            
             const currentOutput = document.getElementById('outputText').innerText;
-            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("apparaîtra") || currentOutput.includes("apparirà") || currentOutput.includes("pojawia") || currentOutput.includes("erscheint")) {
+            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear")) {
                 document.getElementById('outputText').innerText = t.resultPlaceholder;
             }
-
             document.getElementById('speakTxt').innerText = t.speak;
-            document.getElementById('copyTxt').innerText = t.copy;
-            document.getElementById('shareTxt').innerText = t.share;
             document.getElementById('historyTitle').innerText = t.history;
             document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
         }
@@ -669,9 +572,8 @@
         function changeQuickCategory(cat) {
             const container = document.getElementById('quickChips');
             const items = quickData[cat] || [];
-            
             container.innerHTML = items.map(item => `
-                <button class="chip-btn" onclick="vibrate(); applyQuickPhrase('${item.uk.replace(/'/g, "\\'")}', '${item.sq.replace(/'/g, "\\'")}')">
+                <button class="chip" onclick="vibrate(); applyQuickPhrase('${item.uk.replace(/'/g, "\\'")}', '${item.sq.replace(/'/g, "\\'")}')">
                     ${item.uk}
                 </button>
             `).join('');
@@ -680,7 +582,6 @@
         function applyQuickPhrase(ukText, sqText) {
             const srcLang = document.getElementById('srcLang').value;
             const tgtLang = document.getElementById('tgtLang').value;
-
             if (srcLang === 'uk' && tgtLang === 'sq') {
                 document.getElementById('inputText').value = ukText;
                 document.getElementById('outputText').innerText = sqText;
@@ -730,7 +631,6 @@
                 stopRecording();
                 translateText();
             };
-
             recognition.onerror = () => stopRecording();
             recognition.onend = () => stopRecording();
         }
@@ -761,12 +661,8 @@
             const t = uiTranslations[sourceLang] || uiTranslations['uk'];
 
             if (!text) return;
-
             const outputDiv = document.getElementById('outputText');
-            const resultCard = document.getElementById('resultCard');
-            
             outputDiv.innerText = t.loading;
-            resultCard.classList.add('shimmer');
 
             try {
                 const response = await fetch('/api/translate', {
@@ -775,28 +671,17 @@
                     body: JSON.stringify({ text, sourceLang, targetLang })
                 });
                 const data = await response.json();
-                resultCard.classList.remove('shimmer');
                 const resText = data.translation || t.error;
                 outputDiv.innerText = resText;
-                
-                if (data.translation) {
-                    saveToHistory(text, resText);
-                }
+                if (data.translation) saveToHistory(text, resText);
             } catch (err) {
-                resultCard.classList.remove('shimmer');
                 outputDiv.innerText = t.connectionError;
             }
         }
 
         async function speakResult() {
             const text = document.getElementById('outputText').innerText.trim();
-            if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear") || text.includes("Зачекайте") || text.includes("prisni") || text.includes("patienter") || text.includes("Attendere") || text.includes("Czekaj") || text.includes("warten")) {
-                return;
-            }
-
-            const speakBtn = document.getElementById('speakTxt');
-            const originalText = speakBtn.innerText;
-            speakBtn.innerText = "⏳ ...";
+            if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear")) return;
 
             try {
                 const response = await fetch('/api/tts', {
@@ -804,42 +689,32 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text })
                 });
-
-                if (!response.ok) throw new Error('TTS network request failed');
-
+                if (!response.ok) throw new Error('TTS error');
                 const blob = await response.blob();
-                const audioUrl = URL.createObjectURL(blob);
-                const audio = new Audio(audioUrl);
-                
+                const audio = new Audio(URL.createObjectURL(blob));
                 await audio.play();
             } catch (err) {
-                console.error("Помилка відтворення звуку:", err);
-            } finally {
-                speakBtn.innerText = originalText;
+                console.error("TTS Error:", err);
             }
         }
 
         function copyResult() {
             const text = document.getElementById('outputText').innerText;
-            if (text) {
-                navigator.clipboard.writeText(text);
-            }
+            if (text) navigator.clipboard.writeText(text);
         }
 
         async function shareResult() {
             const text = document.getElementById('outputText').innerText;
             if (navigator.share && text) {
                 try { await navigator.share({ text }); } catch (e) {}
-            } else {
-                copyResult();
-            }
+            } else { copyResult(); }
         }
 
         function saveToHistory(orig, trans) {
             let history = JSON.parse(localStorage.getItem('history') || '[]');
             if (history.length > 0 && history[0].orig === orig) return;
             history.unshift({ orig, trans });
-            history = history.slice(0, 10);
+            history = history.slice(0, 5);
             localStorage.setItem('history', JSON.stringify(history));
             renderHistory();
         }
@@ -848,8 +723,8 @@
             const history = JSON.parse(localStorage.getItem('history') || '[]');
             const list = document.getElementById('historyList');
             list.innerHTML = history.map(item => `
-                <div class="history-item" onclick="vibrate(); loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
-                    <div class="history-orig">${item.orig}</div>
+                <div class="history-row" onclick="vibrate(); loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
+                    <div class="history-row-orig">${item.orig}</div>
                     <div>${item.trans}</div>
                 </div>
             `).join('');
@@ -865,7 +740,6 @@
             renderHistory();
         }
 
-        // Ініціалізація
         updateUI();
         renderHistory();
         changeQuickCategory('cafe');
