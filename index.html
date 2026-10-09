@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Voice Translator Premium</title>
     
-    <!-- PWA та Іконки (Виправлені відносні шляхи) -->
+    <!-- PWA та Іконки -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#090d16">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -169,6 +169,70 @@
 
         .swap-btn:active {
             transform: rotate(180deg) scale(0.9);
+        }
+
+        /* Стилі швидкого розмовника (Лід-магніт) */
+        .quick-phrases-container {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+
+        .quick-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .quick-select {
+            background: var(--btn-glass);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 4px 8px;
+            font-size: 11px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .quick-select option {
+            background: #1e293b;
+            color: #f8fafc;
+        }
+
+        .quick-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+
+        .quick-chips::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chip-btn {
+            background: var(--btn-glass);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 6px 10px;
+            font-size: 11px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chip-btn:active {
+            transform: scale(0.95);
+            background: var(--btn-glass-hover);
         }
 
         .input-card, .result-card {
@@ -378,6 +442,24 @@
             </select>
         </div>
 
+        <!-- Інтерактивний лід-магніт: Швидкі фрази -->
+        <div class="quick-phrases-container">
+            <div class="quick-header">
+                <span>🎁 Експрес-розмовник:</span>
+                <select id="quickCategory" onchange="vibrate(); changeQuickCategory(this.value);" class="quick-select">
+                    <option value="cafe">☕ Кафе / Ресторан</option>
+                    <option value="market">🛒 Ринок / Магазини</option>
+                    <option value="taxi">🚖 Таксі / Дорога</option>
+                    <option value="hotel">🏠 Готель / Оренда</option>
+                    <option value="sos">💊 Аптека / SOS</option>
+                    <option value="basic">👋 Етикет / Базові</option>
+                </select>
+            </div>
+            <div class="quick-chips" id="quickChips">
+                <!-- Фрази підвантажуються динамічно через JS -->
+            </div>
+        </div>
+
         <div class="input-card">
             <textarea id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
         </div>
@@ -527,6 +609,57 @@
             'de': 'de-DE'
         };
 
+        const quickData = {
+            cafe: [
+                { uk: "Рахунок, будь ласка", sq: "Fatura, ju lutem" },
+                { uk: "Це було дуже смачно!", sq: "Ishte shumë e shijshme!" },
+                { uk: "Воду без газу, будь ласка", sq: "Ujë pa gaz, ju lutem" },
+                { uk: "Дві кави еспресо", sq: "Dy kafe ekspres" },
+                { uk: "Чи є у вас морепродукти?", sq: "A keni ushqime deti?" },
+                { uk: "Де знаходиться вбиральня?", sq: "Ku është tualeti?" },
+                { uk: "Принесіть меню, будь ласка", sq: "Më sillni menynë, ju lutem" }
+            ],
+            market: [
+                { uk: "Скільки це коштує?", sq: "Sa kushton kjo?" },
+                { uk: "Чи можна оплатити карткою?", sq: "A mund të paguaj me kartë?" },
+                { uk: "Ви приймаєте євро?", sq: "A pranoni euro?" },
+                { uk: "Зробіть знижку, будь ласка", sq: "Më bëni një zbritje, ju lutem" },
+                { uk: "Дайте пакет, будь ласка", sq: "Më jepni një qese, ju lutem" },
+                { uk: "Я просто дивлюся, дякую", sq: "Po shikoj vetëm, faleminderit" },
+                { uk: "Де найближчий банкомат?", sq: "Ku është bankomati më i afërt?" }
+            ],
+            taxi: [
+                { uk: "Скільки до центра?", sq: "Sa kushton për në qendër?" },
+                { uk: "Зупиніться тут, будь ласка", sq: "Ndaloni këtu, ju lutem" },
+                { uk: "Увімкніть лічильник", sq: "Ulni taksimetrin, ju lutem" },
+                { uk: "Скільки до аеропорту?", sq: "Sa kushton për në aeroport?" },
+                { uk: "Зачекайте мене 5 хвилин", sq: "Më prisni këtu 5 minuta" },
+                { uk: "Як дістатися до пляжу?", sq: "Si të shkoj në plazh?" }
+            ],
+            hotel: [
+                { uk: "Я бронював номер", sq: "Kam rezervuar një dhomë" },
+                { uk: "Який пароль від Wi-Fi?", sq: "Cili është fjalëkalimi i Wi-Fi?" },
+                { uk: "Не працює кондиціонер", sq: "Nuk punon kondicioneri" },
+                { uk: "Коли час виселення?", sq: "Kur është koha e daljes?" },
+                { uk: "Чи можна залишити багаж?", sq: "A mund t'i lë bagazhet?" }
+            ],
+            sos: [
+                { uk: "Де найближча аптека?", sq: "Ku është farmacia më i afërt?" },
+                { uk: "Ліки від головного болю", sq: "Barna për dhimbje koke" },
+                { uk: "Викличте швидку допомогу", sq: "Thirrni ndihmën e shpejtë" },
+                { uk: "Мені погано, допоможіть", sq: "Ndihem keq, më ndihmoni" },
+                { uk: "Потрібен пластир", sq: "Më nevojitet plastur" }
+            ],
+            basic: [
+                { uk: "Добрий день", sq: "Mirëdita" },
+                { uk: "Дякую", sq: "Faleminderit" },
+                { uk: "Будь ласка", sq: "Ju lutem" },
+                { uk: "Ви розмовляєте англійською?", sq: "A flisni anglisht?" },
+                { uk: "Я не розумію албанської", sq: "Nuk kuptoj shqip" },
+                { uk: "Вибачте", sq: "Më falni" }
+            ]
+        };
+
         function vibrate() {
             if (navigator.vibrate) navigator.vibrate(12);
         }
@@ -549,6 +682,30 @@
             document.getElementById('shareTxt').innerText = t.share;
             document.getElementById('historyTitle').innerText = t.history;
             document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
+        }
+
+        function changeQuickCategory(cat) {
+            const container = document.getElementById('quickChips');
+            const items = quickData[cat] || [];
+            
+            container.innerHTML = items.map(item => `
+                <button class="chip-btn" onclick="vibrate(); applyQuickPhrase('${item.uk.replace(/'/g, "\\'")}', '${item.sq.replace(/'/g, "\\'")}')">
+                    ${item.uk}
+                </button>
+            `).join('');
+        }
+
+        function applyQuickPhrase(ukText, sqText) {
+            const srcLang = document.getElementById('srcLang').value;
+            const tgtLang = document.getElementById('tgtLang').value;
+
+            if (srcLang === 'uk' && tgtLang === 'sq') {
+                document.getElementById('inputText').value = ukText;
+                document.getElementById('outputText').innerText = sqText;
+            } else {
+                document.getElementById('inputText').value = ukText;
+                translateText();
+            }
         }
 
         function toggleTheme() {
@@ -726,8 +883,10 @@
             renderHistory();
         }
 
+        // Ініціалізація
         updateUI();
         renderHistory();
+        changeQuickCategory('cafe');
     </script>
 </body>
 </html>
