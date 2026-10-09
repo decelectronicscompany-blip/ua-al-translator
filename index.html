@@ -107,7 +107,7 @@
 
         .header-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .btn-phrase-trigger {
@@ -115,7 +115,7 @@
             border: 1px solid rgba(52, 211, 153, 0.3);
             color: #34d399;
             border-radius: 12px;
-            padding: 6px 12px;
+            padding: 6px 10px;
             font-size: 12px;
             font-weight: 700;
             cursor: pointer;
@@ -123,6 +123,20 @@
             align-items: center;
             gap: 5px;
             backdrop-filter: blur(8px);
+        }
+
+        .btn-hand-toggle {
+            background: var(--glass-btn);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 6px 9px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 3px;
         }
 
         .theme-btn {
@@ -295,19 +309,47 @@
             50% { height: 20px; }
         }
 
-        /* Панель Керування */
+        /* Панель Керування з підтримкою лівші/правші/центра */
         .controls-bar {
             display: grid;
-            grid-template-columns: 66px 1fr;
             gap: 12px;
             align-items: center;
             margin-top: 4px;
         }
 
+        /* Варіант: Центр (Default) */
+        .controls-bar.hand-center {
+            grid-template-columns: 1fr 68px 1fr;
+        }
+
+        /* Варіант: Лівша (Left-handed) */
+        .controls-bar.hand-left {
+            grid-template-columns: 68px 1fr;
+        }
+
+        /* Варіант: Правша (Right-handed) */
+        .controls-bar.hand-right {
+            grid-template-columns: 1fr 68px;
+        }
+
+        .btn-action-side {
+            background: var(--card-glass);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 20px;
+            height: 66px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         /* 3D Смарагдова Сфера Мікрофона */
         .btn-mic-main {
-            width: 66px;
-            height: 66px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             background: var(--grad-mic);
             border: 1px solid rgba(255, 255, 255, 0.25);
@@ -320,6 +362,7 @@
             box-shadow: var(--emerald-glow);
             position: relative;
             backdrop-filter: blur(8px);
+            justify-self: center;
         }
 
         .btn-mic-main svg {
@@ -346,11 +389,10 @@
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
-        .btn-mic-main:active, .btn-translate-main:active {
+        .btn-mic-main:active, .btn-translate-main:active, .btn-action-side:active {
             transform: scale(0.95);
         }
 
-        /* Соковите сяйво та пульсація під час розмови */
         .btn-mic-main.recording {
             animation: emeraldGlowPulse 1.2s infinite alternate;
         }
@@ -496,6 +538,7 @@
                 <div class="brand-title">Voice Translator</div>
             </div>
             <div class="header-actions">
+                <button class="btn-hand-toggle" onclick="vibrate(); cycleHandMode();" id="handBtn">🖐️ Центр</button>
                 <button class="btn-phrase-trigger" onclick="vibrate(); openPhrasesSheet();">📖 Фрази</button>
                 <button class="theme-btn" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
             </div>
@@ -512,6 +555,7 @@
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
                 <option disabled>────── Всі інші мови ──────</option>
+                <option value="ru">Русский</option>
                 <option value="es">🇪🇸 Español (Іспанська)</option>
                 <option value="pt">🇵🇹 Português (Португальська)</option>
                 <option value="tr">🇹🇷 Türkçe (Турецька)</option>
@@ -547,6 +591,7 @@
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
                 <option disabled>────── Всі інші мови ──────</option>
+                <option value="ru">Русский</option>
                 <option value="es">🇪🇸 Español (Іспанська)</option>
                 <option value="pt">🇵🇹 Português (Португальська)</option>
                 <option value="tr">🇹🇷 Türkçe (Турецька)</option>
@@ -594,16 +639,9 @@
             </div>
         </div>
 
-        <!-- Нижній Блок Керування -->
-        <div class="controls-bar">
-            <!-- 3D Смарагдова Сфера Мікрофона -->
-            <button class="btn-mic-main" id="micBtn" onclick="vibrate(); toggleRecognition();">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                </svg>
-            </button>
-            <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
+        <!-- Нижній Блок Керування із динамічною розміткою -->
+        <div class="controls-bar hand-center" id="controlsBar">
+            <!-- Динамічні елементи завантажуються скриптом -->
         </div>
 
         <!-- Історія -->
@@ -640,6 +678,7 @@
     <script>
         let isRecording = false;
         let recognition = null;
+        let handMode = localStorage.getItem('handMode') || 'center'; // 'center', 'left', 'right'
 
         const uiTranslations = {
             'uk': { placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання" },
@@ -648,7 +687,7 @@
         };
 
         const langSpeechCodes = { 
-            'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE', 'it': 'it-IT', 'fr': 'fr-FR', 'pl': 'pl-PL'
+            'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE', 'it': 'it-IT', 'fr': 'fr-FR', 'pl': 'pl-PL', 'ru': 'ru-RU'
         };
 
         const quickData = {
@@ -661,6 +700,51 @@
         };
 
         function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
+
+        function cycleHandMode() {
+            if (handMode === 'center') handMode = 'right';
+            else if (handMode === 'right') handMode = 'left';
+            else handMode = 'center';
+            
+            localStorage.setItem('handMode', handMode);
+            renderControlsBar();
+        }
+
+        function renderControlsBar() {
+            const bar = document.getElementById('controlsBar');
+            const handBtn = document.getElementById('handBtn');
+            bar.className = `controls-bar hand-${handMode}`;
+
+            const micHTML = `
+                <button class="btn-mic-main ${isRecording ? 'recording' : ''}" id="micBtn" onclick="vibrate(); toggleRecognition();">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                </button>
+            `;
+
+            const translateHTML = `
+                <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
+            `;
+
+            const clearHTML = `
+                <button class="btn-action-side" onclick="vibrate(); clearInput();">Очистити</button>
+            `;
+
+            if (handMode === 'center') {
+                handBtn.innerText = '🖐️ Центр';
+                bar.innerHTML = clearHTML + micHTML + translateHTML;
+            } else if (handMode === 'right') {
+                handBtn.innerText = '👉 Правша';
+                bar.innerHTML = translateHTML + micHTML;
+            } else {
+                handBtn.innerText = '👈 Лівша';
+                bar.innerHTML = micHTML + translateHTML;
+            }
+
+            updateUI();
+        }
 
         function openPhrasesSheet() {
             document.getElementById('sheetOverlay').classList.add('active');
@@ -693,7 +777,9 @@
             const srcLang = document.getElementById('srcLang').value;
             const t = uiTranslations[srcLang] || uiTranslations['uk'];
             document.getElementById('inputText').placeholder = t.placeholder;
-            document.getElementById('translateBtn').innerText = t.translate;
+            
+            const btnT = document.getElementById('translateBtn');
+            if (btnT) btnT.innerText = t.translate;
             
             const currentOutput = document.getElementById('outputText').innerText;
             if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear")) {
@@ -759,14 +845,16 @@
                 recognition.lang = langSpeechCodes[srcLangCode] || 'uk-UA';
                 recognition.start();
                 isRecording = true;
-                document.getElementById('micBtn').classList.add('recording');
+                const mic = document.getElementById('micBtn');
+                if (mic) mic.classList.add('recording');
                 document.getElementById('waveBox').style.display = 'flex';
             }
         }
 
         function stopRecording() {
             isRecording = false;
-            document.getElementById('micBtn').classList.remove('recording');
+            const mic = document.getElementById('micBtn');
+            if (mic) mic.classList.remove('recording');
             document.getElementById('waveBox').style.display = 'none';
         }
 
@@ -856,7 +944,7 @@
             renderHistory();
         }
 
-        updateUI();
+        renderControlsBar();
         renderHistory();
     </script>
 </body>
