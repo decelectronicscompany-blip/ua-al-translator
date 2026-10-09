@@ -17,27 +17,28 @@
     <style>
         :root {
             --bg-dark: #080b14;
-            --card-glass: rgba(255, 255, 255, 0.03);
+            --card-glass: rgba(255, 255, 255, 0.04);
             --card-border: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
+            --text-title: #ffffff;
             --text-muted: #64748b;
-            --accent-purple: #8b5cf6;
-            --accent-cyan: #06b6d4;
-            --accent-pink: #ec4899;
+            --accent-blue: #38bdf8;
             --grad-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
             --grad-mic: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
-            --glass-btn: rgba(255, 255, 255, 0.05);
+            --glass-btn: rgba(255, 255, 255, 0.06);
             --glass-btn-hover: rgba(255, 255, 255, 0.12);
         }
 
         [data-theme="light"] {
-            --bg-dark: #f1f5f9;
-            --card-glass: rgba(255, 255, 255, 0.7);
-            --card-border: rgba(255, 255, 255, 0.9);
+            --bg-dark: #f8fafc;
+            --card-glass: #ffffff;
+            --card-border: rgba(226, 232, 240, 0.8);
             --text-main: #0f172a;
+            --text-title: #0f172a;
             --text-muted: #64748b;
-            --glass-btn: rgba(0, 0, 0, 0.04);
-            --glass-btn-hover: rgba(0, 0, 0, 0.08);
+            --accent-blue: #0284c7;
+            --glass-btn: #f1f5f9;
+            --glass-btn-hover: #e2e8f0;
         }
 
         * {
@@ -50,8 +51,8 @@
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             background: var(--bg-dark);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.12) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%);
             min-height: 100vh;
             margin: 0;
             padding: 16px 14px;
@@ -74,7 +75,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 4px 2px;
+            padding: 2px 4px;
         }
 
         .brand {
@@ -88,16 +89,14 @@
             height: 9px;
             background: #10b981;
             border-radius: 50%;
-            box-shadow: 0 0 12px #10b981;
+            box-shadow: 0 0 10px #10b981;
         }
 
         .brand-title {
-            font-size: 19px;
+            font-size: 20px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #ffffff 30%, var(--text-muted));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-title);
         }
 
         .theme-btn {
@@ -105,13 +104,13 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 14px;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 16px;
         }
 
         /* Вибір мови */
@@ -121,10 +120,10 @@
             align-items: center;
             gap: 8px;
             background: var(--card-glass);
-            backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 6px 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
 
         select.lang-select {
@@ -160,22 +159,23 @@
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
-        /* Преміум Розмовник */
+        /* Розмовник */
         .express-bar {
             background: var(--card-glass);
-            backdrop-filter: blur(20px);
             border: 1px solid var(--card-border);
             border-radius: 20px;
-            padding: 10px 12px;
+            padding: 10px 0;
             display: flex;
             flex-direction: column;
             gap: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
 
         .express-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 12px;
         }
 
         .express-label {
@@ -204,7 +204,7 @@
             gap: 6px;
             overflow-x: auto;
             scrollbar-width: none;
-            padding-bottom: 2px;
+            padding: 0 12px 2px 12px;
         }
 
         .express-chips::-webkit-scrollbar { display: none; }
@@ -214,9 +214,9 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 12px;
-            padding: 6px 12px;
+            padding: 7px 12px;
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
             white-space: nowrap;
             cursor: pointer;
         }
@@ -226,23 +226,21 @@
             transform: scale(0.96);
         }
 
-        /* Головна Скляна Картка Перекладу */
+        /* Картка Перекладу */
         .translation-card {
             background: var(--card-glass);
-            backdrop-filter: blur(32px);
-            -webkit-backdrop-filter: blur(32px);
             border: 1px solid var(--card-border);
-            border-radius: 28px;
+            border-radius: 26px;
             padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
         }
 
         textarea.input-area {
             width: 100%;
-            height: 75px;
+            height: 70px;
             background: transparent;
             border: none;
             color: var(--text-main);
@@ -261,29 +259,26 @@
 
         .card-divider {
             height: 1px;
-            background: linear-gradient(90deg, transparent, var(--card-border), transparent);
-            margin: 2px 0;
+            background: var(--card-border);
+            margin: 0;
         }
 
         .output-area {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             line-height: 1.4;
-            min-height: 55px;
-            color: #38bdf8;
+            min-height: 50px;
+            color: var(--accent-blue);
             word-break: break-word;
         }
 
+        /* Гармонійна лінійка дій */
         .action-row {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 6px;
             align-items: center;
             padding-top: 4px;
-        }
-
-        .action-group {
-            display: flex;
-            gap: 6px;
         }
 
         .icon-btn {
@@ -291,41 +286,33 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 12px;
-            padding: 7px 12px;
+            padding: 8px 12px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .icon-btn-speak {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent-blue);
         }
 
         .icon-btn:active {
             background: var(--glass-btn-hover);
         }
 
-        /* Панель керування (Дії) */
+        /* Панель Керування */
         .controls-bar {
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
+            grid-template-columns: 1fr 80px;
             align-items: center;
-            gap: 12px;
-            margin: 4px 0;
-        }
-
-        .btn-secondary {
-            background: var(--card-glass);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 18px;
-            padding: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            gap: 10px;
+            margin-top: 2px;
         }
 
         .btn-mic-main {
@@ -342,7 +329,6 @@
             justify-content: center;
             box-shadow: 0 8px 25px rgba(244, 63, 94, 0.4);
             justify-self: center;
-            position: relative;
         }
 
         .btn-mic-main:active {
@@ -353,15 +339,16 @@
             background: var(--grad-primary);
             border: none;
             color: white;
-            border-radius: 18px;
-            padding: 12px;
-            font-size: 13px;
+            border-radius: 20px;
+            height: 56px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+            width: 100%;
         }
 
-        /* Анімація хвилі для мікрофона */
+        /* Анімація хвилі */
         .mic-waves {
             display: none;
             align-items: center;
@@ -403,17 +390,18 @@
             border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 12px 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
 
         .history-top {
             display: flex;
             justify-content: space-between;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--text-muted);
             margin-bottom: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
         }
 
         .history-items {
@@ -427,7 +415,7 @@
         .history-row {
             font-size: 12px;
             padding: 4px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             cursor: pointer;
         }
 
@@ -474,7 +462,7 @@
             </select>
         </div>
 
-        <!-- Експрес Розмовник -->
+        <!-- Розмовник -->
         <div class="express-bar">
             <div class="express-top">
                 <span class="express-label">⚡ Швидкий розмовник</span>
@@ -490,7 +478,7 @@
             <div class="express-chips" id="quickChips"></div>
         </div>
 
-        <!-- Головне Вікно Перекладу -->
+        <!-- Картка Перекладу -->
         <div class="translation-card" id="mainCard">
             <textarea class="input-area" id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
             
@@ -499,18 +487,16 @@
             <div class="output-area" id="outputText">Переклад з'явиться тут...</div>
             
             <div class="action-row">
-                <button class="icon-btn" onclick="vibrate(); clearInput();">🗑️</button>
-                <div class="action-group">
-                    <button class="icon-btn" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
-                    <button class="icon-btn" onclick="vibrate(); copyResult();"><span id="copyTxt">📋</span></button>
-                    <button class="icon-btn" onclick="vibrate(); shareResult();"><span id="shareTxt">📲</span></button>
-                </div>
+                <button class="icon-btn" onclick="vibrate(); clearInput();" title="Очистити">🗑️</button>
+                <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
+                <button class="icon-btn" onclick="vibrate(); copyResult();"><span id="copyTxt">📋 Копіювати</span></button>
+                <button class="icon-btn" onclick="vibrate(); shareResult();"><span id="shareTxt">📲</span></button>
             </div>
         </div>
 
         <!-- Панель Керування -->
         <div class="controls-bar">
-            <button class="btn-secondary" onclick="vibrate(); clearInput();">Очистити</button>
+            <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
             
             <button class="btn-mic-main" id="micBtn" onclick="vibrate(); toggleRecognition();">
                 <span class="mic-icon">🎤</span>
@@ -518,8 +504,6 @@
                     <span></span><span></span><span></span>
                 </div>
             </button>
-            
-            <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
         </div>
 
         <!-- Історія -->
