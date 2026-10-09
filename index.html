@@ -23,12 +23,10 @@
             --text-muted: #64748b;
             --accent-emerald: #34d399;
             
-            /* Насичені смарагдові 3D-градієнти */
             --grad-mic: radial-gradient(circle at 35% 35%, #34d399 0%, #10b981 40%, #059669 75%, #022c22 100%);
             --grad-btn: linear-gradient(180deg, rgba(52, 211, 153, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%);
             --grad-primary: linear-gradient(135deg, #10b981 0%, #059669 50%, #044e3a 100%);
             
-            /* Соковите багаторівневе сяйво */
             --emerald-glow: 0 0 20px rgba(16, 185, 129, 0.45), 0 0 45px rgba(5, 150, 105, 0.25);
             --emerald-glow-strong: 0 0 25px rgba(52, 211, 153, 0.75), 0 0 60px rgba(16, 185, 129, 0.55);
             --glass-btn: rgba(255, 255, 255, 0.05);
@@ -309,7 +307,7 @@
             50% { height: 20px; }
         }
 
-        /* Панель Керування з підтримкою лівші/правші/центра */
+        /* Панель Керування */
         .controls-bar {
             display: grid;
             gap: 12px;
@@ -317,20 +315,9 @@
             margin-top: 4px;
         }
 
-        /* Варіант: Центр (Default) */
-        .controls-bar.hand-center {
-            grid-template-columns: 1fr 68px 1fr;
-        }
-
-        /* Варіант: Лівша (Left-handed) */
-        .controls-bar.hand-left {
-            grid-template-columns: 68px 1fr;
-        }
-
-        /* Варіант: Правша (Right-handed) */
-        .controls-bar.hand-right {
-            grid-template-columns: 1fr 68px;
-        }
+        .controls-bar.hand-center { grid-template-columns: 1fr 68px 1fr; }
+        .controls-bar.hand-left { grid-template-columns: 68px 1fr; }
+        .controls-bar.hand-right { grid-template-columns: 1fr 68px; }
 
         .btn-action-side {
             background: var(--card-glass);
@@ -346,7 +333,6 @@
             justify-content: center;
         }
 
-        /* 3D Смарагдова Сфера Мікрофона */
         .btn-mic-main {
             width: 68px;
             height: 68px;
@@ -372,7 +358,6 @@
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
         }
 
-        /* Головна кнопка з об'ємним відблиском */
         .btn-translate-main {
             background: var(--grad-primary);
             border: 1px solid rgba(52, 211, 153, 0.3);
@@ -398,14 +383,8 @@
         }
 
         @keyframes emeraldGlowPulse {
-            0% {
-                box-shadow: var(--emerald-glow);
-                transform: scale(1);
-            }
-            100% {
-                box-shadow: var(--emerald-glow-strong);
-                transform: scale(1.06);
-            }
+            0% { box-shadow: var(--emerald-glow); transform: scale(1); }
+            100% { box-shadow: var(--emerald-glow-strong); transform: scale(1.06); }
         }
 
         /* Модальна Шторка */
@@ -539,7 +518,7 @@
             </div>
             <div class="header-actions">
                 <button class="btn-hand-toggle" onclick="vibrate(); cycleHandMode();" id="handBtn">🖐️ Центр</button>
-                <button class="btn-phrase-trigger" onclick="vibrate(); openPhrasesSheet();">📖 Фрази</button>
+                <button class="btn-phrase-trigger" onclick="vibrate(); openPhrasesSheet();" id="phrasesBtnTxt">📖 Фрази</button>
                 <button class="theme-btn" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
             </div>
         </div>
@@ -555,7 +534,6 @@
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
                 <option disabled>────── Всі інші мови ──────</option>
-                <option value="ru">Русский</option>
                 <option value="es">🇪🇸 Español (Іспанська)</option>
                 <option value="pt">🇵🇹 Português (Португальська)</option>
                 <option value="tr">🇹🇷 Türkçe (Турецька)</option>
@@ -578,6 +556,7 @@
                 <option value="ko">🇰🇷 한국어 (Корейська)</option>
                 <option value="zh">🇨🇳 中文 (Китайська)</option>
                 <option value="hi">🇮🇳 हिन्दी (Хінді)</option>
+                <option value="ru">Русский</option>
             </select>
             
             <button class="swap-btn" onclick="vibrate(); swapLanguages();">⇄</button>
@@ -591,7 +570,6 @@
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
                 <option disabled>────── Всі інші мови ──────</option>
-                <option value="ru">Русский</option>
                 <option value="es">🇪🇸 Español (Іспанська)</option>
                 <option value="pt">🇵🇹 Português (Португальська)</option>
                 <option value="tr">🇹🇷 Türkçe (Турецька)</option>
@@ -614,6 +592,7 @@
                 <option value="ko">🇰🇷 한국어 (Корейська)</option>
                 <option value="zh">🇨🇳 中文 (Китайська)</option>
                 <option value="hi">🇮🇳 हिन्दी (Хінді)</option>
+                <option value="ru">Русский</option>
             </select>
         </div>
 
@@ -639,10 +618,8 @@
             </div>
         </div>
 
-        <!-- Нижній Блок Керування із динамічною розміткою -->
-        <div class="controls-bar hand-center" id="controlsBar">
-            <!-- Динамічні елементи завантажуються скриптом -->
-        </div>
+        <!-- Нижній Блок Керування -->
+        <div class="controls-bar hand-center" id="controlsBar"></div>
 
         <!-- Історія -->
         <div class="history-card">
@@ -658,7 +635,7 @@
     <div class="sheet-overlay" id="sheetOverlay" onclick="closePhrasesSheet(event)">
         <div class="sheet-content" onclick="event.stopPropagation()">
             <div class="sheet-header">
-                <span class="sheet-title">⚡ Швидкі фрази</span>
+                <span class="sheet-title" id="sheetTitleTxt">⚡ Швидкі фрази</span>
                 <button class="sheet-close" onclick="closePhrasesSheet()">✕</button>
             </div>
             
@@ -678,26 +655,63 @@
     <script>
         let isRecording = false;
         let recognition = null;
-        let handMode = localStorage.getItem('handMode') || 'center'; // 'center', 'left', 'right'
+        let handMode = localStorage.getItem('handMode') || 'center';
 
         const uiTranslations = {
-            'uk': { placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання" },
-            'sq': { placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje" },
-            'en': { placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error" }
+            'uk': { phrasesBtn: "📖 Фрази", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
+                catCafe: "☕ Кафе та ресторани", catMarket: "🛒 Ринок та шопінг", catTaxi: "🚖 Таксі та транспорт", catHotel: "🏠 Готель та оренда", catSos: "💊 Аптека та SOS", catBasic: "👋 Етикет та розмова"
+            },
+            'sq': { phrasesBtn: "📖 Fjalët", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje",
+                catCafe: "☕ Kafe & Restorante", catMarket: "🛒 Tregu & Blerjet", catTaxi: "🚖 Taksi & Transporti", catHotel: "🏠 Hoteli & Me qira", catSos: "💊 Farmacia & SOS", catBasic: "👋 Etiketa & Biseda"
+            },
+            'en': { phrasesBtn: "📖 Phrases", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
+                catCafe: "☕ Cafe & Dining", catMarket: "🛒 Market & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Rental", catSos: "💊 Pharmacy & SOS", catBasic: "👋 Etiquette & Chat"
+            },
+            'de': { phrasesBtn: "📖 Phrasen", sheetTitle: "⚡ Schnelle Phrasen", clearBtn: "Löschen", placeholder: "Text eingeben oder diktieren...", translate: "Übersetzen", resultPlaceholder: "Übersetzung erscheint hier...", speak: "🔊 Anhören", history: "Verlauf", clearHistory: "Löschen", loading: "Bitte warten...", error: "Übersetzungsfehler", connectionError: "Verbindungsfehler",
+                catCafe: "☕ Café & Restaurant", catMarket: "🛒 Markt & Einkaufen", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Unterkunft", catSos: "💊 Apotheke & SOS", catBasic: "👋 Etikette & Gespräch"
+            },
+            'it': { phrasesBtn: "📖 Frasi", sheetTitle: "⚡ Frasi Rapide", clearBtn: "Cancella", placeholder: "Scrivi o detta il testo...", translate: "Traduci", resultPlaceholder: "La traduzione apparirà qui...", speak: "🔊 Ascolta", history: "Cronologia", clearHistory: "Cancella", loading: "Attendere...", error: "Errore di traduzione", connectionError: "Errore di connessione",
+                catCafe: "☕ Ristorante e Caffè", catMarket: "🛒 Mercato e Shopping", catTaxi: "🚖 Taxi e Trasporti", catHotel: "🏠 Hotel e Affitti", catSos: "💊 Farmacia e SOS", catBasic: "👋 Galateo e Chiacchiere"
+            },
+            'fr': { phrasesBtn: "📖 Phrases", sheetTitle: "⚡ Phrases Rapides", clearBtn: "Effacer", placeholder: "Saisissez ou dictez le texte...", translate: "Traduire", resultPlaceholder: "La traduction apparaîtra ici...", speak: "🔊 Écouter", history: "Historique", clearHistory: "Effacer", loading: "Veuillez patienter...", error: "Erreur de traduction", connectionError: "Erreur de connexion",
+                catCafe: "☕ Café & Restaurant", catMarket: "🛒 Marché & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hôtel & Location", catSos: "💊 Pharmacie & SOS", catBasic: "👋 Politesse & Discussion"
+            },
+            'pl': { phrasesBtn: "📖 Zwroty", sheetTitle: "⚡ Szybkie Zwroty", clearBtn: "Wyczyść", placeholder: "Wpisz lub podyktuj tekst...", translate: "Przetłumacz", resultPlaceholder: "Tłumaczenie pojawi się tutaj...", speak: "🔊 Słuchaj", history: "Historia", clearHistory: "Wyczyść", loading: "Czekaj...", error: "Błąd tłumaczenia", connectionError: "Błąd połączenia",
+                catCafe: "☕ Kawiarnia i Restauracja", catMarket: "🛒 Targ i Zakupy", catTaxi: "🚖 Taksówka i Transport", catHotel: "🏠 Hotel i Wynajem", catSos: "💊 Apteka i SOS", catBasic: "👋 Etykieta i Rozmowa"
+            }
         };
 
         const langSpeechCodes = { 
             'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE', 'it': 'it-IT', 'fr': 'fr-FR', 'pl': 'pl-PL', 'ru': 'ru-RU'
         };
 
-        const quickData = {
-            cafe: [ "Рахунок, будь ласка", "Це було дуже смачно, дякую!", "Принесіть меню, будь ласка", "Воду без газу, будь ласка", "Дві кави еспресо", "Капучино з рослинним молоком", "Чи є у вас морепродукти?", "Чи є вегетаріанські страви?", "Де знаходиться вбиральня?", "Чи можна розрахуватися карткою?" ],
+        const quickDataBase = {
+            cafe: [ "Рахунок, будь ласка", "Це було дуже смачно, дякую!", "Принесіть меню, будь ласка", "Воду без газу, будь ласка", "Дві кави еспресо", "Капучино з рослинним молоком", "Чи є у вас морепродукти?", "Де знаходиться вбиральня?", "Чи можна розрахуватися карткою?" ],
             market: [ "Скільки це коштує?", "Чи можна оплатити карткою?", "Ви приймаєте євро?", "Зробіть невеличку знижку, будь ласка", "Дайте пакет, будь ласка", "Я просто дивлюся, дякую", "Де найближчий банкомат?", "Можна це приміряти?" ],
             taxi: [ "Скільки коштує поїздка до центра?", "Зупиніться тут, будь ласка", "Увімкніть лічильник, будь ласка", "Скільки до аеропорту?", "Зачекайте мене тут 5 хвилин", "Як дістатися до найближчого пляжу?" ],
             hotel: [ "Я бронював номер на своє ім'я", "Який пароль від Wi-Fi?", "В номері не працює кондиціонер", "О котрій годині сніданок?", "Коли час виселення (check-out)?", "Чи можна залишити багаж на рецепції?" ],
             sos: [ "Де найближча аптека?", "Дайте ліки від головного болю", "Терміново викличте швидку допомогу!", "Мені погано, допоможіть будь ласка", "Потрібен пластир та антисептик" ],
             basic: [ "Добрий день!", "Дуже дякую за допомогу!", "Будь ласка", "Ви розмовляєте англійською?", "Я вас не розумію", "Вибачте", "Як вас звати?", "Гарного вам дня!" ]
         };
+
+        // Автозапуск визначення мови користувача при вході
+        function detectUserLanguage() {
+            const savedSrc = localStorage.getItem('srcLang');
+            if (savedSrc) return; // Якщо людина вже обирала мову раніше
+            
+            const userLang = (navigator.language || navigator.userLanguage || '').slice(0, 2).toLowerCase();
+            const srcSelect = document.getElementById('srcLang');
+            
+            let matched = false;
+            for (let i = 0; i < srcSelect.options.length; i++) {
+                if (srcSelect.options[i].value === userLang) {
+                    srcSelect.value = userLang;
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) srcSelect.value = 'en'; // За замовчуванням англійська для іноземців
+        }
 
         function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
 
@@ -729,7 +743,7 @@
             `;
 
             const clearHTML = `
-                <button class="btn-action-side" onclick="vibrate(); clearInput();">Очистити</button>
+                <button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Очистити</button>
             `;
 
             if (handMode === 'center') {
@@ -757,7 +771,7 @@
 
         function renderSheetPhrases(cat) {
             const list = document.getElementById('sheetPhrasesList');
-            const items = quickData[cat] || [];
+            const items = quickDataBase[cat] || [];
             
             list.innerHTML = items.map(phraseText => `
                 <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${phraseText.replace(/'/g, "\\'")}')">
@@ -775,20 +789,39 @@
 
         function updateUI() {
             const srcLang = document.getElementById('srcLang').value;
-            const t = uiTranslations[srcLang] || uiTranslations['uk'];
+            localStorage.setItem('srcLang', srcLang);
+            
+            const t = uiTranslations[srcLang] || uiTranslations['en'];
             document.getElementById('inputText').placeholder = t.placeholder;
             
             const btnT = document.getElementById('translateBtn');
             if (btnT) btnT.innerText = t.translate;
+
+            const btnClear = document.getElementById('clearBtnSide');
+            if (btnClear) btnClear.innerText = t.clearBtn;
             
+            document.getElementById('phrasesBtnTxt').innerText = t.phrasesBtn;
+            document.getElementById('sheetTitleTxt').innerText = t.sheetTitle;
+
             const currentOutput = document.getElementById('outputText').innerText;
-            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear")) {
+            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("erscheint")) {
                 document.getElementById('outputText').innerText = t.resultPlaceholder;
             }
             
             document.getElementById('speakTxt').innerText = t.speak;
             document.getElementById('historyTitle').innerText = t.history;
             document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
+
+            // Оновлення назв категорій у шторці
+            const catSelect = document.getElementById('sheetCategory');
+            if (catSelect && t.catCafe) {
+                catSelect.options[0].text = t.catCafe;
+                catSelect.options[1].text = t.catMarket;
+                catSelect.options[2].text = t.catTaxi;
+                catSelect.options[3].text = t.catHotel;
+                catSelect.options[4].text = t.catSos;
+                catSelect.options[5].text = t.catBasic;
+            }
         }
 
         function toggleTheme() {
@@ -815,7 +848,7 @@
 
         function clearInput() {
             const srcLang = document.getElementById('srcLang').value;
-            const t = uiTranslations[srcLang] || uiTranslations['uk'];
+            const t = uiTranslations[srcLang] || uiTranslations['en'];
             document.getElementById('inputText').value = '';
             document.getElementById('outputText').innerText = t.resultPlaceholder;
         }
@@ -862,7 +895,7 @@
             const text = document.getElementById('inputText').value.trim();
             const sourceLang = document.getElementById('srcLang').value;
             const targetLang = document.getElementById('tgtLang').value;
-            const t = uiTranslations[sourceLang] || uiTranslations['uk'];
+            const t = uiTranslations[sourceLang] || uiTranslations['en'];
 
             if (!text) return;
             const outputDiv = document.getElementById('outputText');
@@ -944,6 +977,7 @@
             renderHistory();
         }
 
+        detectUserLanguage();
         renderControlsBar();
         renderHistory();
     </script>
