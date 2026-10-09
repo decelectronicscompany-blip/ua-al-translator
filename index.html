@@ -6,7 +6,7 @@
     <title>Voice Translator Executive</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#05080e">
+    <meta name="theme-color" content="#030706">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
 
@@ -15,16 +15,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #05080e;
-            --card-glass: rgba(255, 255, 255, 0.03);
-            --card-border: rgba(255, 255, 255, 0.08);
+            --bg-main: #030706;
+            --card-glass: rgba(6, 24, 18, 0.45);
+            --card-border: rgba(52, 211, 153, 0.12);
             --text-main: #f8fafc;
             --text-title: #ffffff;
             --text-muted: #64748b;
             --accent-emerald: #34d399;
-            --emerald-glow: rgba(16, 185, 129, 0.4);
-            --grad-primary: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
-            --grad-mic: linear-gradient(135deg, #047857 0%, #10b981 100%);
+            
+            /* Насичені смарагдові 3D-градієнти */
+            --grad-mic: radial-gradient(circle at 35% 35%, #34d399 0%, #10b981 40%, #059669 75%, #022c22 100%);
+            --grad-btn: linear-gradient(180deg, rgba(52, 211, 153, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%);
+            --grad-primary: linear-gradient(135deg, #10b981 0%, #059669 50%, #044e3a 100%);
+            
+            /* Соковите багаторівневе сяйво */
+            --emerald-glow: 0 0 20px rgba(16, 185, 129, 0.45), 0 0 45px rgba(5, 150, 105, 0.25);
+            --emerald-glow-strong: 0 0 25px rgba(52, 211, 153, 0.75), 0 0 60px rgba(16, 185, 129, 0.55);
             --glass-btn: rgba(255, 255, 255, 0.05);
             --glass-btn-hover: rgba(255, 255, 255, 0.1);
         }
@@ -51,8 +57,8 @@
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             background: var(--bg-main);
             background-image: 
-                radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 55%),
-                radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.1) 0px, transparent 50%);
+                radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.18) 0px, transparent 60%),
+                radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.12) 0px, transparent 50%);
             min-height: 100vh;
             margin: 0;
             padding: 16px 14px;
@@ -87,9 +93,9 @@
         .brand-badge {
             width: 8px;
             height: 8px;
-            background: #10b981;
+            background: #34d399;
             border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
+            box-shadow: 0 0 12px #34d399;
         }
 
         .brand-title {
@@ -105,8 +111,8 @@
         }
 
         .btn-phrase-trigger {
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.3);
             color: #34d399;
             border-radius: 12px;
             padding: 6px 12px;
@@ -116,6 +122,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            backdrop-filter: blur(8px);
         }
 
         .theme-btn {
@@ -142,7 +149,8 @@
             border: 1px solid var(--card-border);
             border-radius: 18px;
             padding: 6px 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         select.lang-select {
@@ -159,13 +167,14 @@
         }
 
         select.lang-select option {
-            background: #0f172a;
+            background: #061510;
             color: #f8fafc;
         }
 
         .swap-btn {
             background: var(--grad-primary);
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
             color: white;
             border-radius: 50%;
             width: 30px;
@@ -175,7 +184,7 @@
             align-items: center;
             justify-content: center;
             font-size: 12px;
-            box-shadow: 0 4px 12px var(--emerald-glow);
+            box-shadow: var(--emerald-glow);
         }
 
         /* Головна Скляна Картка */
@@ -187,7 +196,8 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
         }
 
         textarea.input-area {
@@ -221,6 +231,7 @@
             min-height: 60px;
             color: var(--accent-emerald);
             word-break: break-word;
+            text-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
         }
 
         /* Лінійка Дій */
@@ -251,8 +262,8 @@
         }
 
         .icon-btn-speak {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.35);
             color: var(--accent-emerald);
         }
 
@@ -271,7 +282,7 @@
             height: 100%;
             background: #34d399;
             border-radius: 3px;
-            box-shadow: 0 0 8px #34d399;
+            box-shadow: 0 0 10px #34d399;
             animation: wave 1s ease-in-out infinite;
         }
 
@@ -287,65 +298,70 @@
         /* Панель Керування */
         .controls-bar {
             display: grid;
-            grid-template-columns: 68px 1fr;
+            grid-template-columns: 66px 1fr;
             gap: 12px;
             align-items: center;
             margin-top: 4px;
         }
 
+        /* 3D Смарагдова Сфера Мікрофона */
         .btn-mic-main {
-            width: 68px;
-            height: 68px;
+            width: 66px;
+            height: 66px;
             border-radius: 50%;
             background: var(--grad-mic);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-top: 1.5px solid rgba(255, 255, 255, 0.5);
             color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 25px var(--emerald-glow);
+            box-shadow: var(--emerald-glow);
             position: relative;
+            backdrop-filter: blur(8px);
         }
 
         .btn-mic-main svg {
             width: 26px;
             height: 26px;
             fill: white;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
         }
 
+        /* Головна кнопка з об'ємним відблиском */
         .btn-translate-main {
             background: var(--grad-primary);
-            border: none;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.45);
             color: white;
-            border-radius: 22px;
-            height: 68px;
+            border-radius: 20px;
+            height: 66px;
             font-size: 16px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 8px 20px var(--emerald-glow);
+            box-shadow: var(--emerald-glow);
             width: 100%;
             letter-spacing: 0.3px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
 
         .btn-mic-main:active, .btn-translate-main:active {
             transform: scale(0.95);
         }
 
-        /* Неоновий пульс під час розмови */
+        /* Соковите сяйво та пульсація під час розмови */
         .btn-mic-main.recording {
-            animation: pulse-glow 1.2s infinite alternate;
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            animation: emeraldGlowPulse 1.2s infinite alternate;
         }
 
-        @keyframes pulse-glow {
+        @keyframes emeraldGlowPulse {
             0% {
-                box-shadow: 0 0 15px rgba(52, 211, 153, 0.6), 0 0 30px rgba(16, 185, 129, 0.4);
+                box-shadow: var(--emerald-glow);
                 transform: scale(1);
             }
             100% {
-                box-shadow: 0 0 25px rgba(52, 211, 153, 0.9), 0 0 50px rgba(16, 185, 129, 0.7);
+                box-shadow: var(--emerald-glow-strong);
                 transform: scale(1.06);
             }
         }
@@ -354,8 +370,8 @@
         .sheet-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
             display: none;
             justify-content: center;
             align-items: flex-end;
@@ -365,7 +381,7 @@
         .sheet-overlay.active { display: flex; }
 
         .sheet-content {
-            background: var(--bg-main);
+            background: #06120d;
             border-top: 1px solid var(--card-border);
             border-radius: 28px 28px 0 0;
             width: 100%;
@@ -437,6 +453,7 @@
             border: 1px solid var(--card-border);
             border-radius: 18px;
             padding: 12px 14px;
+            backdrop-filter: blur(12px);
         }
 
         .history-top {
@@ -542,305 +559,4 @@
                 <option value="sv">🇸🇪 Svenska (Шведська)</option>
                 <option value="no">🇳🇴 Norsk (Норвезька)</option>
                 <option value="fi">🇫🇮 Suomi (Фінська)</option>
-                <option value="da">🇩🇰 Dansk (Данська)</option>
-                <option value="cs">🇨🇿 Čeština (Чеська)</option>
-                <option value="hu">🇭🇺 Magyar (Угорська)</option>
-                <option value="sk">🇸🇰 Slovenčina (Словацька)</option>
-                <option value="ar">🇸🇦 العربية (Арабська)</option>
-                <option value="he">🇮🇱 עברית (Іврит)</option>
-                <option value="ja">🇯🇵 日本語 (Японська)</option>
-                <option value="ko">🇰🇷 한국어 (Корейська)</option>
-                <option value="zh">🇨🇳 中文 (Китайська)</option>
-                <option value="hi">🇮🇳 हिन्दी (Хінді)</option>
-            </select>
-        </div>
-
-        <!-- Головне Вікно Перекладу -->
-        <div class="main-card">
-            <textarea class="input-area" id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
-            
-            <div class="wave-container" id="waveBox">
-                <span></span><span></span><span></span><span></span>
-            </div>
-
-            <div class="card-divider"></div>
-            
-            <div class="output-area" id="outputText">Переклад з'явиться тут...</div>
-            
-            <div class="action-row">
-                <button class="icon-btn" onclick="vibrate(); clearInput();" title="Очистити">🗑️</button>
-                <div class="action-group">
-                    <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
-                    <button class="icon-btn" onclick="vibrate(); copyResult();">📋</button>
-                    <button class="icon-btn" onclick="vibrate(); shareResult();">📲</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Нижній Блок Керування -->
-        <div class="controls-bar">
-            <!-- Векторний плаский мікрофон -->
-            <button class="btn-mic-main" id="micBtn" onclick="vibrate(); toggleRecognition();">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                </svg>
-            </button>
-            <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
-        </div>
-
-        <!-- Історія -->
-        <div class="history-card">
-            <div class="history-top">
-                <span id="historyTitle">Історія</span>
-                <span id="clearHistoryTxt" style="cursor:pointer;" onclick="vibrate(); clearHistory();">Очистити</span>
-            </div>
-            <div class="history-items" id="historyList"></div>
-        </div>
-    </div>
-
-    <!-- Модальна Шторка -->
-    <div class="sheet-overlay" id="sheetOverlay" onclick="closePhrasesSheet(event)">
-        <div class="sheet-content" onclick="event.stopPropagation()">
-            <div class="sheet-header">
-                <span class="sheet-title">⚡ Швидкі фрази</span>
-                <button class="sheet-close" onclick="closePhrasesSheet()">✕</button>
-            </div>
-            
-            <select id="sheetCategory" onchange="renderSheetPhrases(this.value);" class="sheet-select">
-                <option value="cafe">☕ Кафе та ресторани</option>
-                <option value="market">🛒 Ринок та шопінг</option>
-                <option value="taxi">🚖 Таксі та транспорт</option>
-                <option value="hotel">🏠 Готель та оренда</option>
-                <option value="sos">💊 Аптека та SOS</option>
-                <option value="basic">👋 Етикет та розмова</option>
-            </select>
-
-            <div class="sheet-phrases-list" id="sheetPhrasesList"></div>
-        </div>
-    </div>
-
-    <script>
-        let isRecording = false;
-        let recognition = null;
-
-        const uiTranslations = {
-            'uk': { placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання" },
-            'sq': { placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje" },
-            'en': { placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error" }
-        };
-
-        const langSpeechCodes = { 
-            'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE', 'it': 'it-IT', 'fr': 'fr-FR', 'pl': 'pl-PL'
-        };
-
-        const quickData = {
-            cafe: [ "Рахунок, будь ласка", "Це було дуже смачно, дякую!", "Принесіть меню, будь ласка", "Воду без газу, будь ласка", "Дві кави еспресо", "Капучино з рослинним молоком", "Чи є у вас морепродукти?", "Чи є вегетаріанські страви?", "Де знаходиться вбиральня?", "Чи можна розрахуватися карткою?" ],
-            market: [ "Скільки це коштує?", "Чи можна оплатити карткою?", "Ви приймаєте євро?", "Зробіть невеличку знижку, будь ласка", "Дайте пакет, будь ласка", "Я просто дивлюся, дякую", "Де найближчий банкомат?", "Можна це приміряти?" ],
-            taxi: [ "Скільки коштує поїздка до центра?", "Зупиніться тут, будь ласка", "Увімкніть лічильник, будь ласка", "Скільки до аеропорту?", "Зачекайте мене тут 5 хвилин", "Як дістатися до найближчого пляжу?" ],
-            hotel: [ "Я бронював номер на своє ім'я", "Який пароль від Wi-Fi?", "В номері не працює кондиціонер", "О котрій годині сніданок?", "Коли час виселення (check-out)?", "Чи можна залишити багаж на рецепції?" ],
-            sos: [ "Де найближча аптека?", "Дайте ліки від головного болю", "Терміново викличте швидку допомогу!", "Мені погано, допоможіть будь ласка", "Потрібен пластир та антисептик" ],
-            basic: [ "Добрий день!", "Дуже дякую за допомогу!", "Будь ласка", "Ви розмовляєте англійською?", "Я вас не розумію", "Вибачте", "Як вас звати?", "Гарного вам дня!" ]
-        };
-
-        function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
-
-        function openPhrasesSheet() {
-            document.getElementById('sheetOverlay').classList.add('active');
-            renderSheetPhrases(document.getElementById('sheetCategory').value);
-        }
-
-        function closePhrasesSheet(e) {
-            document.getElementById('sheetOverlay').classList.remove('active');
-        }
-
-        function renderSheetPhrases(cat) {
-            const list = document.getElementById('sheetPhrasesList');
-            const items = quickData[cat] || [];
-            
-            list.innerHTML = items.map(phraseText => `
-                <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${phraseText.replace(/'/g, "\\'")}')">
-                    <span>${phraseText}</span>
-                    <span style="color:var(--accent-emerald); font-size:13px;">➔</span>
-                </div>
-            `).join('');
-        }
-
-        function selectPhrase(phraseText) {
-            document.getElementById('inputText').value = phraseText;
-            closePhrasesSheet();
-            translateText();
-        }
-
-        function updateUI() {
-            const srcLang = document.getElementById('srcLang').value;
-            const t = uiTranslations[srcLang] || uiTranslations['uk'];
-            document.getElementById('inputText').placeholder = t.placeholder;
-            document.getElementById('translateBtn').innerText = t.translate;
-            
-            const currentOutput = document.getElementById('outputText').innerText;
-            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear")) {
-                document.getElementById('outputText').innerText = t.resultPlaceholder;
-            }
-            
-            document.getElementById('speakTxt').innerText = t.speak;
-            document.getElementById('historyTitle').innerText = t.history;
-            document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            document.getElementById('themeBtn').innerText = newTheme === 'light' ? '☀️' : '🌙';
-            localStorage.setItem('theme', newTheme);
-        }
-
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').innerText = savedTheme === 'light' ? '☀️' : '🌙';
-
-        function swapLanguages() {
-            const src = document.getElementById('srcLang');
-            const tgt = document.getElementById('tgtLang');
-            const temp = src.value;
-            src.value = tgt.value;
-            tgt.value = temp;
-            updateUI();
-            if (document.getElementById('inputText').value.trim()) translateText();
-        }
-
-        function clearInput() {
-            const srcLang = document.getElementById('srcLang').value;
-            const t = uiTranslations[srcLang] || uiTranslations['uk'];
-            document.getElementById('inputText').value = '';
-            document.getElementById('outputText').innerText = t.resultPlaceholder;
-        }
-
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-
-            recognition.onresult = (event) => {
-                document.getElementById('inputText').value = event.results[0][0].transcript;
-                stopRecording();
-                translateText();
-            };
-            recognition.onerror = () => stopRecording();
-            recognition.onend = () => stopRecording();
-        }
-
-        function toggleRecognition() {
-            if (!recognition) return alert('Speech recognition not supported in this browser');
-            if (isRecording) {
-                recognition.stop();
-                stopRecording();
-            } else {
-                const srcLangCode = document.getElementById('srcLang').value;
-                recognition.lang = langSpeechCodes[srcLangCode] || 'uk-UA';
-                recognition.start();
-                isRecording = true;
-                document.getElementById('micBtn').classList.add('recording');
-                document.getElementById('waveBox').style.display = 'flex';
-            }
-        }
-
-        function stopRecording() {
-            isRecording = false;
-            document.getElementById('micBtn').classList.remove('recording');
-            document.getElementById('waveBox').style.display = 'none';
-        }
-
-        async function translateText() {
-            const text = document.getElementById('inputText').value.trim();
-            const sourceLang = document.getElementById('srcLang').value;
-            const targetLang = document.getElementById('tgtLang').value;
-            const t = uiTranslations[sourceLang] || uiTranslations['uk'];
-
-            if (!text) return;
-            const outputDiv = document.getElementById('outputText');
-            outputDiv.innerText = t.loading;
-
-            try {
-                const response = await fetch('/api/translate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, sourceLang, targetLang })
-                });
-                const data = await response.json();
-                const resText = data.translation || t.error;
-                outputDiv.innerText = resText;
-                if (data.translation) saveToHistory(text, resText);
-            } catch (err) {
-                outputDiv.innerText = t.connectionError;
-            }
-        }
-
-        async function speakResult() {
-            const text = document.getElementById('outputText').innerText.trim();
-            if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear")) return;
-
-            try {
-                const response = await fetch('/api/tts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text })
-                });
-                if (!response.ok) throw new Error('TTS error');
-                const blob = await response.blob();
-                const audio = new Audio(URL.createObjectURL(blob));
-                await audio.play();
-            } catch (err) {
-                console.error("TTS Error:", err);
-            }
-        }
-
-        function copyResult() {
-            const text = document.getElementById('outputText').innerText;
-            if (text) navigator.clipboard.writeText(text);
-        }
-
-        async function shareResult() {
-            const text = document.getElementById('outputText').innerText;
-            if (navigator.share && text) {
-                try { await navigator.share({ text }); } catch (e) {}
-            } else { copyResult(); }
-        }
-
-        function saveToHistory(orig, trans) {
-            let history = JSON.parse(localStorage.getItem('history') || '[]');
-            if (history.length > 0 && history[0].orig === orig) return;
-            history.unshift({ orig, trans });
-            history = history.slice(0, 5);
-            localStorage.setItem('history', JSON.stringify(history));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('history') || '[]');
-            const list = document.getElementById('historyList');
-            list.innerHTML = history.map(item => `
-                <div class="history-row" onclick="vibrate(); loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
-                    <div class="history-row-orig">${item.orig}</div>
-                    <div>${item.trans}</div>
-                </div>
-            `).join('');
-        }
-
-        function loadHistory(orig, trans) {
-            document.getElementById('inputText').value = orig;
-            document.getElementById('outputText').innerText = trans;
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('history');
-            renderHistory();
-        }
-
-        updateUI();
-        renderHistory();
-    </script>
-</body>
-</html>
+                <option value="da">🇩🇰 Dansk (
