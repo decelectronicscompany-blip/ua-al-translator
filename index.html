@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Voice Translator Premium</title>
     
-    <!-- PWA та Іконки -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#080b14">
+    <meta name="theme-color" content="#090d16">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" href="icon-192.png">
 
@@ -16,21 +15,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #080b14;
-            --card-glass: rgba(255, 255, 255, 0.04);
+            --bg-main: #090d16;
+            --card-glass: rgba(255, 255, 255, 0.03);
             --card-border: rgba(255, 255, 255, 0.08);
             --text-main: #f8fafc;
             --text-title: #ffffff;
             --text-muted: #64748b;
             --accent-blue: #38bdf8;
-            --grad-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-            --grad-mic: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
-            --glass-btn: rgba(255, 255, 255, 0.06);
-            --glass-btn-hover: rgba(255, 255, 255, 0.12);
+            --grad-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --grad-mic: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            --glass-btn: rgba(255, 255, 255, 0.05);
+            --glass-btn-hover: rgba(255, 255, 255, 0.1);
         }
 
         [data-theme="light"] {
-            --bg-dark: #f8fafc;
+            --bg-main: #f8fafc;
             --card-glass: #ffffff;
             --card-border: rgba(226, 232, 240, 0.8);
             --text-main: #0f172a;
@@ -49,10 +48,10 @@
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background: var(--bg-dark);
+            background: var(--bg-main);
             background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
             min-height: 100vh;
             margin: 0;
             padding: 16px 14px;
@@ -64,13 +63,13 @@
 
         .app-viewport {
             width: 100%;
-            max-width: 440px;
+            max-width: 420px;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        /* Хедер */
+        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
@@ -85,35 +84,54 @@
         }
 
         .brand-badge {
-            width: 9px;
-            height: 9px;
-            background: #10b981;
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
             border-radius: 50%;
-            box-shadow: 0 0 10px #10b981;
+            box-shadow: 0 0 10px #22c55e;
         }
 
         .brand-title {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 800;
-            letter-spacing: -0.5px;
             color: var(--text-title);
+            letter-spacing: -0.4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-phrase-trigger {
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #a855f7;
+            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .theme-btn {
             background: var(--glass-btn);
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            border-radius: 14px;
-            width: 38px;
-            height: 38px;
+            border-radius: 12px;
+            width: 34px;
+            height: 34px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 15px;
         }
 
-        /* Вибір мови */
+        /* Мови */
         .lang-bar {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -121,7 +139,7 @@
             gap: 8px;
             background: var(--card-glass);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
+            border-radius: 18px;
             padding: 6px 10px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
@@ -149,98 +167,31 @@
             border: none;
             color: white;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 12px;
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
 
-        /* Розмовник */
-        .express-bar {
+        /* Головна Скляна Картка */
+        .main-card {
             background: var(--card-glass);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 10px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-        }
-
-        .express-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 12px;
-        }
-
-        .express-label {
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            background: linear-gradient(135deg, #38bdf8, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .express-select {
-            background: var(--glass-btn);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 10px;
-            padding: 3px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            outline: none;
-        }
-
-        .express-chips {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            padding: 0 12px 2px 12px;
-        }
-
-        .express-chips::-webkit-scrollbar { display: none; }
-
-        .chip {
-            background: var(--glass-btn);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 12px;
-            padding: 7px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            white-space: nowrap;
-            cursor: pointer;
-        }
-
-        .chip:active {
-            background: var(--glass-btn-hover);
-            transform: scale(0.96);
-        }
-
-        /* Картка Перекладу */
-        .translation-card {
-            background: var(--card-glass);
-            border: 1px solid var(--card-border);
-            border-radius: 26px;
+            border-radius: 24px;
             padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
         }
 
         textarea.input-area {
             width: 100%;
-            height: 70px;
+            height: 80px;
             background: transparent;
             border: none;
             color: var(--text-main);
@@ -260,137 +211,177 @@
         .card-divider {
             height: 1px;
             background: var(--card-border);
-            margin: 0;
         }
 
         .output-area {
             font-size: 16px;
             font-weight: 700;
             line-height: 1.4;
-            min-height: 50px;
+            min-height: 60px;
             color: var(--accent-blue);
             word-break: break-word;
         }
 
-        /* Гармонійна лінійка дій */
+        /* Лінійка Дій */
         .action-row {
-            display: grid;
-            grid-template-columns: auto 1fr auto auto;
-            gap: 6px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
             padding-top: 4px;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 6px;
         }
 
         .icon-btn {
             background: var(--glass-btn);
             border: 1px solid var(--card-border);
             color: var(--text-main);
-            border-radius: 12px;
-            padding: 8px 12px;
+            border-radius: 10px;
+            padding: 7px 12px;
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 4px;
+            gap: 5px;
         }
 
         .icon-btn-speak {
-            background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             color: var(--accent-blue);
-        }
-
-        .icon-btn:active {
-            background: var(--glass-btn-hover);
         }
 
         /* Панель Керування */
         .controls-bar {
             display: grid;
-            grid-template-columns: 1fr 80px;
-            align-items: center;
+            grid-template-columns: 1fr 64px;
             gap: 10px;
-            margin-top: 2px;
-        }
-
-        .btn-mic-main {
-            width: 68px;
-            height: 68px;
-            border-radius: 50%;
-            background: var(--grad-mic);
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 25px rgba(244, 63, 94, 0.4);
-            justify-self: center;
-        }
-
-        .btn-mic-main:active {
-            transform: scale(0.92);
         }
 
         .btn-translate-main {
             background: var(--grad-primary);
             border: none;
             color: white;
-            border-radius: 20px;
-            height: 56px;
+            border-radius: 18px;
+            height: 60px;
             font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
             width: 100%;
         }
 
-        /* Анімація хвилі */
-        .mic-waves {
-            display: none;
+        .btn-mic-main {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: var(--grad-mic);
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
             align-items: center;
-            gap: 3px;
-            height: 18px;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(244, 63, 94, 0.35);
         }
 
-        .mic-waves span {
-            width: 3px;
-            height: 100%;
-            background: white;
-            border-radius: 3px;
-            animation: wave 1s ease-in-out infinite;
+        .btn-mic-main:active, .btn-translate-main:active {
+            transform: scale(0.96);
         }
 
-        .mic-waves span:nth-child(2) { animation-delay: 0.15s; }
-        .mic-waves span:nth-child(3) { animation-delay: 0.3s; }
-
-        @keyframes wave {
-            0%, 100% { height: 4px; }
-            50% { height: 18px; }
+        /* Модальне вікно / Шторка для Фраз */
+        .sheet-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 999;
         }
 
-        .recording .mic-icon { display: none; }
-        .recording .mic-waves { display: flex; }
-        .recording {
-            animation: pulse-ring 1.5s infinite;
+        .sheet-overlay.active { display: flex; }
+
+        .sheet-content {
+            background: var(--bg-main);
+            border-top: 1px solid var(--card-border);
+            border-radius: 28px 28px 0 0;
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        @keyframes pulse-ring {
-            0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.6); }
-            70% { box-shadow: 0 0 0 15px rgba(244, 63, 94, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sheet-title {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .sheet-close {
+            background: var(--glass-btn);
+            border: none;
+            color: var(--text-main);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        .sheet-select {
+            background: var(--card-glass);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            width: 100%;
+        }
+
+        .sheet-phrases-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .sheet-phrase-item {
+            background: var(--card-glass);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         /* Історія */
         .history-card {
             background: var(--card-glass);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
+            border-radius: 18px;
             padding: 12px 14px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
         }
 
         .history-top {
@@ -401,21 +392,19 @@
             color: var(--text-muted);
             margin-bottom: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
         }
 
         .history-items {
             display: flex;
             flex-direction: column;
             gap: 6px;
-            max-height: 80px;
+            max-height: 70px;
             overflow-y: auto;
         }
 
         .history-row {
             font-size: 12px;
-            padding: 4px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 3px 0;
             cursor: pointer;
         }
 
@@ -434,10 +423,13 @@
                 <div class="brand-badge"></div>
                 <div class="brand-title">Voice Translator</div>
             </div>
-            <button class="theme-btn" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
+            <div class="header-actions">
+                <button class="btn-phrase-trigger" onclick="vibrate(); openPhrasesSheet();">📖 Фрази</button>
+                <button class="theme-btn" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
+            </div>
         </div>
 
-        <!-- Мови -->
+        <!-- Перемикач мов -->
         <div class="lang-bar">
             <select class="lang-select" id="srcLang" onchange="vibrate(); updateUI();">
                 <option value="uk">🇺🇦 Українська</option>
@@ -462,48 +454,26 @@
             </select>
         </div>
 
-        <!-- Розмовник -->
-        <div class="express-bar">
-            <div class="express-top">
-                <span class="express-label">⚡ Швидкий розмовник</span>
-                <select id="quickCategory" onchange="vibrate(); changeQuickCategory(this.value);" class="express-select">
-                    <option value="cafe">☕ Кафе</option>
-                    <option value="market">🛒 Ринок</option>
-                    <option value="taxi">🚖 Таксі</option>
-                    <option value="hotel">🏠 Готель</option>
-                    <option value="sos">💊 SOS</option>
-                    <option value="basic">👋 Базові</option>
-                </select>
-            </div>
-            <div class="express-chips" id="quickChips"></div>
-        </div>
-
-        <!-- Картка Перекладу -->
-        <div class="translation-card" id="mainCard">
+        <!-- Головне Вікно Перекладу -->
+        <div class="main-card">
             <textarea class="input-area" id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
-            
             <div class="card-divider"></div>
-            
             <div class="output-area" id="outputText">Переклад з'явиться тут...</div>
             
             <div class="action-row">
                 <button class="icon-btn" onclick="vibrate(); clearInput();" title="Очистити">🗑️</button>
-                <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
-                <button class="icon-btn" onclick="vibrate(); copyResult();"><span id="copyTxt">📋 Копіювати</span></button>
-                <button class="icon-btn" onclick="vibrate(); shareResult();"><span id="shareTxt">📲</span></button>
+                <div class="action-group">
+                    <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
+                    <button class="icon-btn" onclick="vibrate(); copyResult();">📋</button>
+                    <button class="icon-btn" onclick="vibrate(); shareResult();">📲</button>
+                </div>
             </div>
         </div>
 
-        <!-- Панель Керування -->
+        <!-- Нижній блок керування -->
         <div class="controls-bar">
             <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
-            
-            <button class="btn-mic-main" id="micBtn" onclick="vibrate(); toggleRecognition();">
-                <span class="mic-icon">🎤</span>
-                <div class="mic-waves">
-                    <span></span><span></span><span></span>
-                </div>
-            </button>
+            <button class="btn-mic-main" id="micBtn" onclick="vibrate(); toggleRecognition();">🎤</button>
         </div>
 
         <!-- Історія -->
@@ -513,6 +483,27 @@
                 <span id="clearHistoryTxt" style="cursor:pointer;" onclick="vibrate(); clearHistory();">Очистити</span>
             </div>
             <div class="history-items" id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- Модальна Шторка для Фраз (Лід-Магніт) -->
+    <div class="sheet-overlay" id="sheetOverlay" onclick="closePhrasesSheet(event)">
+        <div class="sheet-content" onclick="event.stopPropagation()">
+            <div class="sheet-header">
+                <span class="sheet-title">⚡ Швидкі фрази</span>
+                <button class="sheet-close" onclick="closePhrasesSheet()">✕</button>
+            </div>
+            
+            <select id="sheetCategory" onchange="renderSheetPhrases(this.value);" class="sheet-select">
+                <option value="cafe">☕ Кафе та ресторани</option>
+                <option value="market">🛒 Ринок та шопінг</option>
+                <option value="taxi">🚖 Таксі та дорога</option>
+                <option value="hotel">🏠 Готель та оренда</option>
+                <option value="sos">💊 Аптека та SOS</option>
+                <option value="basic">👋 Етикет та розмова</option>
+            </select>
+
+            <div class="sheet-phrases-list" id="sheetPhrasesList"></div>
         </div>
     </div>
 
@@ -529,7 +520,7 @@
         const langSpeechCodes = { 'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'fr': 'fr-FR', 'it': 'it-IT', 'pl': 'pl-PL', 'de': 'de-DE' };
 
         const quickData = {
-            cafe: [ { uk: "Рахунок, будь ласка", sq: "Fatura, ju lutem" }, { uk: "Це було дуже смачно!", sq: "Ishte shumë e shijshme!" }, { uk: "Воду без газу", sq: "Ujë pa gaz, ju lutem" }, { uk: "Дві кави еспресо", sq: "Dy kafe ekspres" } ],
+            cafe: [ { uk: "Рахунок, будь ласка", sq: "Fatura, ju lutem" }, { uk: "Це було дуже смачно!", sq: "Ishte shumë e shijshme!" }, { uk: "Воду без газу, будь ласка", sq: "Ujë pa gaz, ju lutem" }, { uk: "Дві кави еспресо", sq: "Dy kafe ekspres" } ],
             market: [ { uk: "Скільки це коштує?", sq: "Sa kushton kjo?" }, { uk: "Чи можна оплатити карткою?", sq: "A mund të paguaj me kartë?" }, { uk: "Ви приймаєте євро?", sq: "A pranoni euro?" } ],
             taxi: [ { uk: "Скільки до центра?", sq: "Sa kushton për në qendër?" }, { uk: "Зупиніться тут", sq: "Ndaloni këtu, ju lutem" }, { uk: "Увімкніть лічильник", sq: "Ulni taksimetrin, ju lutem" } ],
             hotel: [ { uk: "Я бронював номер", sq: "Kam rezervuar një dhomë" }, { uk: "Який пароль від Wi-Fi?", sq: "Cili është fjalëkalimi i Wi-Fi?" } ],
@@ -538,6 +529,32 @@
         };
 
         function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
+
+        function openPhrasesSheet() {
+            document.getElementById('sheetOverlay').classList.add('active');
+            renderSheetPhrases(document.getElementById('sheetCategory').value);
+        }
+
+        function closePhrasesSheet(e) {
+            document.getElementById('sheetOverlay').classList.remove('active');
+        }
+
+        function renderSheetPhrases(cat) {
+            const list = document.getElementById('sheetPhrasesList');
+            const items = quickData[cat] || [];
+            list.innerHTML = items.map(item => `
+                <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${item.uk.replace(/'/g, "\\'")}', '${item.sq.replace(/'/g, "\\'")}')">
+                    <span>${item.uk}</span>
+                    <span style="color:var(--accent-blue); font-size:12px;">${item.sq}</span>
+                </div>
+            `).join('');
+        }
+
+        function selectPhrase(uk, sq) {
+            document.getElementById('inputText').value = uk;
+            document.getElementById('outputText').innerText = sq;
+            closePhrasesSheet();
+        }
 
         function updateUI() {
             const srcLang = document.getElementById('srcLang').value;
@@ -551,28 +568,6 @@
             document.getElementById('speakTxt').innerText = t.speak;
             document.getElementById('historyTitle').innerText = t.history;
             document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
-        }
-
-        function changeQuickCategory(cat) {
-            const container = document.getElementById('quickChips');
-            const items = quickData[cat] || [];
-            container.innerHTML = items.map(item => `
-                <button class="chip" onclick="vibrate(); applyQuickPhrase('${item.uk.replace(/'/g, "\\'")}', '${item.sq.replace(/'/g, "\\'")}')">
-                    ${item.uk}
-                </button>
-            `).join('');
-        }
-
-        function applyQuickPhrase(ukText, sqText) {
-            const srcLang = document.getElementById('srcLang').value;
-            const tgtLang = document.getElementById('tgtLang').value;
-            if (srcLang === 'uk' && tgtLang === 'sq') {
-                document.getElementById('inputText').value = ukText;
-                document.getElementById('outputText').innerText = sqText;
-            } else {
-                document.getElementById('inputText').value = ukText;
-                translateText();
-            }
         }
 
         function toggleTheme() {
@@ -629,13 +624,13 @@
                 recognition.lang = langSpeechCodes[srcLangCode] || 'en-US';
                 recognition.start();
                 isRecording = true;
-                document.getElementById('micBtn').classList.add('recording');
+                document.getElementById('micBtn').style.opacity = '0.5';
             }
         }
 
         function stopRecording() {
             isRecording = false;
-            document.getElementById('micBtn').classList.remove('recording');
+            document.getElementById('micBtn').style.opacity = '1';
         }
 
         async function translateText() {
@@ -726,7 +721,6 @@
 
         updateUI();
         renderHistory();
-        changeQuickCategory('cafe');
     </script>
 </body>
 </html>
