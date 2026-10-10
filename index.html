@@ -86,7 +86,6 @@
             gap: 12px;
         }
 
-        /* Баннер Встановлення PWA */
         .pwa-banner {
             display: none;
             background: rgba(16, 185, 129, 0.12);
@@ -422,7 +421,6 @@
             100% { transform: scale(1.06); }
         }
 
-        /* Стилі для Модальної Інструкції Встановлення (iOS) */
         .pwa-modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -646,7 +644,7 @@
 <body>
 
     <div class="app-viewport">
-        <!-- Адаптивний Баннер Встановлення PWA -->
+        <!-- Баннер Встановлення PWA -->
         <div class="pwa-banner" id="pwaBanner">
             <div class="pwa-banner-text">
                 <span>📲</span> Встановити як додаток
@@ -710,7 +708,7 @@
                 <option value="hu">🇭🇺 Magyar (Угорська)</option>
                 <option value="sk">🇸🇰 Slovenčina (Словацька)</option>
                 <option value="ar">🇸🇦 العربية (Арабська)</option>
-                <option value="he">🇮🇱 עבריت (Іврит)</option>
+                <option value="he">🇮🇱 עברית (Іврит)</option>
                 <option value="ja">🇯🇵 日本語 (Японська)</option>
                 <option value="ko">🇰🇷 한국어 (Корейська)</option>
                 <option value="zh">🇨🇳 中文 (Китайська)</option>
@@ -875,17 +873,98 @@
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
-        let duoTurn = 'user';
+        let duoTurn = 'user'; // 'user' (Ви) або 'partner' (Співрозмовник)
         let audioCtx = null;
         let deferredPrompt = null;
 
-        const uiTranslations = {
-            'uk': { phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання" },
-            'sq': { phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje" },
-            'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error" }
+        // Повний словничок готових фраз
+        const phrasesData = {
+            cafe: [
+                "Could I see the menu, please?",
+                "Do you have a table for two?",
+                "I would like to order coffee, please.",
+                "Is there a vegetarian option?",
+                "Could we have the bill, please?",
+                "Is service included in the bill?",
+                "Where is the restroom?"
+            ],
+            market: [
+                "How much does this cost?",
+                "Can I pay by card?",
+                "Do you offer a discount on this?",
+                "I am looking for local fruits.",
+                "Can I try this on?",
+                "Do you have this in a different size?",
+                "I will take this one, thank you!"
+            ],
+            taxi: [
+                "Can you take me to this address, please?",
+                "How much will the trip cost?",
+                "Please turn on the taximeter.",
+                "Can I pay with credit card?",
+                "Could you stop here for a second?",
+                "I need to get to the airport by 5 PM.",
+                "Thank you for the ride!"
+            ],
+            hotel: [
+                "I have a reservation under my name.",
+                "What time is check-out?",
+                "Could I get an extra towel, please?",
+                "What is the Wi-Fi password?",
+                "Can I store my luggage here for a few hours?",
+                "The air conditioner is not working.",
+                "Can you call a taxi for me, please?"
+            ],
+            sos: [
+                "I need a doctor, please help!",
+                "Where is the nearest pharmacy?",
+                "I have a headache and fever.",
+                "Do you have medication for stomach pain?",
+                "I lost my passport and wallet.",
+                "Please call the emergency services!",
+                "I am allergic to penicillin."
+            ],
+            basic: [
+                "Hello, nice to meet you!",
+                "Thank you very much for your help.",
+                "Excuse me, do you speak English?",
+                "I am sorry, I didn't catch that.",
+                "Could you speak a little slower, please?",
+                "No problem at all!",
+                "Have a wonderful day!"
+            ]
         };
 
-        // Логіка Встановлення PWA (Android + iOS)
+        const uiTranslations = {
+            'uk': { phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
+                catCafe: "☕ Кафе та ресторани", catMarket: "🛒 Ринок та шопінг", catTaxi: "🚖 Таксі та транспорт", catHotel: "🏠 Готель та оренда", catSos: "💊 Аптека та SOS", catBasic: "👋 Етикет та розмова"
+            },
+            'sq': { phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje",
+                catCafe: "☕ Kafe & Restorante", catMarket: "🛒 Tregu & Blerjet", catTaxi: "🚖 Taksi & Transporti", catHotel: "🏠 Hoteli & Me qira", catSos: "💊 Farmacia & SOS", catBasic: "👋 Etiketa & Biseda"
+            },
+            'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
+                catCafe: "☕ Cafe & Dining", catMarket: "🛒 Market & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Rental", catSos: "💊 Pharmacy & SOS", catBasic: "👋 Etiquette & Chat"
+            }
+        };
+
+        function renderSheetPhrases(category) {
+            const listContainer = document.getElementById('sheetPhrasesList');
+            const phrases = phrasesData[category] || [];
+            
+            listContainer.innerHTML = phrases.map(p => `
+                <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${p.replace(/'/g, "\\'")}');">
+                    <span>${p}</span>
+                    <span style="opacity:0.5;">➔</span>
+                </div>
+            `).join('');
+        }
+
+        function selectPhrase(phraseText) {
+            document.getElementById('inputText').value = phraseText;
+            closePhrasesSheet();
+            translateText('both');
+        }
+
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
         const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -1039,6 +1118,16 @@
             const btnClear = document.getElementById('clearBtnSide');
             if (btnClear) btnClear.innerText = t.clearBtn;
 
+            const sheetCategorySelect = document.getElementById('sheetCategory');
+            if (sheetCategorySelect && t.catCafe) {
+                sheetCategorySelect.options[0].text = t.catCafe;
+                sheetCategorySelect.options[1].text = t.catMarket;
+                sheetCategorySelect.options[2].text = t.catTaxi;
+                sheetCategorySelect.options[3].text = t.catHotel;
+                sheetCategorySelect.options[4].text = t.catSos;
+                sheetCategorySelect.options[5].text = t.catBasic;
+            }
+
             const currentOutput = document.getElementById('outputText').innerText;
             if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("erscheint")) {
                 document.getElementById('outputText').innerText = t.resultPlaceholder;
@@ -1078,6 +1167,7 @@
             document.getElementById('outputText').innerText = t.resultPlaceholder;
         }
 
+        // ОБРОБНИК РОЗПІЗНАВАННЯ З ПОРАЧЕНИМ АВТОЦИКЛОМ ТА ЗАХИСТОМ ВІД ПАУЗИ
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
@@ -1087,24 +1177,51 @@
             recognition.onresult = async (event) => {
                 const text = event.results[0][0].transcript;
                 document.getElementById('inputText').value = text;
-                stopRecording();
+                
+                isRecording = false;
+                renderControlsBar();
+                document.getElementById('waveBox').style.display = 'none';
 
                 if (duoModeActive) {
                     const currentEar = (duoTurn === 'user') ? 'left' : 'right';
                     const src = (duoTurn === 'user') ? document.getElementById('srcLang').value : document.getElementById('tgtLang').value;
                     const tgt = (duoTurn === 'user') ? document.getElementById('tgtLang').value : document.getElementById('srcLang').value;
 
+                    // 1. Очікуємо закінчення перекладу та озвучки
                     await executeDuoTranslation(text, src, tgt, currentEar);
 
+                    // 2. Змінюємо чергу мовця
                     duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
-                    if (duoModeActive) setTimeout(() => startTurnRecognition(), 1000);
+
+                    // 3. Автоматично вмикаємо мікрофон для наступної мови
+                    if (duoModeActive) {
+                        setTimeout(() => {
+                            if (duoModeActive) startTurnRecognition();
+                        }, 800);
+                    }
                 } else {
                     translateText('both');
                 }
             };
 
-            recognition.onerror = () => stopRecording();
-            recognition.onend = () => { stopRecording(); };
+            recognition.onerror = (event) => {
+                console.warn("Speech recognition event:", event.error);
+                // При паузі "no-speech" у Duo режимі не вимикаємо розпізнавання, а робимо перезапуск
+                if (duoModeActive && (event.error === 'no-speech' || event.error === 'network')) {
+                    isRecording = false;
+                    setTimeout(() => {
+                        if (duoModeActive) startTurnRecognition();
+                    }, 1000);
+                } else {
+                    stopRecording();
+                }
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                renderControlsBar();
+                document.getElementById('waveBox').style.display = 'none';
+            };
         }
 
         function toggleRecognition() {
@@ -1248,23 +1365,3 @@
                 <div class="history-row" onclick="vibrate(); loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
                     <div class="history-row-orig">${item.orig}</div>
                     <div>${item.trans}</div>
-                </div>
-            `).join('');
-        }
-
-        function loadHistory(orig, trans) {
-            document.getElementById('inputText').value = orig;
-            document.getElementById('outputText').innerText = trans;
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('history');
-            renderHistory();
-        }
-
-        detectUserLanguage();
-        renderControlsBar();
-        renderHistory();
-    </script>
-</body>
-</html>
