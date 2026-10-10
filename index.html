@@ -129,6 +129,8 @@
             display: flex;
             flex-direction: column;
             gap: 3px;
+            cursor: pointer;
+            user-select: none;
         }
 
         .brand-top {
@@ -797,12 +799,12 @@
 
         <!-- Header -->
         <div class="header">
-            <div class="brand">
+            <div class="brand" onclick="handleBrandClick();">
                 <div class="brand-top">
                     <div class="brand-badge"></div>
                     <div class="brand-title">Voice Translator</div>
                 </div>
-                <div class="user-id-chip" onclick="vibrate(); showUserCodeInfo();">
+                <div class="user-id-chip" onclick="event.stopPropagation(); vibrate(); showUserCodeInfo();">
                     ID <span id="userBadgeCode">0000</span> (<span id="userBadgeCount">15</span>x)
                 </div>
             </div>
@@ -1059,6 +1061,9 @@
         let audioCtx = null;
         let deferredPrompt = null;
         
+        // Список тестувальників з безлімітним доступом
+        const TESTER_IDS = ['7848', '5231'];
+
         let userRawCode = localStorage.getItem('userRawCode');
         if (!userRawCode) {
             userRawCode = Math.floor(1000 + Math.random() * 9000).toString();
@@ -1067,14 +1072,24 @@
 
         let userBalance = parseInt(localStorage.getItem('userBalance') ?? '15');
 
+        function isTester() {
+            return TESTER_IDS.includes(userRawCode);
+        }
+
         function updateBalanceDisplay() {
             const badgeCode = document.getElementById('userBadgeCode');
             const badgeCount = document.getElementById('userBadgeCount');
             if (badgeCode) badgeCode.innerText = userRawCode;
-            if (badgeCount) badgeCount.innerText = userBalance;
+            if (badgeCount) {
+                badgeCount.innerText = isTester() ? '∞' : userBalance;
+            }
         }
 
         function checkAndDeductBalance() {
+            if (isTester()) {
+                updateBalanceDisplay();
+                return true;
+            }
             if (userBalance <= 0) {
                 openPaywall();
                 return false;
@@ -1085,11 +1100,55 @@
             return true;
         }
 
+        // Логіка 5-кратного кліку на логотип (Адмін-панель)
+        let brandClickCount = 0;
+        let brandClickTimer = null;
+
+        function handleBrandClick() {
+            vibrate();
+            brandClickCount++;
+            clearTimeout(brandClickTimer);
+
+            if (brandClickCount >= 5) {
+                brandClickCount = 0;
+                openAdminMenu();
+            } else {
+                brandClickTimer = setTimeout(() => { brandClickCount = 0; }, 2000);
+            }
+        }
+
+        function openAdminMenu() {
+            const currentStatus = isTester() ? 'ТЕСТУВАЛЬНИК (Безліміт)' : `Звичайний (Залишок: ${userBalance})`;
+            const action = prompt(
+                `🛠️ АДМІН-ПАНЕЛЬ\nПоточний ID: ${userRawCode}\nСтатус: ${currentStatus}\n\nОберіть дію:\n1 — Змінити ID\n2 — Встановити новий баланс перекладів`,
+                "1"
+            );
+
+            if (action === "1") {
+                const newId = prompt("Введіть новий ID (наприклад 7848 або 5231 для тестувальника):", userRawCode);
+                if (newId && newId.trim()) {
+                    userRawCode = newId.trim();
+                    localStorage.setItem('userRawCode', userRawCode);
+                    updateBalanceDisplay();
+                    alert(`ID успішно змінено на ${userRawCode}!`);
+                }
+            } else if (action === "2") {
+                const newBal = prompt("Введіть новий баланс перекладів:", userBalance);
+                if (newBal !== null) {
+                    userBalance = parseInt(newBal) || 0;
+                    localStorage.setItem('userBalance', userBalance.toString());
+                    updateBalanceDisplay();
+                    alert(`Баланс змінено на ${userBalance}!`);
+                }
+            }
+        }
+
         function openPaywall() { document.getElementById('paywallModal').classList.add('active'); }
         function closePaywall() { document.getElementById('paywallModal').classList.remove('active'); }
 
         function showUserCodeInfo() {
-            alert(`Ваш ID: ${userRawCode}\nЗалишок перекладів: ${userBalance}`);
+            const status = isTester() ? 'Безлімітний тестувальник' : `${userBalance} перекладів`;
+            alert(`Ваш ID: ${userRawCode}\nСтатус: ${status}`);
         }
 
         async function shareReferral() {
