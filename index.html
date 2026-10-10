@@ -445,7 +445,7 @@
         .paywall-modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(3, 10, 7, 0.88);
+            background: rgba(3, 10, 7, 0.92);
             backdrop-filter: blur(18px);
             display: none;
             justify-content: center;
@@ -457,8 +457,8 @@
         .paywall-modal-overlay.active { display: flex; }
 
         .paywall-card {
-            background: radial-gradient(circle at top, #062419 0%, #030a07 100%);
-            border: 1px solid rgba(52, 211, 153, 0.35);
+            background: radial-gradient(circle at top, #083323 0%, #030d09 100%);
+            border: 1px solid rgba(52, 211, 153, 0.4);
             border-radius: 28px;
             width: 100%;
             max-width: 390px;
@@ -466,7 +466,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(16, 185, 129, 0.25);
             text-align: center;
         }
 
@@ -479,7 +479,7 @@
 
         .paywall-sub {
             font-size: 13px;
-            color: var(--text-muted);
+            color: #cbd5e1;
             margin-top: -8px;
             line-height: 1.4;
         }
@@ -492,7 +492,7 @@
         }
 
         .tariff-item {
-            background: rgba(10, 30, 22, 0.6);
+            background: rgba(10, 30, 22, 0.7);
             border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 14px;
@@ -505,22 +505,39 @@
 
         .tariff-item.featured {
             border-color: rgba(52, 211, 153, 0.6);
-            background: rgba(16, 185, 129, 0.12);
-            box-shadow: inset 0 0 15px rgba(52, 211, 153, 0.1);
+            background: rgba(16, 185, 129, 0.15);
+            box-shadow: inset 0 0 15px rgba(52, 211, 153, 0.15);
         }
 
         .tariff-name { font-size: 14px; font-weight: 800; color: #ffffff; }
-        .tariff-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .tariff-desc { font-size: 11px; color: #94a3b8; margin-top: 2px; }
         .tariff-price { font-size: 16px; font-weight: 800; color: var(--accent-emerald); }
 
         .paywall-referral-box {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px dashed rgba(52, 211, 153, 0.4);
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px dashed rgba(52, 211, 153, 0.5);
             border-radius: 16px;
-            padding: 12px;
+            padding: 14px 12px;
             font-size: 12px;
-            color: var(--text-main);
-            line-height: 1.4;
+            color: #f8fafc;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .paywall-referral-title {
+            color: #34d399;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .paywall-referral-text {
+            color: #e2e8f0;
+            font-size: 12px;
         }
 
         .btn-paywall-action {
@@ -539,11 +556,12 @@
         .btn-paywall-close {
             background: transparent;
             border: none;
-            color: var(--text-muted);
-            font-size: 12px;
+            color: #94a3b8;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: -6px;
+            margin-top: -4px;
+            padding: 6px;
         }
 
         .pwa-modal-overlay {
@@ -947,7 +965,8 @@
             </div>
 
             <div class="paywall-referral-box">
-                <b>🎁 Потрібно безкоштовно?</b><br>Запросіть друга за своїм посиланням і отримайте <b>+15 перекладів</b> після його першої оплати!
+                <div class="paywall-referral-title">🎁 Потрібно безкоштовно?</div>
+                <div class="paywall-referral-text">Запросіть друга за своїм посиланням і отримайте <b>+15 перекладів</b> після його першої оплати!</div>
             </div>
 
             <button class="btn-paywall-action" onclick="vibrate(); shareReferral();">Запросити друга (+15 перекладів)</button>
@@ -1040,7 +1059,6 @@
         let audioCtx = null;
         let deferredPrompt = null;
         
-        // Генерація короткого 4-значного ID
         let userRawCode = localStorage.getItem('userRawCode');
         if (!userRawCode) {
             userRawCode = Math.floor(1000 + Math.random() * 9000).toString();
