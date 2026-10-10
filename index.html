@@ -1061,7 +1061,6 @@
         let audioCtx = null;
         let deferredPrompt = null;
         
-        // Список тестувальників з безлімітним доступом
         const TESTER_IDS = ['7848', '5231'];
 
         let userRawCode = localStorage.getItem('userRawCode');
@@ -1076,6 +1075,19 @@
             return TESTER_IDS.includes(userRawCode);
         }
 
+        async function syncUserWithServer() {
+            try {
+                await fetch('/api/register-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userId: userRawCode,
+                        balance: userBalance 
+                    })
+                });
+            } catch(e) {}
+        }
+
         function updateBalanceDisplay() {
             const badgeCode = document.getElementById('userBadgeCode');
             const badgeCount = document.getElementById('userBadgeCount');
@@ -1088,6 +1100,7 @@
         function checkAndDeductBalance() {
             if (isTester()) {
                 updateBalanceDisplay();
+                syncUserWithServer();
                 return true;
             }
             if (userBalance <= 0) {
@@ -1097,10 +1110,10 @@
             userBalance--;
             localStorage.setItem('userBalance', userBalance.toString());
             updateBalanceDisplay();
+            syncUserWithServer();
             return true;
         }
 
-        // Логіка 5-кратного кліку на логотип (Адмін-панель)
         let brandClickCount = 0;
         let brandClickTimer = null;
 
@@ -1130,6 +1143,7 @@
                     userRawCode = newId.trim();
                     localStorage.setItem('userRawCode', userRawCode);
                     updateBalanceDisplay();
+                    syncUserWithServer();
                     alert(`ID успішно змінено на ${userRawCode}!`);
                 }
             } else if (action === "2") {
@@ -1138,6 +1152,7 @@
                     userBalance = parseInt(newBal) || 0;
                     localStorage.setItem('userBalance', userBalance.toString());
                     updateBalanceDisplay();
+                    syncUserWithServer();
                     alert(`Баланс змінено на ${userBalance}!`);
                 }
             }
@@ -1802,6 +1817,7 @@
         detectUserLanguage();
         updateUI();
         renderHistory();
+        syncUserWithServer();
     </script>
 </body>
 </html>
