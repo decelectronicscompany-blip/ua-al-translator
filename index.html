@@ -16,31 +16,44 @@
     <style>
         :root {
             --bg-main: #030706;
-            --card-glass: rgba(10, 30, 22, 0.45);
-            --card-border: rgba(52, 211, 153, 0.15);
+            --card-glass: rgba(10, 30, 22, 0.55);
+            --card-border: rgba(52, 211, 153, 0.18);
             --text-main: #f8fafc;
             --text-title: #ffffff;
-            --text-muted: #64748b;
+            --text-muted: #94a3b8;
             --accent-emerald: #34d399;
             
+            --switcher-bg: rgba(0, 0, 0, 0.5);
+            --switcher-btn-inactive: #94a3b8;
+            --switcher-btn-active-bg: rgba(16, 185, 129, 0.25);
+            --switcher-btn-active-border: rgba(52, 211, 153, 0.4);
+            --switcher-btn-active-text: #34d399;
+
             --grad-mic: linear-gradient(135deg, #10b981 0%, #059669 60%, #044e3a 100%);
             --grad-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
             
             --emerald-glow: 0 8px 25px rgba(16, 185, 129, 0.35);
             --emerald-glow-strong: 0 12px 35px rgba(52, 211, 153, 0.6);
-            --glass-btn: rgba(255, 255, 255, 0.05);
-            --glass-btn-hover: rgba(255, 255, 255, 0.1);
+            --glass-btn: rgba(255, 255, 255, 0.06);
+            --glass-btn-hover: rgba(255, 255, 255, 0.12);
         }
 
         [data-theme="light"] {
-            --bg-main: #f8fafc;
+            --bg-main: #f1f5f9;
             --card-glass: #ffffff;
-            --card-border: rgba(226, 232, 240, 0.8);
+            --card-border: rgba(203, 213, 225, 0.9);
             --text-main: #0f172a;
             --text-title: #0f172a;
             --text-muted: #64748b;
-            --accent-emerald: #059669;
-            --glass-btn: #f1f5f9;
+            --accent-emerald: #047857;
+            
+            --switcher-bg: #e2e8f0;
+            --switcher-btn-inactive: #475569;
+            --switcher-btn-active-bg: #059669;
+            --switcher-btn-active-border: #047857;
+            --switcher-btn-active-text: #ffffff;
+
+            --glass-btn: #f8fafc;
             --glass-btn-hover: #e2e8f0;
         }
 
@@ -54,8 +67,8 @@
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             background: var(--bg-main);
             background-image: 
-                radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 60%),
-                radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.1) 0px, transparent 50%);
+                radial-gradient(at 50% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 60%),
+                radial-gradient(at 100% 100%, rgba(5, 150, 105, 0.08) 0px, transparent 50%);
             min-height: 100vh;
             margin: 0;
             padding: 16px 14px;
@@ -119,26 +132,28 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        /* Сегментований перемикач Режимів */
+        /* Чіткий контрастний Перемикач Режимів */
         .mode-switcher {
-            background: rgba(0, 0, 0, 0.4);
+            background: var(--switcher-bg);
             border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 4px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
         }
 
         .mode-btn {
             background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 8px 12px;
+            border: 1px solid transparent;
+            color: var(--switcher-btn-inactive);
+            padding: 9px 12px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -149,10 +164,10 @@
         }
 
         .mode-btn.active {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid rgba(52, 211, 153, 0.35);
-            color: var(--accent-emerald);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            background: var(--switcher-btn-active-bg);
+            border-color: var(--switcher-btn-active-border);
+            color: var(--switcher-btn-active-text);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         }
 
         .lang-bar {
@@ -165,6 +180,7 @@
             border-radius: 18px;
             padding: 6px 10px;
             backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         select.lang-select {
@@ -183,6 +199,11 @@
         select.lang-select option {
             background: #061510;
             color: #f8fafc;
+        }
+
+        [data-theme="light"] select.lang-select option {
+            background: #ffffff;
+            color: #0f172a;
         }
 
         .swap-btn {
@@ -212,6 +233,7 @@
             flex-direction: column;
             gap: 12px;
             backdrop-filter: blur(16px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
         }
 
         textarea.input-area {
@@ -313,6 +335,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         }
 
         .btn-mic-main {
@@ -383,10 +406,15 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         }
 
+        [data-theme="light"] .duo-modal-card {
+            background: #ffffff;
+            border-color: rgba(203, 213, 225, 0.8);
+        }
+
         .duo-modal-title {
             font-size: 18px;
             font-weight: 800;
-            color: white;
+            color: var(--text-title);
             text-align: center;
             display: flex;
             align-items: center;
@@ -437,10 +465,10 @@
         .earbud-icon.right-ear {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid var(--card-border);
-            color: white;
+            color: var(--text-main);
         }
 
-        .earbud-label { font-size: 13px; font-weight: 800; color: white; }
+        .earbud-label { font-size: 13px; font-weight: 800; color: var(--text-title); }
         .earbud-desc { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
 
         .duo-rule-box {
@@ -450,7 +478,7 @@
             padding: 10px 12px;
             font-size: 12px;
             line-height: 1.4;
-            color: #e2e8f0;
+            color: var(--text-main);
         }
 
         .btn-start-duo {
@@ -493,6 +521,10 @@
             gap: 12px;
         }
 
+        [data-theme="light"] .sheet-content {
+            background: #ffffff;
+        }
+
         .sheet-header { display: flex; justify-content: space-between; align-items: center; }
         .sheet-title { font-size: 16px; font-weight: 800; }
         .sheet-close { background: var(--glass-btn); border: none; color: var(--text-main); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
@@ -500,7 +532,7 @@
         .sheet-phrases-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
         .sheet-phrase-item { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
 
-        .history-card { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 18px; padding: 12px 14px; backdrop-filter: blur(12px); }
+        .history-card { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 18px; padding: 12px 14px; backdrop-filter: blur(12px); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
         .history-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
         .history-items { display: flex; flex-direction: column; gap: 6px; max-height: 70px; overflow-y: auto; }
         .history-row { font-size: 12px; padding: 3px 0; cursor: pointer; }
@@ -523,7 +555,7 @@
             </div>
         </div>
 
-        <!-- Перемикач Режимів (Solo / Duo) -->
+        <!-- Контрастний Перемикач Режимів (Solo / Duo) -->
         <div class="mode-switcher">
             <button class="mode-btn active" id="btnModeSolo" onclick="vibrate(); setAppMode('solo');">
                 <span>🎙️</span> Solo Mode
@@ -847,6 +879,10 @@
             document.getElementById('themeBtn').innerText = newTheme === 'light' ? '☀️' : '🌙';
             localStorage.setItem('theme', newTheme);
         }
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeBtn').innerText = savedTheme === 'light' ? '☀️' : '🌙';
 
         function swapLanguages() {
             const src = document.getElementById('srcLang');
