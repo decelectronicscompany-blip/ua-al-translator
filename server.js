@@ -1,22 +1,19 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-// Вкажіть ваш Секретний ключ Stripe з панелі dashboard.stripe.com
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'sk_test_YOUR_SECRET_KEY');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('.'));
 
-// Важливо: для Stripe Webhook потрібен raw body
-app.use((req, res, next) => {
-    if (req.originalUrl === '/api/stripe-webhook') {
-        next();
-    } else {
-        express.json()(req, res, next);
-    }
-});
+// Налаштування 2Checkout (Verifone)
+// Вкажіть ваші дані з облікового запису 2Checkout:
+const TWOCHECKOUT_MERCHANT_CODE = process.env.TWOCHECKOUT_MERCHANT_CODE || '2CHECKOUT_MERCHANT_CODE';
+const TWOCHECKOUT_SECRET_KEY = process.env.TWOCHECKOUT_SECRET_KEY || '2CHECKOUT_SECRET_KEY';
 
 const USERS_FILE = path.join(__dirname, 'users.json');
 
@@ -54,7 +51,7 @@ function saveUsers(users) {
     }
 }
 
-// Реєстрація та синхронізація
+// Реєстрація та синхронізація користувачів
 app.post('/api/register-user', (req, res) => {
     const { userId, balance } = req.body;
     if (!userId) return res.status(400).json({ error: 'No userId provided' });
@@ -66,7 +63,7 @@ app.post('/api/register-user', (req, res) => {
         users[userId] = {
             id: userId,
             balance: isTester ? 'Безліміт' : (balance ?? 15),
-            status: isTester ? 'Тестувальник' : 'Звичайний',
+            status: isTester ? 'Тестувальник' : 'Ззвичайний',
             firstSeen: new Date().toISOString(),
             lastActive: new Date().toISOString()
         };
@@ -81,81 +78,59 @@ app.post('/api/register-user', (req, res) => {
     res.json({ success: true, user: users[userId] });
 });
 
-// API: Створення сесії оплати Stripe
-app.post('/api/create-checkout-session', async (req, res) => {
+// API: Генерування посилання на оплату 2Checkout (Verifone)
+app.post('/api/create-2checkout-payment', (req, res) => {
     const { userId, plan } = req.body;
     if (!userId) return res.status(400).json({ error: 'User ID is required' });
 
-    let priceAmount = 100; // €1.00 за замовчуванням (в центах)
-    let planName = 'Solo Безлім (1 місяць)';
+    let price = '1.00';
+    let prodName = 'Solo Безлім (1 місяць)';
 
     if (plan === 'duo') {
-        priceAmount = 200; // €2.00
-        planName = 'Duo Earbuds Paket (333 переклади)';
+        price = '2.00';
+        prodName = 'Duo Earbuds Paket (333 переклади)';
     }
 
-    try {
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'eur',
-                        product_data: {
-                            name: planName,
-                            description: `Активація для акаунту ID: ${userId}`,
-                        },
-                        unit_amount: priceAmount,
-                    },
-                    quantity: 1,
-                },
-            ],
-            mode: 'payment',
-            metadata: {
-                userId: userId,
-                plan: plan
-            },
-            success_url: `${req.headers.origin}?payment=success`,
-            cancel_url: `${req.headers.origin}?payment=cancel`,
-        });
+    // Формування URL для 2Checkout Standard/Convert Plus Checkout
+    const checkoutUrl = new URL('https://secure.2checkout.com/checkout/buy');
+    checkoutUrl.searchParams.append('sid', TWOCHECKOUT_MERCHANT_CODE);
+    checkoutUrl.searchParams.append('mode', '2CO');
+    checkoutUrl.searchParams.append('li_0_type', 'product');
+    checkoutUrl.searchParams.append('li_0_name', prodName);
+    checkoutUrl.searchParams.append('li_0_price', price);
+    checkoutUrl.searchParams.append('currency_code', 'EUR');
+    checkoutUrl.searchParams.append('custom_user_id', userId);
+    checkoutUrl.searchParams.append('custom_plan', plan);
+    
+    const returnUrl = `${req.headers.origin}?payment=success`;
+    checkoutUrl.searchParams.append('x_receipt_link_url', returnUrl);
 
-        res.json({ url: session.url });
-    } catch (e) {
-        console.error('Stripe Error:', e);
-        res.status(500).json({ error: e.message });
-    }
+    res.json({ url: checkoutUrl.toString() });
 });
 
-// Stripe Webhook: автопоповнення після оплати
-app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), (req, res) => {
-    const sig = req.headers['stripe-signature'];
-    let event;
+// Webhook / INS / IPN (Instant Notification Service) від 2Checkout
+app.post('/api/2checkout-webhook', (req, res) => {
+    const data = req.body;
+    const userId = data.custom_user_id;
+    const plan = data.custom_plan;
 
-    try {
-        // Увімкніть перевірку підпису у продакшені
-        event = JSON.parse(req.body);
-    } catch (err) {
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-
-    if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
-        const userId = session.metadata.userId;
-        const plan = session.metadata.plan;
-
-        const users = getUsers();
-        if (users[userId]) {
-            if (plan === 'duo') {
-                const current = parseInt(users[userId].balance) || 0;
-                users[userId].balance = current + 333;
-            } else {
-                users[userId].balance = 'Безліміт (Місяць)';
+    // Перевірка успішності платежу від 2Checkout
+    if (data.invoice_status === 'approved' || data.fraud_status === 'pass' || data.credit_card_processed === 'Y') {
+        if (userId) {
+            const users = getUsers();
+            if (users[userId]) {
+                if (plan === 'duo') {
+                    const current = parseInt(users[userId].balance) || 0;
+                    users[userId].balance = current + 333;
+                } else {
+                    users[userId].balance = 'Безліміт (Місяць)';
+                }
+                saveUsers(users);
             }
-            saveUsers(users);
         }
     }
 
-    res.json({ received: true });
+    res.send('2COMM_APPROVED');
 });
 
 // Адмін-панель
