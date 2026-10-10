@@ -86,7 +86,6 @@
             gap: 12px;
         }
 
-        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
@@ -135,7 +134,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        /* Чіткий контрастний Перемикач Режимів */
         .mode-switcher {
             background: var(--switcher-bg);
             border: 1px solid var(--card-border);
@@ -168,6 +166,19 @@
             border-color: var(--switcher-btn-active-border);
             color: var(--switcher-btn-active-text);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Індикатор активного чергового мовця в Duo режимі */
+        .duo-speaker-badge {
+            display: none;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--accent-emerald);
+            text-align: center;
         }
 
         .lang-bar {
@@ -521,9 +532,7 @@
             gap: 12px;
         }
 
-        [data-theme="light"] .sheet-content {
-            background: #ffffff;
-        }
+        [data-theme="light"] .sheet-content { background: #ffffff; }
 
         .sheet-header { display: flex; justify-content: space-between; align-items: center; }
         .sheet-title { font-size: 16px; font-weight: 800; }
@@ -563,6 +572,11 @@
             <button class="mode-btn" id="btnModeDuo" onclick="vibrate(); setAppMode('duo');">
                 <span>🎧</span> Duo Earbuds
             </button>
+        </div>
+
+        <!-- Індикатор черги мовця у Duo режимі -->
+        <div class="duo-speaker-badge" id="duoBadge">
+            🎧 Черга: <span id="duoCurrentLangName">Українська (Ваш навушник)</span>
         </div>
 
         <!-- Перемикач мов -->
@@ -699,7 +713,7 @@
             </div>
 
             <div class="duo-rule-box">
-                <b>🎙️ Повністю без рук:</b> Говоріть по черзі. Натисніть червону кнопку стоп у будь-який момент, щоб зупинити запис.
+                <b>🎙️ Повністю без рук:</b> Додаток почергово слухає вас та співрозмовника. Натисніть червону кнопку стоп у будь-який момент, щоб зупинити розмову.
             </div>
 
             <button class="btn-start-duo" onclick="vibrate(); startDuoLiveMode();">Зрозуміло, розпочати!</button>
@@ -732,44 +746,59 @@
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
+        let duoTurn = 'user'; // 'user' (Ваша черга) або 'partner' (Черга співрозмовника)
         let audioCtx = null;
 
         const uiTranslations = {
-            'uk': { phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
-                catCafe: "☕ Кафе та ресторани", catMarket: "🛒 Ринок та шопінг", catTaxi: "🚖 Таксі та транспорт", catHotel: "🏠 Готель та оренда", catSos: "💊 Аптека та SOS", catBasic: "👋 Етикет та розмова"
-            },
-            'sq': { phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje",
-                catCafe: "☕ Kafe & Restorante", catMarket: "🛒 Tregu & Blerjet", catTaxi: "🚖 Taksi & Transporti", catHotel: "🏠 Hoteli & Me qira", catSos: "💊 Farmacia & SOS", catBasic: "👋 Etiketa & Biseda"
-            },
-            'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
-                catCafe: "☕ Cafe & Dining", catMarket: "🛒 Market & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Rental", catSos: "💊 Pharmacy & SOS", catBasic: "👋 Etiquette & Chat"
-            }
+            'uk': { phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання" },
+            'sq': { phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje" },
+            'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error" }
         };
 
         function setAppMode(mode) {
             document.getElementById('btnModeSolo').classList.toggle('active', mode === 'solo');
             document.getElementById('btnModeDuo').classList.toggle('active', mode === 'duo');
+            document.getElementById('duoBadge').style.display = (mode === 'duo') ? 'block' : 'none';
 
             if (mode === 'duo') {
                 openDuoModal();
             } else {
                 duoModeActive = false;
-                if (isRecording) toggleRecognition();
+                if (isRecording) stopRecording();
             }
         }
 
-        function openDuoModal() {
-            document.getElementById('duoModalOverlay').classList.add('active');
-        }
-
-        function closeDuoModal() {
-            document.getElementById('duoModalOverlay').classList.remove('active');
-        }
+        function openDuoModal() { document.getElementById('duoModalOverlay').classList.add('active'); }
+        function closeDuoModal() { document.getElementById('duoModalOverlay').classList.remove('active'); }
 
         function startDuoLiveMode() {
             closeDuoModal();
             duoModeActive = true;
-            toggleRecognition();
+            duoTurn = 'user';
+            startTurnRecognition();
+        }
+
+        function startTurnRecognition() {
+            if (!recognition || !duoModeActive) return;
+
+            const srcLang = document.getElementById('srcLang').value;
+            const tgtLang = document.getElementById('tgtLang').value;
+            const badgeTxt = document.getElementById('duoCurrentLangName');
+
+            if (duoTurn === 'user') {
+                recognition.lang = srcLang;
+                if (badgeTxt) badgeTxt.innerText = `Слухаю ВАС (${srcLang.toUpperCase()}) ➔ Переклад у ЛІВИЙ навушник`;
+            } else {
+                recognition.lang = tgtLang;
+                if (badgeTxt) badgeTxt.innerText = `Слухаю СПІВРОЗМОВНИКА (${tgtLang.toUpperCase()}) ➔ Переклад у ПРАВИЙ навушник`;
+            }
+
+            try {
+                recognition.start();
+                isRecording = true;
+                renderControlsBar();
+                document.getElementById('waveBox').style.display = 'flex';
+            } catch(e) {}
         }
 
         function detectUserLanguage() {
@@ -812,19 +841,9 @@
                 `<svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>` : 
                 `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
 
-            const micHTML = `
-                <button class="btn-mic-main ${isRecording ? 'recording' : ''}" id="micBtn" onclick="vibrate(); toggleRecognition();">
-                    ${micIconSVG}
-                </button>
-            `;
-
-            const translateHTML = `
-                <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Translate</button>
-            `;
-
-            const clearHTML = `
-                <button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Clear</button>
-            `;
+            const micHTML = `<button class="btn-mic-main ${isRecording ? 'recording' : ''}" id="micBtn" onclick="vibrate(); toggleRecognition();">${micIconSVG}</button>`;
+            const translateHTML = `<button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Translate</button>`;
+            const clearHTML = `<button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Clear</button>`;
 
             if (handMode === 'center') {
                 handBtn.innerText = '🖐️';
@@ -845,9 +864,7 @@
             renderSheetPhrases(document.getElementById('sheetCategory').value);
         }
 
-        function closePhrasesSheet() {
-            document.getElementById('sheetOverlay').classList.remove('active');
-        }
+        function closePhrasesSheet() { document.getElementById('sheetOverlay').classList.remove('active'); }
 
         function updateUI() {
             const srcLang = document.getElementById('srcLang').value;
@@ -907,17 +924,29 @@
             recognition.continuous = false;
             recognition.interimResults = false;
 
-            recognition.onresult = (event) => {
-                document.getElementById('inputText').value = event.results[0][0].transcript;
+            recognition.onresult = async (event) => {
+                const text = event.results[0][0].transcript;
+                document.getElementById('inputText').value = text;
                 stopRecording();
-                translateText(duoModeActive ? 'left' : 'both');
+
+                if (duoModeActive) {
+                    const currentEar = (duoTurn === 'user') ? 'left' : 'right';
+                    const src = (duoTurn === 'user') ? document.getElementById('srcLang').value : document.getElementById('tgtLang').value;
+                    const tgt = (duoTurn === 'user') ? document.getElementById('tgtLang').value : document.getElementById('srcLang').value;
+
+                    await executeDuoTranslation(text, src, tgt, currentEar);
+
+                    // Зміна черги мовця для наступного кроку
+                    duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
+                    if (duoModeActive) setTimeout(() => startTurnRecognition(), 1000);
+                } else {
+                    translateText('both');
+                }
             };
+
             recognition.onerror = () => stopRecording();
             recognition.onend = () => {
                 stopRecording();
-                if (duoModeActive && isRecording) {
-                    setTimeout(() => { if (duoModeActive) toggleRecognition(); }, 1500);
-                }
             };
         }
 
@@ -929,14 +958,17 @@
                 recognition.stop();
                 stopRecording();
             } else {
-                const srcLangCode = document.getElementById('srcLang').value;
-                recognition.lang = srcLangCode;
-                try {
-                    recognition.start();
-                    isRecording = true;
-                    renderControlsBar();
-                    document.getElementById('waveBox').style.display = 'flex';
-                } catch(e){}
+                if (duoModeActive) {
+                    startTurnRecognition();
+                } else {
+                    recognition.lang = document.getElementById('srcLang').value;
+                    try {
+                        recognition.start();
+                        isRecording = true;
+                        renderControlsBar();
+                        document.getElementById('waveBox').style.display = 'flex';
+                    } catch(e){}
+                }
             }
         }
 
@@ -944,6 +976,28 @@
             isRecording = false;
             renderControlsBar();
             document.getElementById('waveBox').style.display = 'none';
+        }
+
+        async function executeDuoTranslation(text, sourceLang, targetLang, targetEar) {
+            const outputDiv = document.getElementById('outputText');
+            outputDiv.innerText = "Перекладаю...";
+
+            try {
+                const response = await fetch('/api/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, sourceLang, targetLang })
+                });
+                const data = await response.json();
+                const resText = data.translation || "Помилка перекладу";
+                outputDiv.innerText = resText;
+                if (data.translation) {
+                    saveToHistory(text, resText);
+                    await speakResult(targetEar, resText);
+                }
+            } catch (err) {
+                outputDiv.innerText = "Помилка з'єднання";
+            }
         }
 
         async function translateText(targetEar = 'both') {
@@ -967,42 +1021,46 @@
                 outputDiv.innerText = resText;
                 if (data.translation) {
                     saveToHistory(text, resText);
-                    speakResult(targetEar);
+                    speakResult(targetEar, resText);
                 }
             } catch (err) {
                 outputDiv.innerText = t.connectionError;
             }
         }
 
-        async function speakResult(ear = 'both') {
-            const text = document.getElementById('outputText').innerText.trim();
+        async function speakResult(ear = 'both', textToSpeak = null) {
+            const text = textToSpeak || document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear")) return;
 
-            try {
-                const response = await fetch('/api/tts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text })
-                });
-                if (!response.ok) throw new Error('TTS error');
-                const blob = await response.blob();
-                
-                const audio = new Audio(URL.createObjectURL(blob));
-
-                if (ear === 'left' || ear === 'right') {
-                    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    const source = audioCtx.createMediaElementSource(audio);
-                    const panner = audioCtx.createStereoPanner();
+            return new Promise(async (resolve) => {
+                try {
+                    const response = await fetch('/api/tts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text })
+                    });
+                    if (!response.ok) throw new Error('TTS error');
+                    const blob = await response.blob();
                     
-                    panner.pan.value = (ear === 'left') ? -1 : 1;
-                    source.connect(panner);
-                    panner.connect(audioCtx.destination);
-                }
+                    const audio = new Audio(URL.createObjectURL(blob));
 
-                await audio.play();
-            } catch (err) {
-                console.error("TTS Error:", err);
-            }
+                    if (ear === 'left' || ear === 'right') {
+                        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        const source = audioCtx.createMediaElementSource(audio);
+                        const panner = audioCtx.createStereoPanner();
+                        
+                        panner.pan.value = (ear === 'left') ? -1 : 1;
+                        source.connect(panner);
+                        panner.connect(audioCtx.destination);
+                    }
+
+                    audio.onended = () => resolve();
+                    await audio.play();
+                } catch (err) {
+                    console.error("TTS Error:", err);
+                    resolve();
+                }
+            });
         }
 
         function copyResult() {
