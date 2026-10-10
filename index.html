@@ -833,9 +833,9 @@
         <!-- Language Bar -->
         <div class="lang-bar">
             <select class="lang-select" id="srcLang" onchange="vibrate(); updateUI();">
-                <option value="en" selected>🇬🇧 English (Англійська)</option>
+                <option value="uk" selected>🇺🇦 Українська</option>
                 <option value="sq">🇦🇱 Shqip (Албанська)</option>
-                <option value="uk">🇺🇦 Українська</option>
+                <option value="en">🇬🇧 English (Англійська)</option>
                 <option value="de">🇩🇪 Deutsch (Німецька)</option>
                 <option value="it">🇮🇹 Italiano (Італійська)</option>
                 <option value="pl">🇵🇱 Polski (Польська)</option>
@@ -874,8 +874,8 @@
             
             <select class="lang-select" id="tgtLang" onchange="vibrate();">
                 <option value="sq" selected>🇦🇱 Shqip (Албанська)</option>
-                <option value="en">🇬🇧 English (Англійська)</option>
                 <option value="uk">🇺🇦 Українська</option>
+                <option value="en">🇬🇧 English (Англійська)</option>
                 <option value="de">🇩🇪 Deutsch (Німецька)</option>
                 <option value="it">🇮🇹 Italiano (Італійська)</option>
                 <option value="pl">🇵🇱 Polski (Польська)</option>
@@ -1182,10 +1182,11 @@
             }
         }
 
+        // Оплата через Verifone / 2Checkout
         async function selectTariff(plan) {
             vibrate();
             try {
-                const response = await fetch('/api/create-checkout-session', {
+                const response = await fetch('/api/create-2checkout-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -1198,7 +1199,7 @@
                 if (data.url) {
                     window.location.href = data.url;
                 } else {
-                    alert('Помилка створення платежу. Перевірте налаштування Stripe на сервері.');
+                    alert('Помилка створення платежу 2Checkout.');
                 }
             } catch (e) {
                 alert('Помилка зєднання з сервером оплати.');
@@ -1300,28 +1301,6 @@
                 duoModalTitle: "🎧 Duo Earbuds Mode", duoLeftLabel: "Left Earbud", duoLeftDesc: "Give to partner. They hear your translation.", duoRightLabel: "Right Earbud", duoRightDesc: "Keep for yourself. You hear their translation.", duoRuleBox: "<b>🎙️ Hands-free:</b> App automatically listens to you and your partner in turns.", duoStartBtn: "Got it, start!",
                 duoTurnUser: "Turn: Listening to YOU ({LANG}) ➔ Translation to LEFT earbud",
                 duoTurnPartner: "Turn: Listening to PARTNER ({LANG}) ➔ Translation to RIGHT earbud"
-            },
-            'de': { 
-                phrasesBtn: "📖", sheetTitle: "⚡ Schnelle Sätze", clearBtn: "Löschen", placeholder: "Text eingeben oder diktieren...", translate: "Übersetzen", resultPlaceholder: "Übersetzung erscheint hier...", speak: "🔊 Anhören", history: "Verlauf", clearHistory: "Löschen", loading: "Bitte warten...", error: "Übersetzungsfehler", connectionError: "Verbindungsfehler",
-                pwTitle: "Ihre kostenlosen Übersetzungen sind verbraucht!", pwSub: "Wählen Sie einen Tarif oder laden Sie einen Freund ein:",
-                pwSoloTitle: "🎙️ Solo Unbegrenzt", pwSoloDesc: "Text- & Sprachübersetzung für 1 Monat",
-                pwDuoTitle: "🎧 Duo Earbuds Paket", pwDuoDesc: "333 Sprachübersetzungen für Ohrhörer",
-                pwRefTitle: "🎁 Kostenlos benötigt?", pwRefText: "Laden Sie einen Freund ein und erhalten Sie +15 Übersetzungen!",
-                pwBtnInvite: "Freund einladen (+15)", pwBtnClose: "Schließen",
-                duoModalTitle: "🎧 Duo Earbuds Modus", duoLeftLabel: "Linker Ohrhörer", duoLeftDesc: "Dem Partner geben.", duoRightLabel: "Rechter Ohrhörer", duoRightDesc: "Selbst behalten.", duoRuleBox: "<b>🎙️ Freisprechmodus:</b> Automatische Spracherkennung im Wechsel.", duoStartBtn: "Verstanden, Start!",
-                duoTurnUser: "An der Reihe: Höre IHNEN zu ({LANG}) ➔ Übersetzung in LINKEN Ohrhörer",
-                duoTurnPartner: "An der Reihe: Höre PARTNER zu ({LANG}) ➔ Übersetzung in RECHTEN Ohrhörer"
-            },
-            'it': { 
-                phrasesBtn: "📖", sheetTitle: "⚡ Frasi rapide", clearBtn: "Cancella", placeholder: "Digita o detta il testo...", translate: "Traduci", resultPlaceholder: "La traduzione apparirà qui...", speak: "🔊 Ascolta", history: "Cronologia", clearHistory: "Cancella", loading: "Attendere...", error: "Errore di traduzione", connectionError: "Errore di connessione",
-                pwTitle: "Traduzioni gratuite esaurite!", pwSub: "Scegli un piano o invita un amico per continuare:",
-                pwSoloTitle: "🎙️ Solo Illimitato", pwSoloDesc: "Traduzione testo e voce per 1 mese",
-                pwDuoTitle: "🎧 Duo Earbuds Pacchetto", pwDuoDesc: "333 traduzioni vocali per auricolari",
-                pwRefTitle: "🎁 Vuoi traduzioni gratis?", pwRefText: "Invita un amico con il tuo link e ricevi +15 traduzioni!",
-                pwBtnInvite: "Invita un amico (+15)", pwBtnClose: "Chiudi",
-                duoModalTitle: "🎧 Modalità Duo Earbuds", duoLeftLabel: "Auricolare sinistro", duoLeftDesc: "Dallo al tuo interlocutore.", duoRightLabel: "Auricolare destro", duoRightDesc: "Tienilo per te.", duoRuleBox: "<b>🎙️ A mani libere:</b> L'app ascolta a turno entrambi.", duoStartBtn: "Ho capito, inizia!",
-                duoTurnUser: "Turno: Ascolto TE ({LANG}) ➔ Traduzione nell'AURICOLARE SINISTRO",
-                duoTurnPartner: "Turno: Ascolto l'INTERLOCUTORE ({LANG}) ➔ Traduzione nell'AURICOLARE DESTRO"
             }
         };
 
@@ -1351,13 +1330,7 @@
             try {
                 const translatedList = await Promise.all(
                     baseList.map(async (text) => {
-                        const response = await fetch('/api/translate', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ text, sourceLang: 'en', targetLang })
-                        });
-                        const data = await response.json();
-                        return data.translation || text;
+                        return await performDirectTranslation(text, 'en', targetLang);
                     })
                 );
 
@@ -1477,7 +1450,7 @@
                     break;
                 }
             }
-            if (!matched) srcSelect.value = 'en';
+            if (!matched) srcSelect.value = 'uk';
         }
 
         function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
@@ -1528,25 +1501,12 @@
             const tgtLang = document.getElementById('tgtLang').value;
             localStorage.setItem('srcLang', srcLang);
             
-            let t = uiTranslations[srcLang];
-            if (!t) {
-                t = uiTranslations['en'];
-            }
+            let t = uiTranslations[srcLang] || uiTranslations['en'];
 
             document.getElementById('inputText').placeholder = t.placeholder;
 
             const sheetTitle = document.getElementById('sheetTitleTxt');
             if (sheetTitle) sheetTitle.innerText = t.sheetTitle;
-
-            const sheetCategorySelect = document.getElementById('sheetCategory');
-            if (sheetCategorySelect && t.catCafe) {
-                sheetCategorySelect.options[0].text = t.catCafe;
-                sheetCategorySelect.options[1].text = t.catMarket;
-                sheetCategorySelect.options[2].text = t.catTaxi;
-                sheetCategorySelect.options[3].text = t.catHotel;
-                sheetCategorySelect.options[4].text = t.catSos;
-                sheetCategorySelect.options[5].text = t.catBasic;
-            }
 
             const currentOutput = document.getElementById('outputText').innerText;
             if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("erscheint")) {
@@ -1556,34 +1516,6 @@
             document.getElementById('speakTxt').innerText = t.speak;
             document.getElementById('historyTitle').innerText = t.history;
             document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
-            
-            document.getElementById('pwTitle').innerText = t.pwTitle;
-            document.getElementById('pwSub').innerText = t.pwSub;
-            document.getElementById('pwSoloTitle').innerText = t.pwSoloTitle;
-            document.getElementById('pwSoloDesc').innerText = t.pwSoloDesc;
-            document.getElementById('pwDuoTitle').innerText = t.pwDuoTitle;
-            document.getElementById('pwDuoDesc').innerText = t.pwDuoDesc;
-            document.getElementById('pwRefTitle').innerText = t.pwRefTitle;
-            document.getElementById('pwRefText').innerHTML = t.pwRefText;
-            document.getElementById('pwBtnInvite').innerText = t.pwBtnInvite;
-            document.getElementById('pwBtnClose').innerText = t.pwBtnClose;
-
-            document.getElementById('duoModalTitle').innerHTML = `<span>🎧</span> ${t.duoModalTitle}`;
-            document.getElementById('duoLeftLabel').innerText = t.duoLeftLabel;
-            document.getElementById('duoLeftDesc').innerText = t.duoLeftDesc;
-            document.getElementById('duoRightLabel').innerText = t.duoRightLabel;
-            document.getElementById('duoRightDesc').innerText = t.duoRightDesc;
-            document.getElementById('duoRuleBox').innerHTML = t.duoRuleBox;
-            document.getElementById('duoStartBtn').innerText = t.duoStartBtn;
-
-            const badgeTxt = document.getElementById('duoCurrentLangName');
-            if (badgeTxt) {
-                if (duoTurn === 'user') {
-                    badgeTxt.innerText = (t.duoTurnUser || uiTranslations['en'].duoTurnUser).replace('{LANG}', srcLang.toUpperCase());
-                } else {
-                    badgeTxt.innerText = (t.duoTurnPartner || uiTranslations['en'].duoTurnPartner).replace('{LANG}', tgtLang.toUpperCase());
-                }
-            }
 
             updateBalanceDisplay();
             renderControlsBar();
@@ -1652,7 +1584,6 @@
             };
 
             recognition.onerror = (event) => {
-                console.warn("Speech recognition event:", event.error);
                 if (duoModeActive && (event.error === 'no-speech' || event.error === 'network')) {
                     isRecording = false;
                     setTimeout(() => {
@@ -1698,28 +1629,44 @@
             document.getElementById('waveBox').style.display = 'none';
         }
 
-        async function executeDuoTranslation(text, sourceLang, targetLang, targetEar) {
-            if (!checkAndDeductBalance()) return;
-            
-            const outputDiv = document.getElementById('outputText');
-            outputDiv.innerText = "Перекладаю...";
-
+        // Автономний універсальний функціонал перекладу
+        async function performDirectTranslation(text, sourceLang, targetLang) {
             try {
+                // Спроба 1: Через власний сервер
                 const response = await fetch('/api/translate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text, sourceLang, targetLang })
                 });
                 const data = await response.json();
-                const resText = data.translation || "Помилка перекладу";
-                outputDiv.innerText = resText;
-                if (data.translation) {
-                    saveToHistory(text, resText);
-                    await speakResult(targetEar, resText);
+                if (data && data.translation && !data.error) {
+                    return data.translation;
                 }
-            } catch (err) {
-                outputDiv.innerText = "Помилка з'єднання";
-            }
+            } catch (e) {}
+
+            try {
+                // Спроба 2: Пряме фолбек-API (MyMemory Translate API)
+                const fallbackUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+                const res = await fetch(fallbackUrl);
+                const data = await res.json();
+                if (data && data.responseData && data.responseData.translatedText) {
+                    return data.responseData.translatedText;
+                }
+            } catch (e) {}
+
+            return text; // Якщо мережа повністю відсутня
+        }
+
+        async function executeDuoTranslation(text, sourceLang, targetLang, targetEar) {
+            if (!checkAndDeductBalance()) return;
+            
+            const outputDiv = document.getElementById('outputText');
+            outputDiv.innerText = "Перекладаю...";
+
+            const resText = await performDirectTranslation(text, sourceLang, targetLang);
+            outputDiv.innerText = resText;
+            saveToHistory(text, resText);
+            await speakResult(targetEar, resText);
         }
 
         async function translateText(targetEar = 'both') {
@@ -1734,22 +1681,10 @@
             const outputDiv = document.getElementById('outputText');
             outputDiv.innerText = t.loading;
 
-            try {
-                const response = await fetch('/api/translate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, sourceLang, targetLang })
-                });
-                const data = await response.json();
-                const resText = data.translation || t.error;
-                outputDiv.innerText = resText;
-                if (data.translation) {
-                    saveToHistory(text, resText);
-                    speakResult(targetEar, resText);
-                }
-            } catch (err) {
-                outputDiv.innerText = t.connectionError;
-            }
+            const resText = await performDirectTranslation(text, sourceLang, targetLang);
+            outputDiv.innerText = resText;
+            saveToHistory(text, resText);
+            speakResult(targetEar, resText);
         }
 
         async function speakResult(ear = 'both', textToSpeak = null) {
@@ -1758,30 +1693,15 @@
 
             return new Promise(async (resolve) => {
                 try {
-                    const response = await fetch('/api/tts', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text })
-                    });
-                    if (!response.ok) throw new Error('TTS error');
-                    const blob = await response.blob();
-                    
-                    const audio = new Audio(URL.createObjectURL(blob));
+                    const targetLang = document.getElementById('tgtLang').value;
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = targetLang;
 
-                    if (ear === 'left' || ear === 'right') {
-                        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                        const source = audioCtx.createMediaElementSource(audio);
-                        const panner = audioCtx.createStereoPanner();
-                        
-                        panner.pan.value = (ear === 'left') ? -1 : 1;
-                        source.connect(panner);
-                        panner.connect(audioCtx.destination);
-                    }
+                    utterance.onend = () => resolve();
+                    utterance.onerror = () => resolve();
 
-                    audio.onended = () => resolve();
-                    await audio.play();
+                    window.speechSynthesis.speak(utterance);
                 } catch (err) {
-                    console.error("TTS Error:", err);
                     resolve();
                 }
             });
@@ -1830,13 +1750,10 @@
             renderHistory();
         }
 
-        // Перевірка результату після Stripe Checkout
+        // Перевірка повернення після Verifone/2Checkout
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('payment') === 'success') {
-            alert('🎉 Дякуємо за покупку! Вашу оплату успішно прийнято.');
-            window.history.replaceState({}, document.title, window.location.pathname);
-        } else if (urlParams.get('payment') === 'cancel') {
-            alert('Оплату було скасовано.');
+            alert('🎉 Дякуємо за покупку! Вашу оплату через 2Checkout успішно прийнято.');
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
