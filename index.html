@@ -1365,3 +1365,23 @@
                 <div class="history-row" onclick="vibrate(); loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
                     <div class="history-row-orig">${item.orig}</div>
                     <div>${item.trans}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadHistory(orig, trans) {
+            document.getElementById('inputText').value = orig;
+            document.getElementById('outputText').innerText = trans;
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('history');
+            renderHistory();
+        }
+
+        detectUserLanguage();
+        renderControlsBar();
+        renderHistory();
+    </script>
+</body>
+</html>
