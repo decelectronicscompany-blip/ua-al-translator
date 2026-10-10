@@ -156,13 +156,14 @@
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 12px;
-            width: 36px;
+            padding: 0 10px;
             height: 36px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 700;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
@@ -421,6 +422,111 @@
             100% { transform: scale(1.06); }
         }
 
+        /* Стильне Смарагдове Вікно Оплати Та Тарифів */
+        .paywall-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(3, 10, 7, 0.88);
+            backdrop-filter: blur(18px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            padding: 16px;
+        }
+
+        .paywall-modal-overlay.active { display: flex; }
+
+        .paywall-card {
+            background: radial-gradient(circle at top, #062419 0%, #030a07 100%);
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            border-radius: 28px;
+            width: 100%;
+            max-width: 390px;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.2);
+            text-align: center;
+        }
+
+        .paywall-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .paywall-sub {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: -8px;
+            line-height: 1.4;
+        }
+
+        .tariff-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 4px 0;
+        }
+
+        .tariff-item {
+            background: rgba(10, 30, 22, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .tariff-item.featured {
+            border-color: rgba(52, 211, 153, 0.6);
+            background: rgba(16, 185, 129, 0.12);
+            box-shadow: inset 0 0 15px rgba(52, 211, 153, 0.1);
+        }
+
+        .tariff-name { font-size: 14px; font-weight: 800; color: #ffffff; }
+        .tariff-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .tariff-price { font-size: 16px; font-weight: 800; color: var(--accent-emerald); }
+
+        .paywall-referral-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px dashed rgba(52, 211, 153, 0.4);
+            border-radius: 16px;
+            padding: 12px;
+            font-size: 12px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .btn-paywall-action {
+            background: var(--grad-primary);
+            border: none;
+            color: white;
+            border-radius: 16px;
+            height: 48px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: var(--emerald-glow);
+            width: 100%;
+        }
+
+        .btn-paywall-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: -6px;
+        }
+
         .pwa-modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -659,6 +765,7 @@
                 <div class="brand-title">Voice Translator</div>
             </div>
             <div class="header-actions">
+                <button class="btn-header-icon" onclick="vibrate(); showUserCodeInfo();" id="userBadgeBtn" title="Ваш ID">🆔 <span id="userBadgeTxt">...</span></button>
                 <button class="btn-header-icon" onclick="vibrate(); openPhrasesSheet();" id="phrasesBtnTxt" title="Фрази">📖</button>
                 <button class="btn-header-icon" onclick="vibrate(); cycleHandMode();" id="handBtn" title="Ергономіка">🖐️</button>
                 <button class="btn-header-icon" onclick="vibrate(); toggleTheme();" id="themeBtn" title="Тема">🌙</button>
@@ -792,6 +899,39 @@
         </div>
     </div>
 
+    <!-- Преміальне Смарагдове Вікно Оплати / Тарифів -->
+    <div class="paywall-modal-overlay" id="paywallModal">
+        <div class="paywall-card">
+            <div class="paywall-title">Ваші безкоштовні переклади вичерпано!</div>
+            <div class="paywall-sub">Оберіть тариф або запросіть друга, щоб продовжити спілкування:</div>
+
+            <div class="tariff-grid">
+                <div class="tariff-item" onclick="vibrate(); selectTariff('solo');">
+                    <div>
+                        <div class="tariff-name">🎙️ Solo Безлім</div>
+                        <div class="tariff-desc">Текстовий та голосовий переклад на місяць</div>
+                    </div>
+                    <div class="tariff-price">€1.00</div>
+                </div>
+
+                <div class="tariff-item featured" onclick="vibrate(); selectTariff('duo');">
+                    <div>
+                        <div class="tariff-name">🎧 Duo Earbuds Paket</div>
+                        <div class="tariff-desc">333 голосові переклади для навушників</div>
+                    </div>
+                    <div class="tariff-price">€2.00</div>
+                </div>
+            </div>
+
+            <div class="paywall-referral-box">
+                <b>🎁 Потрібно безкоштовно?</b><br>Запросіть друга за своїм посиланням і отримайте <b>+15 перекладів</b> після його першої оплати!
+            </div>
+
+            <button class="btn-paywall-action" onclick="vibrate(); shareReferral();">Запросити друга (+15 перекладів)</button>
+            <button class="btn-paywall-close" onclick="closePaywall();">Закрити</button>
+        </div>
+    </div>
+
     <!-- Модальна Інструкція встановлення PWA на iOS -->
     <div class="pwa-modal-overlay" id="pwaIosModal" onclick="closePwaModal()">
         <div class="pwa-modal-card" onclick="event.stopPropagation()">
@@ -877,10 +1017,60 @@
         let audioCtx = null;
         let deferredPrompt = null;
         
-        // Кєш для збереження динамічно перекладених фраз
+        // Система Анонімного ID та Балансу Перекладів
+        let userId = localStorage.getItem('userId');
+        if (!userId) {
+            userId = 'USR-' + Math.floor(1000 + Math.random() * 9000);
+            localStorage.setItem('userId', userId);
+        }
+
+        let userBalance = parseInt(localStorage.getItem('userBalance') ?? '15');
+
+        function updateBalanceDisplay() {
+            const badge = document.getElementById('userBadgeTxt');
+            if (badge) badge.innerText = `${userBalance} x`;
+        }
+
+        function checkAndDeductBalance() {
+            if (userBalance <= 0) {
+                openPaywall();
+                return false;
+            }
+            userBalance--;
+            localStorage.setItem('userBalance', userBalance.toString());
+            updateBalanceDisplay();
+            return true;
+        }
+
+        function openPaywall() { document.getElementById('paywallModal').classList.add('active'); }
+        function closePaywall() { document.getElementById('paywallModal').classList.remove('active'); }
+
+        function showUserCodeInfo() {
+            alert(`Ваш унікальний ID: ${userId}\nЗалишок перекладів: ${userBalance}`);
+        }
+
+        async function shareReferral() {
+            const refLink = `${window.location.origin}?ref=${userId}`;
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Voice Translator Executive',
+                        text: 'Спробуй новий голосовий перекладач для навушників Duo Earbuds!',
+                        url: refLink
+                    });
+                } catch(e) {}
+            } else {
+                navigator.clipboard.writeText(refLink);
+                alert('Посилання скопійовано: ' + refLink);
+            }
+        }
+
+        function selectTariff(plan) {
+            alert(`Перехід до оплати тарифу ${plan.toUpperCase()}. Скоро буде підключено Stripe/LiqPay!`);
+        }
+
         const phrasesCache = {};
 
-        // Базовий список фраз англійською мовою (Еталон)
         const basePhrasesData = {
             cafe: [
                 "Could I see the menu, please?",
@@ -955,26 +1145,22 @@
             renderSheetPhrases(document.getElementById('sheetCategory').value);
         }
 
-        // АВТОМАТИЧНИЙ ДИНАМІЧНИЙ ПЕРЕКЛАД ФРАЗ ДЛЯ БУДЬ-ЯКОЇ ОБРАНОЇ МОВИ
         async function renderSheetPhrases(category) {
             const listContainer = document.getElementById('sheetPhrasesList');
             const targetLang = document.getElementById('srcLang').value;
             const baseList = basePhrasesData[category] || [];
 
-            // Якщо обрано англійську мову, показуємо відразу
             if (targetLang === 'en') {
                 renderPhrasesList(baseList);
                 return;
             }
 
-            // Перевіряємо, чи є вже готовий кєш для цієї мови та категорії
             const cacheKey = `${targetLang}_${category}`;
             if (phrasesCache[cacheKey]) {
                 renderPhrasesList(phrasesCache[cacheKey]);
                 return;
             }
 
-            // Якщо кєшу немає — показуємо індикатор завантаження та перекладаємо через API
             listContainer.innerHTML = `<div style="text-align:center; padding: 20px; font-weight:700; color:var(--accent-emerald);">⏳ Завантаження фраз...</div>`;
 
             try {
@@ -1068,361 +1254,15 @@
         function startTurnRecognition() {
             if (!recognition || !duoModeActive) return;
 
+            if (!checkAndDeductBalance()) {
+                stopRecording();
+                duoModeActive = false;
+                return;
+            }
+
             const srcLang = document.getElementById('srcLang').value;
             const tgtLang = document.getElementById('tgtLang').value;
             const badgeTxt = document.getElementById('duoCurrentLangName');
 
             if (duoTurn === 'user') {
-                recognition.lang = srcLang;
-                if (badgeTxt) badgeTxt.innerText = `Слухаю ВАС (${srcLang.toUpperCase()}) ➔ Переклад у ЛІВИЙ навушник`;
-            } else {
-                recognition.lang = tgtLang;
-                if (badgeTxt) badgeTxt.innerText = `Слухаю СПІВРОЗМОВНИКА (${tgtLang.toUpperCase()}) ➔ Переклад у ПРАВИЙ навушник`;
-            }
-
-            try {
-                recognition.start();
-                isRecording = true;
-                renderControlsBar();
-                document.getElementById('waveBox').style.display = 'flex';
-            } catch(e) {}
-        }
-
-        function detectUserLanguage() {
-            const savedSrc = localStorage.getItem('srcLang');
-            if (savedSrc) {
-                document.getElementById('srcLang').value = savedSrc;
-                return;
-            }
-            const userLang = (navigator.language || navigator.userLanguage || '').slice(0, 2).toLowerCase();
-            const srcSelect = document.getElementById('srcLang');
-            
-            let matched = false;
-            for (let i = 0; i < srcSelect.options.length; i++) {
-                if (srcSelect.options[i].value === userLang) {
-                    srcSelect.value = userLang;
-                    matched = true;
-                    break;
-                }
-            }
-            if (!matched) srcSelect.value = 'en';
-        }
-
-        function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
-
-        function cycleHandMode() {
-            if (handMode === 'center') handMode = 'right';
-            else if (handMode === 'right') handMode = 'left';
-            else handMode = 'center';
-            
-            localStorage.setItem('handMode', handMode);
-            renderControlsBar();
-        }
-
-        function renderControlsBar() {
-            const bar = document.getElementById('controlsBar');
-            const handBtn = document.getElementById('handBtn');
-            bar.className = `controls-bar hand-${handMode}`;
-
-            const micIconSVG = isRecording ? 
-                `<svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>` : 
-                `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
-
-            const micHTML = `<button class="btn-mic-main ${isRecording ? 'recording' : ''}" id="micBtn" onclick="vibrate(); toggleRecognition();">${micIconSVG}</button>`;
-            const translateHTML = `<button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Translate</button>`;
-            const clearHTML = `<button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Clear</button>`;
-
-            if (handMode === 'center') {
-                handBtn.innerText = '🖐️';
-                bar.innerHTML = clearHTML + micHTML + translateHTML;
-            } else if (handMode === 'right') {
-                handBtn.innerText = '👉';
-                bar.innerHTML = translateHTML + micHTML;
-            } else {
-                handBtn.innerText = '👈';
-                bar.innerHTML = micHTML + translateHTML;
-            }
-
-            updateUI();
-        }
-
-        function closePhrasesSheet() { document.getElementById('sheetOverlay').classList.remove('active'); }
-
-        function updateUI() {
-            const srcLang = document.getElementById('srcLang').value;
-            localStorage.setItem('srcLang', srcLang);
-            
-            const t = uiTranslations[srcLang] || uiTranslations['en'];
-            document.getElementById('inputText').placeholder = t.placeholder;
-            
-            const btnT = document.getElementById('translateBtn');
-            if (btnT) btnT.innerText = t.translate;
-
-            const btnClear = document.getElementById('clearBtnSide');
-            if (btnClear) btnClear.innerText = t.clearBtn;
-
-            const sheetTitle = document.getElementById('sheetTitleTxt');
-            if (sheetTitle) sheetTitle.innerText = t.sheetTitle;
-
-            const sheetCategorySelect = document.getElementById('sheetCategory');
-            if (sheetCategorySelect && t.catCafe) {
-                sheetCategorySelect.options[0].text = t.catCafe;
-                sheetCategorySelect.options[1].text = t.catMarket;
-                sheetCategorySelect.options[2].text = t.catTaxi;
-                sheetCategorySelect.options[3].text = t.catHotel;
-                sheetCategorySelect.options[4].text = t.catSos;
-                sheetCategorySelect.options[5].text = t.catBasic;
-            }
-
-            const currentOutput = document.getElementById('outputText').innerText;
-            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("erscheint")) {
-                document.getElementById('outputText').innerText = t.resultPlaceholder;
-            }
-            
-            document.getElementById('speakTxt').innerText = t.speak;
-            document.getElementById('historyTitle').innerText = t.history;
-            document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            document.getElementById('themeBtn').innerText = newTheme === 'light' ? '☀️' : '🌙';
-            localStorage.setItem('theme', newTheme);
-        }
-
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').innerText = savedTheme === 'light' ? '☀️' : '🌙';
-
-        function swapLanguages() {
-            const src = document.getElementById('srcLang');
-            const tgt = document.getElementById('tgtLang');
-            const temp = src.value;
-            src.value = tgt.value;
-            tgt.value = temp;
-            updateUI();
-            if (document.getElementById('inputText').value.trim()) translateText();
-        }
-
-        function clearInput() {
-            const srcLang = document.getElementById('srcLang').value;
-            const t = uiTranslations[srcLang] || uiTranslations['en'];
-            document.getElementById('inputText').value = '';
-            document.getElementById('outputText').innerText = t.resultPlaceholder;
-        }
-
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-
-            recognition.onresult = async (event) => {
-                const text = event.results[0][0].transcript;
-                document.getElementById('inputText').value = text;
-                
-                isRecording = false;
-                renderControlsBar();
-                document.getElementById('waveBox').style.display = 'none';
-
-                if (duoModeActive) {
-                    const currentEar = (duoTurn === 'user') ? 'left' : 'right';
-                    const src = (duoTurn === 'user') ? document.getElementById('srcLang').value : document.getElementById('tgtLang').value;
-                    const tgt = (duoTurn === 'user') ? document.getElementById('tgtLang').value : document.getElementById('srcLang').value;
-
-                    await executeDuoTranslation(text, src, tgt, currentEar);
-
-                    duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
-
-                    if (duoModeActive) {
-                        setTimeout(() => {
-                            if (duoModeActive) startTurnRecognition();
-                        }, 800);
-                    }
-                } else {
-                    translateText('both');
-                }
-            };
-
-            recognition.onerror = (event) => {
-                console.warn("Speech recognition event:", event.error);
-                if (duoModeActive && (event.error === 'no-speech' || event.error === 'network')) {
-                    isRecording = false;
-                    setTimeout(() => {
-                        if (duoModeActive) startTurnRecognition();
-                    }, 1000);
-                } else {
-                    stopRecording();
-                }
-            };
-
-            recognition.onend = () => {
-                isRecording = false;
-                renderControlsBar();
-                document.getElementById('waveBox').style.display = 'none';
-            };
-        }
-
-        function toggleRecognition() {
-            if (!recognition) return alert('Speech recognition not supported in this browser');
-            
-            if (isRecording) {
-                duoModeActive = false;
-                recognition.stop();
-                stopRecording();
-            } else {
-                if (duoModeActive) {
-                    startTurnRecognition();
-                } else {
-                    recognition.lang = document.getElementById('srcLang').value;
-                    try {
-                        recognition.start();
-                        isRecording = true;
-                        renderControlsBar();
-                        document.getElementById('waveBox').style.display = 'flex';
-                    } catch(e){}
-                }
-            }
-        }
-
-        function stopRecording() {
-            isRecording = false;
-            renderControlsBar();
-            document.getElementById('waveBox').style.display = 'none';
-        }
-
-        async function executeDuoTranslation(text, sourceLang, targetLang, targetEar) {
-            const outputDiv = document.getElementById('outputText');
-            outputDiv.innerText = "Перекладаю...";
-
-            try {
-                const response = await fetch('/api/translate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, sourceLang, targetLang })
-                });
-                const data = await response.json();
-                const resText = data.translation || "Помилка перекладу";
-                outputDiv.innerText = resText;
-                if (data.translation) {
-                    saveToHistory(text, resText);
-                    await speakResult(targetEar, resText);
-                }
-            } catch (err) {
-                outputDiv.innerText = "Помилка з'єднання";
-            }
-        }
-
-        async function translateText(targetEar = 'both') {
-            const text = document.getElementById('inputText').value.trim();
-            const sourceLang = document.getElementById('srcLang').value;
-            const targetLang = document.getElementById('tgtLang').value;
-            const t = uiTranslations[sourceLang] || uiTranslations['en'];
-
-            if (!text) return;
-            const outputDiv = document.getElementById('outputText');
-            outputDiv.innerText = t.loading;
-
-            try {
-                const response = await fetch('/api/translate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, sourceLang, targetLang })
-                });
-                const data = await response.json();
-                const resText = data.translation || t.error;
-                outputDiv.innerText = resText;
-                if (data.translation) {
-                    saveToHistory(text, resText);
-                    speakResult(targetEar, resText);
-                }
-            } catch (err) {
-                outputDiv.innerText = t.connectionError;
-            }
-        }
-
-        async function speakResult(ear = 'both', textToSpeak = null) {
-            const text = textToSpeak || document.getElementById('outputText').innerText.trim();
-            if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear")) return;
-
-            return new Promise(async (resolve) => {
-                try {
-                    const response = await fetch('/api/tts', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text })
-                    });
-                    if (!response.ok) throw new Error('TTS error');
-                    const blob = await response.blob();
-                    
-                    const audio = new Audio(URL.createObjectURL(blob));
-
-                    if (ear === 'left' || ear === 'right') {
-                        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                        const source = audioCtx.createMediaElementSource(audio);
-                        const panner = audioCtx.createStereoPanner();
-                        
-                        panner.pan.value = (ear === 'left') ? -1 : 1;
-                        source.connect(panner);
-                        panner.connect(audioCtx.destination);
-                    }
-
-                    audio.onended = () => resolve();
-                    await audio.play();
-                } catch (err) {
-                    console.error("TTS Error:", err);
-                    resolve();
-                }
-            });
-        }
-
-        function copyResult() {
-            const text = document.getElementById('outputText').innerText;
-            if (text) navigator.clipboard.writeText(text);
-        }
-
-        async function shareResult() {
-            const text = document.getElementById('outputText').innerText;
-            if (navigator.share && text) {
-                try { await navigator.share({ text }); } catch (e) {}
-            } else { copyResult(); }
-        }
-
-        function saveToHistory(orig, trans) {
-            let history = JSON.parse(localStorage.getItem('history') || '[]');
-            if (history.length > 0 && history[0].orig === orig) return;
-            history.unshift({ orig, trans });
-            history = history.slice(0, 5);
-            localStorage.setItem('history', JSON.stringify(history));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('history') || '[]');
-            const list = document.getElementById('historyList');
-            list.innerHTML = history.map(item => `
-                <div class="history-row" onclick="vibrate(); loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
-                    <div class="history-row-orig">${item.orig}</div>
-                    <div>${item.trans}</div>
-                </div>
-            `).join('');
-        }
-
-        function loadHistory(orig, trans) {
-            document.getElementById('inputText').value = orig;
-            document.getElementById('outputText').innerText = trans;
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('history');
-            renderHistory();
-        }
-
-        detectUserLanguage();
-        renderControlsBar();
-        renderHistory();
-    </script>
-</body>
-</html>
+                recognition.
