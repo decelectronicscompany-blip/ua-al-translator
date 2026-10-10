@@ -128,7 +128,7 @@
         .brand {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
         }
 
         .brand-top {
@@ -154,14 +154,16 @@
 
         .user-id-chip {
             font-size: 11px;
-            font-weight: 700;
-            color: var(--accent-emerald);
-            background: rgba(16, 185, 129, 0.12);
-            border: 1px solid rgba(52, 211, 153, 0.25);
-            border-radius: 8px;
-            padding: 2px 8px;
+            font-weight: 800;
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            border-radius: 10px;
+            padding: 3px 10px;
             cursor: pointer;
             width: fit-content;
+            letter-spacing: 0.2px;
+            box-shadow: 0 0 12px rgba(52, 211, 153, 0.15);
         }
 
         .header-actions {
@@ -783,7 +785,7 @@
                     <div class="brand-title">Voice Translator</div>
                 </div>
                 <div class="user-id-chip" onclick="vibrate(); showUserCodeInfo();">
-                    🆔 <span id="userBadgeTxt">USR-... (15x)</span>
+                    ID <span id="userBadgeCode">0000</span> (<span id="userBadgeCount">15</span>x)
                 </div>
             </div>
             <div class="header-actions">
@@ -1038,17 +1040,20 @@
         let audioCtx = null;
         let deferredPrompt = null;
         
-        let userId = localStorage.getItem('userId');
-        if (!userId) {
-            userId = 'USR-' + Math.floor(1000 + Math.random() * 9000);
-            localStorage.setItem('userId', userId);
+        // Генерація короткого 4-значного ID
+        let userRawCode = localStorage.getItem('userRawCode');
+        if (!userRawCode) {
+            userRawCode = Math.floor(1000 + Math.random() * 9000).toString();
+            localStorage.setItem('userRawCode', userRawCode);
         }
 
         let userBalance = parseInt(localStorage.getItem('userBalance') ?? '15');
 
         function updateBalanceDisplay() {
-            const badge = document.getElementById('userBadgeTxt');
-            if (badge) badge.innerText = `${userId} (${userBalance}x)`;
+            const badgeCode = document.getElementById('userBadgeCode');
+            const badgeCount = document.getElementById('userBadgeCount');
+            if (badgeCode) badgeCode.innerText = userRawCode;
+            if (badgeCount) badgeCount.innerText = userBalance;
         }
 
         function checkAndDeductBalance() {
@@ -1066,11 +1071,11 @@
         function closePaywall() { document.getElementById('paywallModal').classList.remove('active'); }
 
         function showUserCodeInfo() {
-            alert(`Ваш унікальний ID: ${userId}\nЗалишок перекладів: ${userBalance}`);
+            alert(`Ваш ID: ${userRawCode}\nЗалишок перекладів: ${userBalance}`);
         }
 
         async function shareReferral() {
-            const refLink = `${window.location.origin}?ref=${userId}`;
+            const refLink = `${window.location.origin}?ref=USR-${userRawCode}`;
             if (navigator.share) {
                 try {
                     await navigator.share({
@@ -1157,7 +1162,9 @@
             },
             'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
                 catCafe: "☕ Cafe & Dining", catMarket: "🛒 Market & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Rental", catSos: "💊 Pharmacy & SOS", catBasic: "👋 Etiquette & Chat"
-            }
+            },
+            'de': { phrasesBtn: "📖", sheetTitle: "⚡ Schnelle Sätze", clearBtn: "Löschen", placeholder: "Text eingeben oder diktieren...", translate: "Übersetzen", resultPlaceholder: "Übersetzung erscheint hier...", speak: "🔊 Anhören", history: "Verlauf", clearHistory: "Löschen", loading: "Bitte warten...", error: "Übersetzungsfehler", connectionError: "Verbindungsfehler" },
+            'it': { phrasesBtn: "📖", sheetTitle: "⚡ Frasi rapide", clearBtn: "Cancella", placeholder: "Digita o detta il testo...", translate: "Traduci", resultPlaceholder: "La traduzione apparirà qui...", speak: "🔊 Ascolta", history: "Cronologia", clearHistory: "Cancella", loading: "Attendere...", error: "Errore di traduzione", connectionError: "Errore di connessione" }
         };
 
         function openPhrasesSheet() {
@@ -1274,12 +1281,6 @@
         function startTurnRecognition() {
             if (!recognition || !duoModeActive) return;
 
-            if (!checkAndDeductBalance()) {
-                stopRecording();
-                duoModeActive = false;
-                return;
-            }
-
             const srcLang = document.getElementById('srcLang').value;
             const tgtLang = document.getElementById('tgtLang').value;
             const badgeTxt = document.getElementById('duoCurrentLangName');
@@ -1335,6 +1336,10 @@
             const bar = document.getElementById('controlsBar');
             const handBtn = document.getElementById('handBtn');
             if (!bar) return;
+            
+            const srcLang = document.getElementById('srcLang').value;
+            const t = uiTranslations[srcLang] || uiTranslations['en'];
+
             bar.className = `controls-bar hand-${handMode}`;
 
             const micIconSVG = isRecording ? 
@@ -1342,8 +1347,8 @@
                 `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
 
             const micHTML = `<button class="btn-mic-main ${isRecording ? 'recording' : ''}" id="micBtn" onclick="vibrate(); toggleRecognition();">${micIconSVG}</button>`;
-            const translateHTML = `<button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Translate</button>`;
-            const clearHTML = `<button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Clear</button>`;
+            const translateHTML = `<button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">${t.translate}</button>`;
+            const clearHTML = `<button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">${t.clearBtn}</button>`;
 
             if (handMode === 'center') {
                 if (handBtn) handBtn.innerText = '🖐️';
@@ -1365,12 +1370,6 @@
             
             const t = uiTranslations[srcLang] || uiTranslations['en'];
             document.getElementById('inputText').placeholder = t.placeholder;
-            
-            const btnT = document.getElementById('translateBtn');
-            if (btnT) btnT.innerText = t.translate;
-
-            const btnClear = document.getElementById('clearBtnSide');
-            if (btnClear) btnClear.innerText = t.clearBtn;
 
             const sheetTitle = document.getElementById('sheetTitleTxt');
             if (sheetTitle) sheetTitle.innerText = t.sheetTitle;
@@ -1490,7 +1489,6 @@
                 if (duoModeActive) {
                     startTurnRecognition();
                 } else {
-                    if (!checkAndDeductBalance()) return;
                     recognition.lang = document.getElementById('srcLang').value;
                     try {
                         recognition.start();
@@ -1509,6 +1507,8 @@
         }
 
         async function executeDuoTranslation(text, sourceLang, targetLang, targetEar) {
+            if (!checkAndDeductBalance()) return;
+            
             const outputDiv = document.getElementById('outputText');
             outputDiv.innerText = "Перекладаю...";
 
