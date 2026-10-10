@@ -1182,8 +1182,27 @@
             }
         }
 
-        function selectTariff(plan) {
-            alert(`Перехід до оплати тарифу ${plan.toUpperCase()}. Скоро буде підключено Stripe/LiqPay!`);
+        async function selectTariff(plan) {
+            vibrate();
+            try {
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        userId: userRawCode,
+                        plan: plan 
+                    })
+                });
+
+                const data = await response.json();
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Помилка створення платежу. Перевірте налаштування Stripe на сервері.');
+                }
+            } catch (e) {
+                alert('Помилка зєднання з сервером оплати.');
+            }
         }
 
         const phrasesCache = {};
@@ -1538,7 +1557,6 @@
             document.getElementById('historyTitle').innerText = t.history;
             document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
             
-            // Оновлення модального вікна Paywall
             document.getElementById('pwTitle').innerText = t.pwTitle;
             document.getElementById('pwSub').innerText = t.pwSub;
             document.getElementById('pwSoloTitle').innerText = t.pwSoloTitle;
@@ -1550,7 +1568,6 @@
             document.getElementById('pwBtnInvite').innerText = t.pwBtnInvite;
             document.getElementById('pwBtnClose').innerText = t.pwBtnClose;
 
-            // Оновлення модального вікна Duo
             document.getElementById('duoModalTitle').innerHTML = `<span>🎧</span> ${t.duoModalTitle}`;
             document.getElementById('duoLeftLabel').innerText = t.duoLeftLabel;
             document.getElementById('duoLeftDesc').innerText = t.duoLeftDesc;
@@ -1559,7 +1576,6 @@
             document.getElementById('duoRuleBox').innerHTML = t.duoRuleBox;
             document.getElementById('duoStartBtn').innerText = t.duoStartBtn;
 
-            // Оновлення статусної плашки Duo Mode
             const badgeTxt = document.getElementById('duoCurrentLangName');
             if (badgeTxt) {
                 if (duoTurn === 'user') {
@@ -1812,6 +1828,16 @@
         function clearHistory() {
             localStorage.removeItem('history');
             renderHistory();
+        }
+
+        // Перевірка результату після Stripe Checkout
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('payment') === 'success') {
+            alert('🎉 Дякуємо за покупку! Вашу оплату успішно прийнято.');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else if (urlParams.get('payment') === 'cancel') {
+            alert('Оплату було скасовано.');
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         detectUserLanguage();
