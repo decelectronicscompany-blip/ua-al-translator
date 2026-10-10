@@ -74,7 +74,6 @@
             gap: 12px;
         }
 
-        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
@@ -151,7 +150,6 @@
             font-size: 15px;
         }
 
-        /* Перемикач мов */
         .lang-bar {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -199,7 +197,6 @@
             box-shadow: var(--emerald-glow);
         }
 
-        /* Головна Скляна Картка */
         .main-card {
             background: var(--card-glass);
             border: 1px solid var(--card-border);
@@ -246,7 +243,6 @@
             text-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
         }
 
-        /* Лінійка Дій */
         .action-row {
             display: flex;
             justify-content: space-between;
@@ -279,7 +275,6 @@
             color: var(--accent-emerald);
         }
 
-        /* Анімована Еквалайзерна Хвиля */
         .wave-container {
             display: none;
             justify-content: center;
@@ -307,7 +302,6 @@
             50% { height: 20px; }
         }
 
-        /* Панель Керування */
         .controls-bar {
             display: grid;
             gap: 12px;
@@ -387,7 +381,6 @@
             100% { box-shadow: var(--emerald-glow-strong); transform: scale(1.06); }
         }
 
-        /* Модальна Шторка */
         .sheet-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -468,7 +461,6 @@
             align-items: center;
         }
 
-        /* Історія */
         .history-card {
             background: var(--card-glass);
             border: 1px solid var(--card-border);
@@ -517,8 +509,8 @@
                 <div class="brand-title">Voice Translator</div>
             </div>
             <div class="header-actions">
-                <button class="btn-hand-toggle" onclick="vibrate(); cycleHandMode();" id="handBtn">🖐️ Центр</button>
-                <button class="btn-phrase-trigger" onclick="vibrate(); openPhrasesSheet();" id="phrasesBtnTxt">📖 Фрази</button>
+                <button class="btn-hand-toggle" onclick="vibrate(); cycleHandMode();" id="handBtn">🖐️ Center</button>
+                <button class="btn-phrase-trigger" onclick="vibrate(); openPhrasesSheet();" id="phrasesBtnTxt">📖 Phrases</button>
                 <button class="theme-btn" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
             </div>
         </div>
@@ -526,9 +518,9 @@
         <!-- Перемикач мов -->
         <div class="lang-bar">
             <select class="lang-select" id="srcLang" onchange="vibrate(); updateUI();">
+                <option value="en" selected>🇬🇧 English (Англійська)</option>
                 <option value="sq">🇦🇱 Shqip (Албанська)</option>
-                <option value="en">🇬🇧 English (Англійська)</option>
-                <option value="uk" selected>🇺🇦 Українська</option>
+                <option value="uk">🇺🇦 Українська</option>
                 <option value="de">🇩🇪 Deutsch (Німецька)</option>
                 <option value="it">🇮🇹 Italiano (Італійська)</option>
                 <option value="pl">🇵🇱 Polski (Польська)</option>
@@ -598,7 +590,7 @@
 
         <!-- Головне Вікно Перекладу -->
         <div class="main-card">
-            <textarea class="input-area" id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
+            <textarea class="input-area" id="inputText" placeholder="Type or dictate text..."></textarea>
             
             <div class="wave-container" id="waveBox">
                 <span></span><span></span><span></span><span></span>
@@ -606,12 +598,12 @@
 
             <div class="card-divider"></div>
             
-            <div class="output-area" id="outputText">Переклад з'явиться тут...</div>
+            <div class="output-area" id="outputText">Translation will appear here...</div>
             
             <div class="action-row">
-                <button class="icon-btn" onclick="vibrate(); clearInput();" title="Очистити">🗑️</button>
+                <button class="icon-btn" onclick="vibrate(); clearInput();" title="Clear">🗑️</button>
                 <div class="action-group">
-                    <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
+                    <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Listen</span></button>
                     <button class="icon-btn" onclick="vibrate(); copyResult();">📋</button>
                     <button class="icon-btn" onclick="vibrate(); shareResult();">📲</button>
                 </div>
@@ -624,8 +616,8 @@
         <!-- Історія -->
         <div class="history-card">
             <div class="history-top">
-                <span id="historyTitle">Історія</span>
-                <span id="clearHistoryTxt" style="cursor:pointer;" onclick="vibrate(); clearHistory();">Очистити</span>
+                <span id="historyTitle">History</span>
+                <span id="clearHistoryTxt" style="cursor:pointer;" onclick="vibrate(); clearHistory();">Clear</span>
             </div>
             <div class="history-items" id="historyList"></div>
         </div>
@@ -635,17 +627,17 @@
     <div class="sheet-overlay" id="sheetOverlay" onclick="closePhrasesSheet(event)">
         <div class="sheet-content" onclick="event.stopPropagation()">
             <div class="sheet-header">
-                <span class="sheet-title" id="sheetTitleTxt">⚡ Швидкі фрази</span>
+                <span class="sheet-title" id="sheetTitleTxt">⚡ Quick Phrases</span>
                 <button class="sheet-close" onclick="closePhrasesSheet()">✕</button>
             </div>
             
             <select id="sheetCategory" onchange="renderSheetPhrases(this.value);" class="sheet-select">
-                <option value="cafe">☕ Кафе та ресторани</option>
-                <option value="market">🛒 Ринок та шопінг</option>
-                <option value="taxi">🚖 Таксі та транспорт</option>
-                <option value="hotel">🏠 Готель та оренда</option>
-                <option value="sos">💊 Аптека та SOS</option>
-                <option value="basic">👋 Етикет та розмова</option>
+                <option value="cafe">☕ Cafe & Dining</option>
+                <option value="market">🛒 Market & Shopping</option>
+                <option value="taxi">🚖 Taxi & Transport</option>
+                <option value="hotel">🏠 Hotel & Rental</option>
+                <option value="sos">💊 Pharmacy & SOS</option>
+                <option value="basic">👋 Etiquette & Chat</option>
             </select>
 
             <div class="sheet-phrases-list" id="sheetPhrasesList"></div>
@@ -685,19 +677,48 @@
             'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE', 'it': 'it-IT', 'fr': 'fr-FR', 'pl': 'pl-PL', 'ru': 'ru-RU'
         };
 
-        const quickDataBase = {
-            cafe: [ "Рахунок, будь ласка", "Це було дуже смачно, дякую!", "Принесіть меню, будь ласка", "Воду без газу, будь ласка", "Дві кави еспресо", "Капучино з рослинним молоком", "Чи є у вас морепродукти?", "Де знаходиться вбиральня?", "Чи можна розрахуватися карткою?" ],
-            market: [ "Скільки це коштує?", "Чи можна оплатити карткою?", "Ви приймаєте євро?", "Зробіть невеличку знижку, будь ласка", "Дайте пакет, будь ласка", "Я просто дивлюся, дякую", "Де найближчий банкомат?", "Можна це приміряти?" ],
-            taxi: [ "Скільки коштує поїздка до центра?", "Зупиніться тут, будь ласка", "Увімкніть лічильник, будь ласка", "Скільки до аеропорту?", "Зачекайте мене тут 5 хвилин", "Як дістатися до найближчого пляжу?" ],
-            hotel: [ "Я бронював номер на своє ім'я", "Який пароль від Wi-Fi?", "В номері не працює кондиціонер", "О котрій годині сніданок?", "Коли час виселення (check-out)?", "Чи можна залишити багаж на рецепції?" ],
-            sos: [ "Де найближча аптека?", "Дайте ліки від головного болю", "Терміново викличте швидку допомогу!", "Мені погано, допоможіть будь ласка", "Потрібен пластир та антисептик" ],
-            basic: [ "Добрий день!", "Дуже дякую за допомогу!", "Будь ласка", "Ви розмовляєте англійською?", "Я вас не розумію", "Вибачте", "Як вас звати?", "Гарного вам дня!" ]
+        // Багатомовна база фраз під обрану мову
+        const phraseDatabase = {
+            uk: {
+                cafe: [ "Рахунок, будь ласка", "Це було дуже смачно, дякую!", "Принесіть меню, будь ласка", "Воду без газу, будь ласка", "Дві кави еспресо", "Чи можна розрахуватися карткою?" ],
+                market: [ "Скільки це коштує?", "Чи можна оплатити карткою?", "Ви приймаєте євро?", "Зробіть невеличку знижку, будь ласка", "Дайте пакет, будь ласка", "Я просто дивлюся, дякую", "Де найближчий банкомат?", "Можна це приміряти?" ],
+                taxi: [ "Скільки коштує поїздка до центра?", "Зупиніться тут, будь ласка", "Увімкніть лічильник, будь ласка", "Скільки до аеропорту?" ],
+                hotel: [ "Я бронював номер на своє ім'я", "Який пароль від Wi-Fi?", "В номері не працює кондиціонер" ],
+                sos: [ "Де найближча аптека?", "Дайте ліки від головного болю", "Терміново викличте швидку допомогу!" ],
+                basic: [ "Добрий день!", "Дуже дякую за допомогу!", "Будь ласка", "Ви розмовляєте англійською?" ]
+            },
+            en: {
+                cafe: [ "The bill, please", "It was delicious, thank you!", "Could we have the menu, please?", "Still water, please", "Two espresso coffees", "Can I pay by card?" ],
+                market: [ "How much is this?", "Can I pay by card?", "Do you accept Euros?", "Could you give a small discount, please?", "Can I have a bag, please?", "I'm just looking, thank you", "Where is the nearest ATM?", "Can I try this on?" ],
+                taxi: [ "How much to the city center?", "Please stop here", "Please turn on the meter", "How much to the airport?" ],
+                hotel: [ "I have a reservation under my name", "What is the Wi-Fi password?", "The air conditioner isn't working" ],
+                sos: [ "Where is the nearest pharmacy?", "Something for a headache, please", "Call an ambulance urgently!" ],
+                basic: [ "Hello / Good day!", "Thank you very much for your help!", "You're welcome", "Do you speak English?" ]
+            },
+            sq: {
+                cafe: [ "Fatura, ju lutem", "Ishte shumë e shijshme, faleminderit!", "Menunë, ju lutem", "Ujë pa gaz, ju lutem", "Dy kafe ekspres", "A mund të paguaj me kartë?" ],
+                market: [ "Sa kushton kjo?", "A mund të paguaj me kartë?", "A pranoni euro?", "Mund të bëni një ulje të vogël?", "Më jepni një qese, ju lutem", "Thjesht po shikoj, faleminderit", "Ku është bankomati më i afërt?", "Mund ta provoj këtë?" ],
+                taxi: [ "Sa kushton për në qendër?", "Ndaloni këtu, ju lutem", "Ulni taksimetrin, ju lutem", "Sa kushton për në aeroport?" ],
+                hotel: [ "Kam një rezervim në emrin tim", "Cili është fjalëkalimi i Wi-Fi?", "Kondicioneri nuk punon" ],
+                sos: [ "Ku është farmacia më e afërt?", "Diçka për dhimbje koke, ju lutem", "Thirrni urgjencën menjëherë!" ],
+                basic: [ "Mirëdita!", "Ju faleminderit shumë për ndihmën!", "Ju lutem", "A flisni anglisht?" ]
+            },
+            de: {
+                cafe: [ "Die Rechnung, bitte", "Es war sehr lecker, danke!", "Die Speisekarte, bitte", "Stilles Wasser, bitte", "Zwei Espresso", "Kann ich mit Karte zahlen?" ],
+                market: [ "Wie viel kostet das?", "Kann ich mit Karte bezahlen?", "Nehmen Sie Euro?", "Gibt es einen kleinen Rabatt?", "Eine Tüte, bitte", "Ich schaue nur, danke", "Wo ist der nächste Geldautomat?", "Kann ich das anprobieren?" ],
+                taxi: [ "Wie viel kostet es ins Zentrum?", "Bitte hier halten", "Schalten Sie bitte das Taxameter ein", "Wie viel kostet es zum Flughafen?" ],
+                hotel: [ "Ich habe eine Reservierung auf meinen Namen", "Wie lautet das WLAN-Passwort?", "Die Klimaanlage funktioniert nicht" ],
+                sos: [ "Wo ist die nächste Apotheke?", "Etwas gegen Kopfschmerzen, bitte", "Rufen Sie sofort einen Krankenwagen!" ],
+                basic: [ "Guten Tag!", "Vielen Dank für Ihre Hilfe!", "Bitte schön", "Sprechen Sie Englisch?" ]
+            }
         };
 
-        // Автозапуск визначення мови користувача при вході
         function detectUserLanguage() {
             const savedSrc = localStorage.getItem('srcLang');
-            if (savedSrc) return; // Якщо людина вже обирала мову раніше
+            if (savedSrc) {
+                document.getElementById('srcLang').value = savedSrc;
+                return;
+            }
             
             const userLang = (navigator.language || navigator.userLanguage || '').slice(0, 2).toLowerCase();
             const srcSelect = document.getElementById('srcLang');
@@ -710,7 +731,7 @@
                     break;
                 }
             }
-            if (!matched) srcSelect.value = 'en'; // За замовчуванням англійська для іноземців
+            if (!matched) srcSelect.value = 'en';
         }
 
         function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
@@ -739,21 +760,24 @@
             `;
 
             const translateHTML = `
-                <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Перекласти</button>
+                <button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">Translate</button>
             `;
 
             const clearHTML = `
-                <button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Очистити</button>
+                <button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Clear</button>
             `;
 
+            const currentSrc = document.getElementById('srcLang') ? document.getElementById('srcLang').value : 'en';
+            const isUk = currentSrc === 'uk';
+
             if (handMode === 'center') {
-                handBtn.innerText = '🖐️ Центр';
+                handBtn.innerText = isUk ? '🖐️ Центр' : '🖐️ Center';
                 bar.innerHTML = clearHTML + micHTML + translateHTML;
             } else if (handMode === 'right') {
-                handBtn.innerText = '👉 Правша';
+                handBtn.innerText = isUk ? '👉 Правша' : '👉 Right-hand';
                 bar.innerHTML = translateHTML + micHTML;
             } else {
-                handBtn.innerText = '👈 Лівша';
+                handBtn.innerText = isUk ? '👈 Лівша' : '👈 Left-hand';
                 bar.innerHTML = micHTML + translateHTML;
             }
 
@@ -771,7 +795,11 @@
 
         function renderSheetPhrases(cat) {
             const list = document.getElementById('sheetPhrasesList');
-            const items = quickDataBase[cat] || [];
+            const currentSrc = document.getElementById('srcLang').value;
+            
+            // Беремо фрази відповідної мови або за замовчуванням англійську
+            const langSet = phraseDatabase[currentSrc] || phraseDatabase['en'];
+            const items = langSet[cat] || phraseDatabase['en'][cat] || [];
             
             list.innerHTML = items.map(phraseText => `
                 <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${phraseText.replace(/'/g, "\\'")}')">
@@ -812,7 +840,6 @@
             document.getElementById('historyTitle').innerText = t.history;
             document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
 
-            // Оновлення назв категорій у шторці
             const catSelect = document.getElementById('sheetCategory');
             if (catSelect && t.catCafe) {
                 catSelect.options[0].text = t.catCafe;
@@ -875,7 +902,7 @@
                 stopRecording();
             } else {
                 const srcLangCode = document.getElementById('srcLang').value;
-                recognition.lang = langSpeechCodes[srcLangCode] || 'uk-UA';
+                recognition.lang = langSpeechCodes[srcLangCode] || 'en-US';
                 recognition.start();
                 isRecording = true;
                 const mic = document.getElementById('micBtn');
