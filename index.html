@@ -873,12 +873,15 @@
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
-        let duoTurn = 'user'; // 'user' (Ви) або 'partner' (Співрозмовник)
+        let duoTurn = 'user';
         let audioCtx = null;
         let deferredPrompt = null;
+        
+        // Кєш для збереження динамічно перекладених фраз
+        const phrasesCache = {};
 
-        // Повний словничок готових фраз
-        const phrasesData = {
+        // Базовий список фраз англійською мовою (Еталон)
+        const basePhrasesData = {
             cafe: [
                 "Could I see the menu, please?",
                 "Do you have a table for two?",
@@ -947,10 +950,55 @@
             }
         };
 
-        function renderSheetPhrases(category) {
+        function openPhrasesSheet() {
+            document.getElementById('sheetOverlay').classList.add('active');
+            renderSheetPhrases(document.getElementById('sheetCategory').value);
+        }
+
+        // АВТОМАТИЧНИЙ ДИНАМІЧНИЙ ПЕРЕКЛАД ФРАЗ ДЛЯ БУДЬ-ЯКОЇ ОБРАНОЇ МОВИ
+        async function renderSheetPhrases(category) {
             const listContainer = document.getElementById('sheetPhrasesList');
-            const phrases = phrasesData[category] || [];
-            
+            const targetLang = document.getElementById('srcLang').value;
+            const baseList = basePhrasesData[category] || [];
+
+            // Якщо обрано англійську мову, показуємо відразу
+            if (targetLang === 'en') {
+                renderPhrasesList(baseList);
+                return;
+            }
+
+            // Перевіряємо, чи є вже готовий кєш для цієї мови та категорії
+            const cacheKey = `${targetLang}_${category}`;
+            if (phrasesCache[cacheKey]) {
+                renderPhrasesList(phrasesCache[cacheKey]);
+                return;
+            }
+
+            // Якщо кєшу немає — показуємо індикатор завантаження та перекладаємо через API
+            listContainer.innerHTML = `<div style="text-align:center; padding: 20px; font-weight:700; color:var(--accent-emerald);">⏳ Завантаження фраз...</div>`;
+
+            try {
+                const translatedList = await Promise.all(
+                    baseList.map(async (text) => {
+                        const response = await fetch('/api/translate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ text, sourceLang: 'en', targetLang })
+                        });
+                        const data = await response.json();
+                        return data.translation || text;
+                    })
+                );
+
+                phrasesCache[cacheKey] = translatedList;
+                renderPhrasesList(translatedList);
+            } catch (e) {
+                renderPhrasesList(baseList);
+            }
+        }
+
+        function renderPhrasesList(phrases) {
+            const listContainer = document.getElementById('sheetPhrasesList');
             listContainer.innerHTML = phrases.map(p => `
                 <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${p.replace(/'/g, "\\'")}');">
                     <span>${p}</span>
@@ -1098,11 +1146,6 @@
             updateUI();
         }
 
-        function openPhrasesSheet() {
-            document.getElementById('sheetOverlay').classList.add('active');
-            renderSheetPhrases(document.getElementById('sheetCategory').value);
-        }
-
         function closePhrasesSheet() { document.getElementById('sheetOverlay').classList.remove('active'); }
 
         function updateUI() {
@@ -1117,6 +1160,9 @@
 
             const btnClear = document.getElementById('clearBtnSide');
             if (btnClear) btnClear.innerText = t.clearBtn;
+
+            const sheetTitle = document.getElementById('sheetTitleTxt');
+            if (sheetTitle) sheetTitle.innerText = t.sheetTitle;
 
             const sheetCategorySelect = document.getElementById('sheetCategory');
             if (sheetCategorySelect && t.catCafe) {
@@ -1167,7 +1213,6 @@
             document.getElementById('outputText').innerText = t.resultPlaceholder;
         }
 
-        // ОБРОБНИК РОЗПІЗНАВАННЯ З ПОРАЧЕНИМ АВТОЦИКЛОМ ТА ЗАХИСТОМ ВІД ПАУЗИ
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
@@ -1187,13 +1232,10 @@
                     const src = (duoTurn === 'user') ? document.getElementById('srcLang').value : document.getElementById('tgtLang').value;
                     const tgt = (duoTurn === 'user') ? document.getElementById('tgtLang').value : document.getElementById('srcLang').value;
 
-                    // 1. Очікуємо закінчення перекладу та озвучки
                     await executeDuoTranslation(text, src, tgt, currentEar);
 
-                    // 2. Змінюємо чергу мовця
                     duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
 
-                    // 3. Автоматично вмикаємо мікрофон для наступної мови
                     if (duoModeActive) {
                         setTimeout(() => {
                             if (duoModeActive) startTurnRecognition();
@@ -1206,7 +1248,6 @@
 
             recognition.onerror = (event) => {
                 console.warn("Speech recognition event:", event.error);
-                // При паузі "no-speech" у Duo режимі не вимикаємо розпізнавання, а робимо перезапуск
                 if (duoModeActive && (event.error === 'no-speech' || event.error === 'network')) {
                     isRecording = false;
                     setTimeout(() => {
