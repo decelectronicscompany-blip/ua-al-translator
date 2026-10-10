@@ -73,6 +73,7 @@
             gap: 12px;
         }
 
+        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
@@ -103,58 +104,55 @@
 
         .header-actions {
             display: flex;
-            gap: 5px;
+            gap: 6px;
         }
 
-        .btn-duo-trigger {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid rgba(52, 211, 153, 0.4);
-            color: #34d399;
-            border-radius: 12px;
-            padding: 6px 9px;
-            font-size: 11px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
-        }
-
-        .btn-phrase-trigger {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 12px;
-            padding: 6px 9px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .btn-hand-toggle {
+        .btn-header-icon {
             background: var(--glass-btn);
             border: 1px solid var(--card-border);
             color: var(--text-main);
             border-radius: 12px;
-            padding: 6px 8px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .theme-btn {
-            background: var(--glass-btn);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            border-radius: 12px;
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
+        }
+
+        /* Сегментований перемикач Режимів */
+        .mode-switcher {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 4px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn.active {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            color: var(--accent-emerald);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .lang-bar {
@@ -512,18 +510,27 @@
 <body>
 
     <div class="app-viewport">
-        <!-- Шапка -->
+        <!-- Очищена Шапка -->
         <div class="header">
             <div class="brand">
                 <div class="brand-badge"></div>
                 <div class="brand-title">Voice Translator</div>
             </div>
             <div class="header-actions">
-                <button class="btn-duo-trigger" onclick="vibrate(); openDuoModal();">🎧 Duo Mode</button>
-                <button class="btn-hand-toggle" onclick="vibrate(); cycleHandMode();" id="handBtn">🖐️</button>
-                <button class="btn-phrase-trigger" onclick="vibrate(); openPhrasesSheet();" id="phrasesBtnTxt">📖</button>
-                <button class="theme-btn" onclick="vibrate(); toggleTheme();" id="themeBtn">🌙</button>
+                <button class="btn-header-icon" onclick="vibrate(); openPhrasesSheet();" id="phrasesBtnTxt" title="Фрази">📖</button>
+                <button class="btn-header-icon" onclick="vibrate(); cycleHandMode();" id="handBtn" title="Ергономіка">🖐️</button>
+                <button class="btn-header-icon" onclick="vibrate(); toggleTheme();" id="themeBtn" title="Тема">🌙</button>
             </div>
+        </div>
+
+        <!-- Перемикач Режимів (Solo / Duo) -->
+        <div class="mode-switcher">
+            <button class="mode-btn active" id="btnModeSolo" onclick="vibrate(); setAppMode('solo');">
+                <span>🎙️</span> Solo Mode
+            </button>
+            <button class="mode-btn" id="btnModeDuo" onclick="vibrate(); setAppMode('duo');">
+                <span>🎧</span> Duo Earbuds
+            </button>
         </div>
 
         <!-- Перемикач мов -->
@@ -660,7 +667,7 @@
             </div>
 
             <div class="duo-rule-box">
-                <b>🎙️ Повністю без рук:</b> Говоріть по черзі. Натисніть кнопку мікрофона в будь-який момент, щоб зупинити запис.
+                <b>🎙️ Повністю без рук:</b> Говоріть по черзі. Натисніть червону кнопку стоп у будь-який момент, щоб зупинити запис.
             </div>
 
             <button class="btn-start-duo" onclick="vibrate(); startDuoLiveMode();">Зрозуміло, розпочати!</button>
@@ -696,16 +703,28 @@
         let audioCtx = null;
 
         const uiTranslations = {
-            'uk': { phrasesBtn: "📖 Фрази", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
+            'uk': { phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
                 catCafe: "☕ Кафе та ресторани", catMarket: "🛒 Ринок та шопінг", catTaxi: "🚖 Таксі та транспорт", catHotel: "🏠 Готель та оренда", catSos: "💊 Аптека та SOS", catBasic: "👋 Етикет та розмова"
             },
-            'sq': { phrasesBtn: "📖 Fjalët", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje",
+            'sq': { phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje",
                 catCafe: "☕ Kafe & Restorante", catMarket: "🛒 Tregu & Blerjet", catTaxi: "🚖 Taksi & Transporti", catHotel: "🏠 Hoteli & Me qira", catSos: "💊 Farmacia & SOS", catBasic: "👋 Etiketa & Biseda"
             },
-            'en': { phrasesBtn: "📖 Phrases", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
+            'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
                 catCafe: "☕ Cafe & Dining", catMarket: "🛒 Market & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Rental", catSos: "💊 Pharmacy & SOS", catBasic: "👋 Etiquette & Chat"
             }
         };
+
+        function setAppMode(mode) {
+            document.getElementById('btnModeSolo').classList.toggle('active', mode === 'solo');
+            document.getElementById('btnModeDuo').classList.toggle('active', mode === 'duo');
+
+            if (mode === 'duo') {
+                openDuoModal();
+            } else {
+                duoModeActive = false;
+                if (isRecording) toggleRecognition();
+            }
+        }
 
         function openDuoModal() {
             document.getElementById('duoModalOverlay').classList.add('active');
@@ -810,8 +829,6 @@
 
             const btnClear = document.getElementById('clearBtnSide');
             if (btnClear) btnClear.innerText = t.clearBtn;
-            
-            document.getElementById('phrasesBtnTxt').innerText = t.phrasesBtn;
 
             const currentOutput = document.getElementById('outputText').innerText;
             if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("erscheint")) {
@@ -857,7 +874,7 @@
             recognition.onresult = (event) => {
                 document.getElementById('inputText').value = event.results[0][0].transcript;
                 stopRecording();
-                translateText('left');
+                translateText(duoModeActive ? 'left' : 'both');
             };
             recognition.onerror = () => stopRecording();
             recognition.onend = () => {
@@ -872,12 +889,10 @@
             if (!recognition) return alert('Speech recognition not supported in this browser');
             
             if (isRecording) {
-                // ПОВНИЙ СТОП
                 duoModeActive = false;
                 recognition.stop();
                 stopRecording();
             } else {
-                // СТАРТ
                 const srcLangCode = document.getElementById('srcLang').value;
                 recognition.lang = srcLangCode;
                 try {
