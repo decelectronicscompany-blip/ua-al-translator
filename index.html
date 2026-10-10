@@ -23,12 +23,13 @@
             --text-muted: #64748b;
             --accent-emerald: #34d399;
             
-            --grad-mic: radial-gradient(circle at 35% 35%, #34d399 0%, #10b981 40%, #059669 75%, #022c22 100%);
-            --grad-btn: linear-gradient(180deg, rgba(52, 211, 153, 0.25) 0%, rgba(16, 185, 129, 0.15) 100%);
-            --grad-primary: linear-gradient(135deg, #10b981 0%, #059669 50%, #044e3a 100%);
+            /* Ефект 3D Liquid Drop (Градієнт краплі води) */
+            --grad-mic: radial-gradient(circle at 35% 25%, #6ee7b7 0%, #10b981 35%, #047857 70%, #022c22 100%);
+            --grad-primary: linear-gradient(180deg, #34d399 0%, #10b981 30%, #059669 70%, #044e3a 100%);
             
-            --emerald-glow: 0 0 20px rgba(16, 185, 129, 0.45), 0 0 45px rgba(5, 150, 105, 0.25);
-            --emerald-glow-strong: 0 0 25px rgba(52, 211, 153, 0.75), 0 0 60px rgba(16, 185, 129, 0.55);
+            /* Сяйво та об'ємний обвод краплі */
+            --emerald-glow: 0 12px 30px rgba(16, 185, 129, 0.45), 0 2px 8px rgba(255, 255, 255, 0.4) inset;
+            --emerald-glow-strong: 0 16px 40px rgba(52, 211, 153, 0.75), 0 4px 12px rgba(255, 255, 255, 0.6) inset;
             --glass-btn: rgba(255, 255, 255, 0.05);
             --glass-btn-hover: rgba(255, 255, 255, 0.1);
         }
@@ -74,6 +75,7 @@
             gap: 12px;
         }
 
+        /* Шапка */
         .header {
             display: flex;
             justify-content: space-between;
@@ -150,6 +152,7 @@
             font-size: 15px;
         }
 
+        /* Перемикач мов */
         .lang-bar {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
@@ -183,8 +186,7 @@
 
         .swap-btn {
             background: var(--grad-primary);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             color: white;
             border-radius: 50%;
             width: 30px;
@@ -197,6 +199,7 @@
             box-shadow: var(--emerald-glow);
         }
 
+        /* Головна Скляна Картка */
         .main-card {
             background: var(--card-glass);
             border: 1px solid var(--card-border);
@@ -327,45 +330,70 @@
             justify-content: center;
         }
 
+        /* 💧 ВЕКТОРНИЙ ЕФЕКТ КРАПЛІ ВОДИ ДЛЯ МІКРОФОНА */
         .btn-mic-main {
             width: 68px;
             height: 68px;
             border-radius: 50%;
             background: var(--grad-mic);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-top: 1.5px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.45);
             color: white;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--emerald-glow);
+            box-shadow: 
+                0 12px 25px rgba(0, 0, 0, 0.5),
+                0 0 25px rgba(16, 185, 129, 0.5),
+                inset 0 4px 8px rgba(255, 255, 255, 0.7),
+                inset 0 -6px 12px rgba(0, 0, 0, 0.4);
             position: relative;
             backdrop-filter: blur(8px);
             justify-self: center;
+            overflow: hidden;
+        }
+
+        /* Верхнє дугоподібне заломлення краплі води */
+        .btn-mic-main::before, .btn-translate-main::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 10%;
+            width: 80%;
+            height: 45%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 50% 50% 35% 35%;
+            pointer-events: none;
         }
 
         .btn-mic-main svg {
             width: 26px;
             height: 26px;
             fill: white;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+            z-index: 2;
         }
 
+        /* 💧 ВЕКТОРНИЙ ЕФЕКТ КРАПЛІ ВОДИ ДЛЯ КНОПКИ ПЕРЕКЛАДУ */
         .btn-translate-main {
             background: var(--grad-primary);
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             color: white;
-            border-radius: 20px;
-            height: 66px;
+            border-radius: 22px;
+            height: 68px;
             font-size: 16px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: var(--emerald-glow);
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(16, 185, 129, 0.4),
+                inset 0 3px 6px rgba(255, 255, 255, 0.6),
+                inset 0 -5px 10px rgba(0, 0, 0, 0.35);
             width: 100%;
             letter-spacing: 0.3px;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-mic-main:active, .btn-translate-main:active, .btn-action-side:active {
@@ -373,12 +401,18 @@
         }
 
         .btn-mic-main.recording {
-            animation: emeraldGlowPulse 1.2s infinite alternate;
+            animation: waterPulse 1.2s infinite alternate;
         }
 
-        @keyframes emeraldGlowPulse {
-            0% { box-shadow: var(--emerald-glow); transform: scale(1); }
-            100% { box-shadow: var(--emerald-glow-strong); transform: scale(1.06); }
+        @keyframes waterPulse {
+            0% {
+                box-shadow: 0 0 20px rgba(52, 211, 153, 0.6), inset 0 4px 8px rgba(255, 255, 255, 0.8);
+                transform: scale(1);
+            }
+            100% {
+                box-shadow: 0 0 35px rgba(52, 211, 153, 0.95), inset 0 6px 14px rgba(255, 255, 255, 0.9);
+                transform: scale(1.06);
+            }
         }
 
         .sheet-overlay {
@@ -648,6 +682,7 @@
         let isRecording = false;
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
+        let phraseCache = {}; // Кеш для AI перекладів фраз другорядних мов
 
         const uiTranslations = {
             'uk': { phrasesBtn: "📖 Фрази", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
@@ -661,23 +696,9 @@
             },
             'de': { phrasesBtn: "📖 Phrasen", sheetTitle: "⚡ Schnelle Phrasen", clearBtn: "Löschen", placeholder: "Text eingeben oder diktieren...", translate: "Übersetzen", resultPlaceholder: "Übersetzung erscheint hier...", speak: "🔊 Anhören", history: "Verlauf", clearHistory: "Löschen", loading: "Bitte warten...", error: "Übersetzungsfehler", connectionError: "Verbindungsfehler",
                 catCafe: "☕ Café & Restaurant", catMarket: "🛒 Markt & Einkaufen", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Unterkunft", catSos: "💊 Apotheke & SOS", catBasic: "👋 Etikette & Gespräch"
-            },
-            'it': { phrasesBtn: "📖 Frasi", sheetTitle: "⚡ Frasi Rapide", clearBtn: "Cancella", placeholder: "Scrivi o detta il testo...", translate: "Traduci", resultPlaceholder: "La traduzione apparirà qui...", speak: "🔊 Ascolta", history: "Cronologia", clearHistory: "Cancella", loading: "Attendere...", error: "Errore di traduzione", connectionError: "Errore di connessione",
-                catCafe: "☕ Ristorante e Caffè", catMarket: "🛒 Mercato e Shopping", catTaxi: "🚖 Taxi e Trasporti", catHotel: "🏠 Hotel e Affitti", catSos: "💊 Farmacia e SOS", catBasic: "👋 Galateo e Chiacchiere"
-            },
-            'fr': { phrasesBtn: "📖 Phrases", sheetTitle: "⚡ Phrases Rapides", clearBtn: "Effacer", placeholder: "Saisissez ou dictez le texte...", translate: "Traduire", resultPlaceholder: "La traduction apparaîtra ici...", speak: "🔊 Écouter", history: "Historique", clearHistory: "Effacer", loading: "Veuillez patienter...", error: "Erreur de traduction", connectionError: "Erreur de connexion",
-                catCafe: "☕ Café & Restaurant", catMarket: "🛒 Marché & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hôtel & Location", catSos: "💊 Pharmacie & SOS", catBasic: "👋 Politesse & Discussion"
-            },
-            'pl': { phrasesBtn: "📖 Zwroty", sheetTitle: "⚡ Szybkie Zwroty", clearBtn: "Wyczyść", placeholder: "Wpisz lub podyktuj tekst...", translate: "Przetłumacz", resultPlaceholder: "Tłumaczenie pojawi się tutaj...", speak: "🔊 Słuchaj", history: "Historia", clearHistory: "Wyczyść", loading: "Czekaj...", error: "Błąd tłumaczenia", connectionError: "Błąd połączenia",
-                catCafe: "☕ Kawiarnia i Restauracja", catMarket: "🛒 Targ i Zakupy", catTaxi: "🚖 Taksówka i Transport", catHotel: "🏠 Hotel i Wynajem", catSos: "💊 Apteka i SOS", catBasic: "👋 Etykieta i Rozmowa"
             }
         };
 
-        const langSpeechCodes = { 
-            'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE', 'it': 'it-IT', 'fr': 'fr-FR', 'pl': 'pl-PL', 'ru': 'ru-RU'
-        };
-
-        // Багатомовна база фраз під обрану мову
         const phraseDatabase = {
             uk: {
                 cafe: [ "Рахунок, будь ласка", "Це було дуже смачно, дякую!", "Принесіть меню, будь ласка", "Воду без газу, будь ласка", "Дві кави еспресо", "Чи можна розрахуватися карткою?" ],
@@ -719,7 +740,6 @@
                 document.getElementById('srcLang').value = savedSrc;
                 return;
             }
-            
             const userLang = (navigator.language || navigator.userLanguage || '').slice(0, 2).toLowerCase();
             const srcSelect = document.getElementById('srcLang');
             
@@ -789,24 +809,58 @@
             renderSheetPhrases(document.getElementById('sheetCategory').value);
         }
 
-        function closePhrasesSheet(e) {
+        function closePhrasesSheet() {
             document.getElementById('sheetOverlay').classList.remove('active');
         }
 
-        function renderSheetPhrases(cat) {
+        async function renderSheetPhrases(cat) {
             const list = document.getElementById('sheetPhrasesList');
             const currentSrc = document.getElementById('srcLang').value;
             
-            // Беремо фрази відповідної мови або за замовчуванням англійську
-            const langSet = phraseDatabase[currentSrc] || phraseDatabase['en'];
-            const items = langSet[cat] || phraseDatabase['en'][cat] || [];
-            
-            list.innerHTML = items.map(phraseText => `
-                <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${phraseText.replace(/'/g, "\\'")}')">
-                    <span>${phraseText}</span>
-                    <span style="color:var(--accent-emerald); font-size:13px;">➔</span>
-                </div>
-            `).join('');
+            // Якщо для даної мови є готова база
+            if (phraseDatabase[currentSrc] && phraseDatabase[currentSrc][cat]) {
+                const items = phraseDatabase[currentSrc][cat];
+                list.innerHTML = items.map(phraseText => `
+                    <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${phraseText.replace(/'/g, "\\'")}')">
+                        <span>${phraseText}</span>
+                        <span style="color:var(--accent-emerald); font-size:13px;">➔</span>
+                    </div>
+                `).join('');
+                return;
+            }
+
+            // Якщо другорядна мова (динамічний AI-переклад фраз у фоні)
+            const cacheKey = `${currentSrc}_${cat}`;
+            if (phraseCache[cacheKey]) {
+                list.innerHTML = phraseCache[cacheKey].map(phraseText => `
+                    <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${phraseText.replace(/'/g, "\\'")}')">
+                        <span>${phraseText}</span>
+                        <span style="color:var(--accent-emerald); font-size:13px;">➔</span>
+                    </div>
+                `).join('');
+                return;
+            }
+
+            // Індикатор завантаження для другорядних мов
+            list.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--accent-emerald); font-weight:700;">⏳ Loading phrases...</div>`;
+
+            const basePhrases = phraseDatabase['en'][cat] || [];
+            try {
+                const translated = await Promise.all(basePhrases.map(async (text) => {
+                    const res = await fetch('/api/translate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text, sourceLang: 'en', targetLang: currentSrc })
+                    });
+                    const data = await res.json();
+                    return data.translation || text;
+                }));
+                phraseCache[cacheKey] = translated;
+                renderSheetPhrases(cat);
+            } catch (e) {
+                phraseCache[cacheKey] = basePhrases;
+                renderSheetPhrases(cat);
+            }
         }
 
         function selectPhrase(phraseText) {
@@ -902,7 +956,7 @@
                 stopRecording();
             } else {
                 const srcLangCode = document.getElementById('srcLang').value;
-                recognition.lang = langSpeechCodes[srcLangCode] || 'en-US';
+                recognition.lang = srcLangCode;
                 recognition.start();
                 isRecording = true;
                 const mic = document.getElementById('micBtn');
