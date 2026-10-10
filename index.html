@@ -347,14 +347,17 @@
             width: 100%;
         }
 
-        .btn-mic-main.recording { animation: emeraldPulse 1.2s infinite alternate; }
-
-        @keyframes emeraldPulse {
-            0% { box-shadow: var(--emerald-glow); transform: scale(1); }
-            100% { box-shadow: var(--emerald-glow-strong); transform: scale(1.05); }
+        .btn-mic-main.recording {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+            animation: redPulse 1.2s infinite alternate;
         }
 
-        /* Стилі для модальної інструкції Duo Earbuds */
+        @keyframes redPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.06); }
+        }
+
         .duo-modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -465,7 +468,6 @@
             width: 100%;
         }
 
-        /* Модальна Шторка */
         .sheet-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -658,7 +660,7 @@
             </div>
 
             <div class="duo-rule-box">
-                <b>🎙️ Повністю без рук:</b> Говоріть по черзі. Додаток автоматично ловить паузу в 2 секунди, робить переклад і транслює звук строго у відповідний навушник.
+                <b>🎙️ Повністю без рук:</b> Говоріть по черзі. Натисніть кнопку мікрофона в будь-який момент, щоб зупинити запис.
             </div>
 
             <button class="btn-start-duo" onclick="vibrate(); startDuoLiveMode();">Зрозуміло, розпочати!</button>
@@ -755,12 +757,13 @@
             const handBtn = document.getElementById('handBtn');
             bar.className = `controls-bar hand-${handMode}`;
 
+            const micIconSVG = isRecording ? 
+                `<svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>` : 
+                `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
+
             const micHTML = `
                 <button class="btn-mic-main ${isRecording ? 'recording' : ''}" id="micBtn" onclick="vibrate(); toggleRecognition();">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                    </svg>
+                    ${micIconSVG}
                 </button>
             `;
 
@@ -769,11 +772,8 @@
             `;
 
             const clearHTML = `
-                <button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Clear</button;>
+                <button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">Clear</button>
             `;
-
-            const currentSrc = document.getElementById('srcLang') ? document.getElementById('srcLang').value : 'en';
-            const isUk = currentSrc === 'uk';
 
             if (handMode === 'center') {
                 handBtn.innerText = '🖐️';
@@ -857,35 +857,41 @@
             recognition.onresult = (event) => {
                 document.getElementById('inputText').value = event.results[0][0].transcript;
                 stopRecording();
-                translateText('left'); // У режимі Duo надсилаємо переклад у лівий навушник співрозмовнику
+                translateText('left');
             };
             recognition.onerror = () => stopRecording();
             recognition.onend = () => {
                 stopRecording();
-                if (duoModeActive) setTimeout(() => toggleRecognition(), 2000); // Автоперезапуск слухання паузи
+                if (duoModeActive && isRecording) {
+                    setTimeout(() => { if (duoModeActive) toggleRecognition(); }, 1500);
+                }
             };
         }
 
         function toggleRecognition() {
             if (!recognition) return alert('Speech recognition not supported in this browser');
+            
             if (isRecording) {
+                // ПОВНИЙ СТОП
+                duoModeActive = false;
                 recognition.stop();
                 stopRecording();
             } else {
+                // СТАРТ
                 const srcLangCode = document.getElementById('srcLang').value;
                 recognition.lang = srcLangCode;
-                recognition.start();
-                isRecording = true;
-                const mic = document.getElementById('micBtn');
-                if (mic) mic.classList.add('recording');
-                document.getElementById('waveBox').style.display = 'flex';
+                try {
+                    recognition.start();
+                    isRecording = true;
+                    renderControlsBar();
+                    document.getElementById('waveBox').style.display = 'flex';
+                } catch(e){}
             }
         }
 
         function stopRecording() {
             isRecording = false;
-            const mic = document.getElementById('micBtn');
-            if (mic) mic.classList.remove('recording');
+            renderControlsBar();
             document.getElementById('waveBox').style.display = 'none';
         }
 
@@ -917,7 +923,6 @@
             }
         }
 
-        // Озвучування із підтримкою розведення каналів (Лівий / Правий навушник)
         async function speakResult(ear = 'both') {
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear")) return;
@@ -933,13 +938,12 @@
                 
                 const audio = new Audio(URL.createObjectURL(blob));
 
-                // Спрямування звуку через StereoPannerNode
                 if (ear === 'left' || ear === 'right') {
                     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                     const source = audioCtx.createMediaElementSource(audio);
                     const panner = audioCtx.createStereoPanner();
                     
-                    panner.pan.value = (ear === 'left') ? -1 : 1; // -1 = Лівий, 1 = Правий
+                    panner.pan.value = (ear === 'left') ? -1 : 1;
                     source.connect(panner);
                     panner.connect(audioCtx.destination);
                 }
