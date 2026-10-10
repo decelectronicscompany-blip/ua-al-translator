@@ -943,34 +943,34 @@
     <!-- Paywall Modal -->
     <div class="paywall-modal-overlay" id="paywallModal">
         <div class="paywall-card">
-            <div class="paywall-title">Ваші безкоштовні переклади вичерпано!</div>
-            <div class="paywall-sub">Оберіть тариф або запросіть друга, щоб продовжити спілкування:</div>
+            <div class="paywall-title" id="pwTitle">Ваші безкоштовні переклади вичерпано!</div>
+            <div class="paywall-sub" id="pwSub">Оберіть тариф або запросіть друга, щоб продовжити спілкування:</div>
 
             <div class="tariff-grid">
                 <div class="tariff-item" onclick="vibrate(); selectTariff('solo');">
                     <div>
-                        <div class="tariff-name">🎙️ Solo Безлім</div>
-                        <div class="tariff-desc">Текстовий та голосовий переклад на місяць</div>
+                        <div class="tariff-name" id="pwSoloTitle">🎙️ Solo Безлім</div>
+                        <div class="tariff-desc" id="pwSoloDesc">Текстовий та голосовий переклад на місяць</div>
                     </div>
                     <div class="tariff-price">€1.00</div>
                 </div>
 
                 <div class="tariff-item featured" onclick="vibrate(); selectTariff('duo');">
                     <div>
-                        <div class="tariff-name">🎧 Duo Earbuds Paket</div>
-                        <div class="tariff-desc">333 голосові переклади для навушників</div>
+                        <div class="tariff-name" id="pwDuoTitle">🎧 Duo Earbuds Paket</div>
+                        <div class="tariff-desc" id="pwDuoDesc">333 голосові переклади для навушників</div>
                     </div>
                     <div class="tariff-price">€2.00</div>
                 </div>
             </div>
 
             <div class="paywall-referral-box">
-                <div class="paywall-referral-title">🎁 Потрібно безкоштовно?</div>
-                <div class="paywall-referral-text">Запросіть друга за своїм посиланням і отримайте <b>+15 перекладів</b> після його першої оплати!</div>
+                <div class="paywall-referral-title" id="pwRefTitle">🎁 Потрібно безкоштовно?</div>
+                <div class="paywall-referral-text" id="pwRefText">Запросіть друга за своїм посиланням і отримайте <b>+15 перекладів</b> після його першої оплати!</div>
             </div>
 
-            <button class="btn-paywall-action" onclick="vibrate(); shareReferral();">Запросити друга (+15 перекладів)</button>
-            <button class="btn-paywall-close" onclick="closePaywall();">Закрити</button>
+            <button class="btn-paywall-action" onclick="vibrate(); shareReferral();" id="pwBtnInvite">Запросити друга (+15 перекладів)</button>
+            <button class="btn-paywall-close" onclick="closePaywall();" id="pwBtnClose">Закрити</button>
         </div>
     </div>
 
@@ -1003,29 +1003,29 @@
     <!-- Duo Modal -->
     <div class="duo-modal-overlay" id="duoModalOverlay">
         <div class="duo-modal-card">
-            <div class="duo-modal-title">
+            <div class="duo-modal-title" id="duoModalTitle">
                 <span>🎧</span> Duo Earbuds Mode
             </div>
 
             <div class="earbuds-visual">
                 <div class="earbud-box emerald">
                     <div class="earbud-icon left-ear">L</div>
-                    <div class="earbud-label">Лівий навушник</div>
-                    <div class="earbud-desc">Віддайте співрозмовнику. Він чує ваш переклад.</div>
+                    <div class="earbud-label" id="duoLeftLabel">Лівий навушник</div>
+                    <div class="earbud-desc" id="duoLeftDesc">Віддайте співрозмовнику. Він чує ваш переклад.</div>
                 </div>
 
                 <div class="earbud-box">
                     <div class="earbud-icon right-ear">R</div>
-                    <div class="earbud-label">Правий навушник</div>
-                    <div class="earbud-desc">Залиште собі. Ви чуєте його переклад.</div>
+                    <div class="earbud-label" id="duoRightLabel">Правий навушник</div>
+                    <div class="earbud-desc" id="duoRightDesc">Залиште собі. Ви чуєте його переклад.</div>
                 </div>
             </div>
 
-            <div class="duo-rule-box">
+            <div class="duo-rule-box" id="duoRuleBox">
                 <b>🎙️ Повністю без рук:</b> Додаток почергово слухає вас та співрозмовника. Натисніть червону кнопку стоп у будь-який момент, щоб зупинити розмову.
             </div>
 
-            <button class="btn-start-duo" onclick="vibrate(); startDuoLiveMode();">Зрозуміло, розпочати!</button>
+            <button class="btn-start-duo" onclick="vibrate(); startDuoLiveMode();" id="duoStartBtn">Зрозуміло, розпочати!</button>
         </div>
     </div>
 
@@ -1172,17 +1172,54 @@
         };
 
         const uiTranslations = {
-            'uk': { phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
-                catCafe: "☕ Кафе та ресторани", catMarket: "🛒 Ринок та шопінг", catTaxi: "🚖 Таксі та транспорт", catHotel: "🏠 Готель та оренда", catSos: "💊 Аптека та SOS", catBasic: "👋 Етикет та розмова"
+            'uk': { 
+                phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
+                catCafe: "☕ Кафе та ресторани", catMarket: "🛒 Ринок та шопінг", catTaxi: "🚖 Таксі та транспорт", catHotel: "🏠 Готель та оренда", catSos: "💊 Аптека та SOS", catBasic: "👋 Етикет та розмова",
+                pwTitle: "Ваші безкоштовні переклади вичерпано!", pwSub: "Оберіть тариф або запросіть друга, щоб продовжити спілкування:",
+                pwSoloTitle: "🎙️ Solo Безлім", pwSoloDesc: "Текстовий та голосовий переклад на місяць",
+                pwDuoTitle: "🎧 Duo Earbuds Paket", pwDuoDesc: "333 голосові переклади для навушників",
+                pwRefTitle: "🎁 Потрібно безкоштовно?", pwRefText: "Запросіть друга за своїм посиланням і отримайте +15 перекладів після його першої оплати!",
+                pwBtnInvite: "Запросити друга (+15 перекладів)", pwBtnClose: "Закрити",
+                duoModalTitle: "🎧 Duo Earbuds Mode", duoLeftLabel: "Лівий навушник", duoLeftDesc: "Віддайте співрозмовнику. Він чує ваш переклад.", duoRightLabel: "Правий навушник", duoRightDesc: "Залиште собі. Ви чуєте його переклад.", duoRuleBox: "<b>🎙️ Повністю без рук:</b> Додаток почергово слухає вас та співрозмовника. Натисніть червону кнопку стоп у будь-який момент, щоб зупинити розмову.", duoStartBtn: "Зрозуміло, розпочати!"
             },
-            'sq': { phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje",
-                catCafe: "☕ Kafe & Restorante", catMarket: "🛒 Tregu & Blerjet", catTaxi: "🚖 Taksi & Transporti", catHotel: "🏠 Hoteli & Me qira", catSos: "💊 Farmacia & SOS", catBasic: "👋 Etiketa & Biseda"
+            'sq': { 
+                phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje",
+                catCafe: "☕ Kafe & Restorante", catMarket: "🛒 Tregu & Blerjet", catTaxi: "🚖 Taksi & Transporti", catHotel: "🏠 Hoteli & Me qira", catSos: "💊 Farmacia & SOS", catBasic: "👋 Etiketa & Biseda",
+                pwTitle: "Përkthimet tuaja falas kanë mbaruar!", pwSub: "Zgjidhni një plan ose ftoni një mik për të vazhduar bisedën:",
+                pwSoloTitle: "🎙️ Solo Pa limit", pwSoloDesc: "Përkthim me tekst dhe zë për një muaj",
+                pwDuoTitle: "🎧 Duo Earbuds Paket", pwDuoDesc: "333 përkthime me zë për kufje",
+                pwRefTitle: "🎁 E dëshironi falas?", pwRefText: "Ftoni një mik me lidhjen tuaj dhe merrni +15 përkthime falas!",
+                pwBtnInvite: "Ftoni një mik (+15 përkthime)", pwBtnClose: "Mbyll",
+                duoModalTitle: "🎧 Modaliteti Duo Earbuds", duoLeftLabel: "Kufja e majtë", duoLeftDesc: "Jepjani bashkëbiseduesit. Ai dëgjon përkthimin tuaj.", duoRightLabel: "Kufja e djathtë", duoRightDesc: "Mbajeni për vete. Ju dëgjoni përkthimin e tij.", duoRuleBox: "<b>🎙️ Tërësisht pa duar:</b> Aplikacioni dëgjon me radhë juve dhe bashkëbiseduesin.", duoStartBtn: "E kuptova, filo!"
             },
-            'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
-                catCafe: "☕ Cafe & Dining", catMarket: "🛒 Market & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Rental", catSos: "💊 Pharmacy & SOS", catBasic: "👋 Etiquette & Chat"
+            'en': { 
+                phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
+                catCafe: "☕ Cafe & Dining", catMarket: "🛒 Market & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Rental", catSos: "💊 Pharmacy & SOS", catBasic: "👋 Etiquette & Chat",
+                pwTitle: "Your free translations are used up!", pwSub: "Choose a plan or invite a friend to keep chatting:",
+                pwSoloTitle: "🎙️ Solo Unlimited", pwSoloDesc: "Text & voice translation for 1 month",
+                pwDuoTitle: "🎧 Duo Earbuds Package", pwDuoDesc: "333 voice translations for earbuds",
+                pwRefTitle: "🎁 Need it for free?", pwRefText: "Invite a friend with your link and get +15 translations after their first payment!",
+                pwBtnInvite: "Invite a Friend (+15 translations)", pwBtnClose: "Close",
+                duoModalTitle: "🎧 Duo Earbuds Mode", duoLeftLabel: "Left Earbud", duoLeftDesc: "Give to partner. They hear your translation.", duoRightLabel: "Right Earbud", duoRightDesc: "Keep for yourself. You hear their translation.", duoRuleBox: "<b>🎙️ Hands-free:</b> App automatically listens to you and your partner in turns.", duoStartBtn: "Got it, start!"
             },
-            'de': { phrasesBtn: "📖", sheetTitle: "⚡ Schnelle Sätze", clearBtn: "Löschen", placeholder: "Text eingeben oder diktieren...", translate: "Übersetzen", resultPlaceholder: "Übersetzung erscheint hier...", speak: "🔊 Anhören", history: "Verlauf", clearHistory: "Löschen", loading: "Bitte warten...", error: "Übersetzungsfehler", connectionError: "Verbindungsfehler" },
-            'it': { phrasesBtn: "📖", sheetTitle: "⚡ Frasi rapide", clearBtn: "Cancella", placeholder: "Digita o detta il testo...", translate: "Traduci", resultPlaceholder: "La traduzione apparirà qui...", speak: "🔊 Ascolta", history: "Cronologia", clearHistory: "Cancella", loading: "Attendere...", error: "Errore di traduzione", connectionError: "Errore di connessione" }
+            'de': { 
+                phrasesBtn: "📖", sheetTitle: "⚡ Schnelle Sätze", clearBtn: "Löschen", placeholder: "Text eingeben oder diktieren...", translate: "Übersetzen", resultPlaceholder: "Übersetzung erscheint hier...", speak: "🔊 Anhören", history: "Verlauf", clearHistory: "Löschen", loading: "Bitte warten...", error: "Übersetzungsfehler", connectionError: "Verbindungsfehler",
+                pwTitle: "Ihre kostenlosen Übersetzungen sind verbraucht!", pwSub: "Wählen Sie einen Tarif oder laden Sie einen Freund ein:",
+                pwSoloTitle: "🎙️ Solo Unbegrenzt", pwSoloDesc: "Text- & Sprachübersetzung für 1 Monat",
+                pwDuoTitle: "🎧 Duo Earbuds Paket", pwDuoDesc: "333 Sprachübersetzungen für Ohrhörer",
+                pwRefTitle: "🎁 Kostenlos benötigt?", pwRefText: "Laden Sie einen Freund ein und erhalten Sie +15 Übersetzungen!",
+                pwBtnInvite: "Freund einladen (+15)", pwBtnClose: "Schließen",
+                duoModalTitle: "🎧 Duo Earbuds Modus", duoLeftLabel: "Linker Ohrhörer", duoLeftDesc: "Dem Partner geben.", duoRightLabel: "Rechter Ohrhörer", duoRightDesc: "Selbst behalten.", duoRuleBox: "<b>🎙️ Freisprechmodus:</b> Automatische Spracherkennung im Wechsel.", duoStartBtn: "Verstanden, Start!"
+            },
+            'it': { 
+                phrasesBtn: "📖", sheetTitle: "⚡ Frasi rapide", clearBtn: "Cancella", placeholder: "Digita o detta il testo...", translate: "Traduci", resultPlaceholder: "La traduzione apparirà qui...", speak: "🔊 Ascolta", history: "Cronologia", clearHistory: "Cancella", loading: "Attendere...", error: "Errore di traduzione", connectionError: "Errore di connessione",
+                pwTitle: "Traduzioni gratuite esaurite!", pwSub: "Scegli un piano o invita un amico per continuare:",
+                pwSoloTitle: "🎙️ Solo Illimitato", pwSoloDesc: "Traduzione testo e voce per 1 mese",
+                pwDuoTitle: "🎧 Duo Earbuds Pacchetto", pwDuoDesc: "333 traduzioni vocali per auricolari",
+                pwRefTitle: "🎁 Vuoi traduzioni gratis?", pwRefText: "Invita un amico con il tuo link e ricevi +15 traduzioni!",
+                pwBtnInvite: "Invita un amico (+15)", pwBtnClose: "Chiudi",
+                duoModalTitle: "🎧 Modalità Duo Earbuds", duoLeftLabel: "Auricolare sinistro", duoLeftDesc: "Dallo al tuo interlocutore.", duoRightLabel: "Auricolare destro", duoRightDesc: "Tienilo per te.", duoRuleBox: "<b>🎙️ A mani libere:</b> L'app ascolta a turno entrambi.", duoStartBtn: "Ho capito, inizia!"
+            }
         };
 
         function openPhrasesSheet() {
@@ -1382,11 +1419,15 @@
 
         function closePhrasesSheet() { document.getElementById('sheetOverlay').classList.remove('active'); }
 
-        function updateUI() {
+        async function updateUI() {
             const srcLang = document.getElementById('srcLang').value;
             localStorage.setItem('srcLang', srcLang);
             
-            const t = uiTranslations[srcLang] || uiTranslations['en'];
+            let t = uiTranslations[srcLang];
+            if (!t) {
+                t = uiTranslations['en'];
+            }
+
             document.getElementById('inputText').placeholder = t.placeholder;
 
             const sheetTitle = document.getElementById('sheetTitleTxt');
@@ -1411,6 +1452,27 @@
             document.getElementById('historyTitle').innerText = t.history;
             document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
             
+            // Оновлення модального вікна Paywall
+            document.getElementById('pwTitle').innerText = t.pwTitle;
+            document.getElementById('pwSub').innerText = t.pwSub;
+            document.getElementById('pwSoloTitle').innerText = t.pwSoloTitle;
+            document.getElementById('pwSoloDesc').innerText = t.pwSoloDesc;
+            document.getElementById('pwDuoTitle').innerText = t.pwDuoTitle;
+            document.getElementById('pwDuoDesc').innerText = t.pwDuoDesc;
+            document.getElementById('pwRefTitle').innerText = t.pwRefTitle;
+            document.getElementById('pwRefText').innerHTML = t.pwRefText;
+            document.getElementById('pwBtnInvite').innerText = t.pwBtnInvite;
+            document.getElementById('pwBtnClose').innerText = t.pwBtnClose;
+
+            // Оновлення модального вікна Duo
+            document.getElementById('duoModalTitle').innerHTML = `<span>🎧</span> ${t.duoModalTitle}`;
+            document.getElementById('duoLeftLabel').innerText = t.duoLeftLabel;
+            document.getElementById('duoLeftDesc').innerText = t.duoLeftDesc;
+            document.getElementById('duoRightLabel').innerText = t.duoRightLabel;
+            document.getElementById('duoRightDesc').innerText = t.duoRightDesc;
+            document.getElementById('duoRuleBox').innerHTML = t.duoRuleBox;
+            document.getElementById('duoStartBtn').innerText = t.duoStartBtn;
+
             updateBalanceDisplay();
             renderControlsBar();
         }
