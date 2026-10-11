@@ -447,8 +447,8 @@
         .history-row { font-size: 12px; padding: 3px 0; cursor: pointer; }
         .history-row-orig { color: var(--text-muted); font-size: 10px; }
 
-        /* Modals (Duo, Paywall, Phrases, Legal) */
-        .duo-modal-overlay, .paywall-modal-overlay, .sheet-overlay, .legal-modal-overlay {
+        /* Modals & Sheets */
+        .duo-modal-overlay, .paywall-modal-overlay, .sheet-overlay, .legal-modal-overlay, .pwa-modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.85);
@@ -459,9 +459,9 @@
             z-index: 1000;
             padding: 16px;
         }
-        .duo-modal-overlay.active, .paywall-modal-overlay.active, .sheet-overlay.active, .legal-modal-overlay.active { display: flex; }
+        .duo-modal-overlay.active, .paywall-modal-overlay.active, .sheet-overlay.active, .legal-modal-overlay.active, .pwa-modal-overlay.active { display: flex; }
 
-        .duo-modal-card, .paywall-card, .sheet-content, .legal-modal-card {
+        .duo-modal-card, .paywall-card, .sheet-content, .legal-modal-card, .pwa-modal-card {
             background: #061510;
             border: 1px solid rgba(52, 211, 153, 0.3);
             border-radius: 28px;
@@ -474,7 +474,7 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
             color: var(--text-main);
         }
-        [data-theme="light"] .duo-modal-card, [data-theme="light"] .paywall-card, [data-theme="light"] .sheet-content, [data-theme="light"] .legal-modal-card { background: #ffffff; }
+        [data-theme="light"] .duo-modal-card, [data-theme="light"] .paywall-card, [data-theme="light"] .sheet-content, [data-theme="light"] .legal-modal-card, [data-theme="light"] .pwa-modal-card { background: #ffffff; }
 
         .duo-modal-title { font-size: 18px; font-weight: 800; color: var(--text-title); text-align: center; }
         .earbuds-visual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -484,7 +484,8 @@
         .earbud-icon.left-ear { background: var(--grad-primary); color: white; }
         .earbud-icon.right-ear { background: rgba(255,255,255,0.1); color: var(--text-main); }
         .earbud-label { font-size: 12px; font-weight: 800; }
-        .earbud-desc { font-size: 10px; color: var(--text-muted); }
+        .earbud-desc { font-size: 10px; color: var(--text-muted); line-height: 1.3; }
+        .duo-rule-box { background: rgba(255, 255, 255, 0.04); border-left: 3px solid #34d399; border-radius: 8px; padding: 10px; font-size: 11px; line-height: 1.4; color: var(--text-main); }
 
         .btn-start-duo { background: var(--grad-primary); border: none; color: white; border-radius: 16px; height: 48px; font-weight: 800; cursor: pointer; width: 100%; }
 
@@ -516,12 +517,24 @@
         }
         .footer-link { color: var(--text-muted); text-decoration: underline; cursor: pointer; }
         .legal-modal-title { font-size: 16px; font-weight: 800; color: var(--accent-emerald); }
-        .btn-legal-close { background: var(--grad-primary); border: none; color: white; border-radius: 12px; height: 40px; font-weight: 800; cursor: pointer; }
+        .btn-legal-close { background: var(--grad-primary); border: none; color: white; border-radius: 12px; height: 40px; font-weight: 800; cursor: pointer; width: 100%; }
+
+        .pwa-step-item { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px; }
+        .pwa-step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--grad-primary); color: white; font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .pwa-step-txt { font-size: 13px; font-weight: 600; line-height: 1.3; }
     </style>
 </head>
 <body>
 
     <div class="app-viewport">
+        <!-- PWA Install Banner -->
+        <div class="pwa-banner" id="pwaBanner">
+            <div class="pwa-banner-text">
+                <span>📲</span> Встановити як додаток
+            </div>
+            <button class="btn-pwa-install" onclick="vibrate(); handlePwaInstall();">Встановити</button>
+        </div>
+
         <!-- Header -->
         <div class="header">
             <div class="brand" onclick="handleBrandClick();">
@@ -552,7 +565,7 @@
 
         <!-- Duo Badge -->
         <div class="duo-speaker-badge" id="duoBadge">
-            🎧 <span id="duoCurrentLangName">Режим Duo Earbuds активний</span>
+            🎧 Режим Duo Earbuds активний (Двостороння трансляція у навушники)
         </div>
 
         <!-- Language Bar -->
@@ -565,6 +578,7 @@
                 <option value="it">🇮🇹 Italiano (Італійська)</option>
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
+                <option value="es">🇪🇸 Español (Іспанська)</option>
             </select>
             
             <button class="swap-btn" onclick="vibrate(); swapLanguages();">
@@ -579,6 +593,7 @@
                 <option value="it">🇮🇹 Italiano (Італійська)</option>
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
+                <option value="es">🇪🇸 Español (Іспанська)</option>
             </select>
         </div>
 
@@ -617,7 +632,7 @@
             <div class="history-items" id="historyList"></div>
         </div>
 
-        <!-- Legal Footer -->
+        <!-- Legal Footer (One Single Line) -->
         <div class="app-footer-single-line">
             <span class="footer-link" onclick="openLegalModal('terms')">Terms</span> • 
             <span class="footer-link" onclick="openLegalModal('privacy')">Privacy</span> • 
@@ -634,7 +649,7 @@
                 <div class="earbud-box emerald">
                     <div class="earbud-icon left-ear">L</div>
                     <div class="earbud-label">Лівий навушник</div>
-                    <div class="earbud-desc">Віддайте співрозмовнику. Він чує переклад.</div>
+                    <div class="earbud-desc">Віддайте співрозмовнику. Він чує ваш переклад.</div>
                 </div>
                 <div class="earbud-box">
                     <div class="earbud-icon right-ear">R</div>
@@ -642,7 +657,10 @@
                     <div class="earbud-desc">Залиште собі. Ви чуєте його переклад.</div>
                 </div>
             </div>
-            <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Розпочати сесію</button>
+            <div class="duo-rule-box">
+                <b>🎙️ Повністю без рук:</b> Додаток почергово розпізнає та озвучує розмову у відповідні канали аудіо для двох осіб.
+            </div>
+            <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Зрозуміло, розпочати!</button>
         </div>
     </div>
 
@@ -650,19 +668,19 @@
     <div class="paywall-modal-overlay" id="paywallModal">
         <div class="paywall-card">
             <div class="duo-modal-title">Ваші переклади вичерпано!</div>
-            <div style="font-size:12px; color:#cbd5e1; text-align:center;">Оберіть тариф для продовження роботи через Verifone:</div>
+            <div style="font-size:12px; color:#cbd5e1; text-align:center;">Оберіть тариф для продовження роботи через захищений платіжний шлюз Verifone:</div>
             <div class="tariff-grid">
                 <div class="tariff-item" onclick="vibrate(); selectTariff('solo');">
                     <div>
                         <div class="tariff-name">🎙️ Solo Безлім</div>
-                        <div class="tariff-desc">Місячний безлімітний переклад</div>
+                        <div class="tariff-desc">Місячний безлімітний переклад тексту та голосу</div>
                     </div>
                     <div class="tariff-price">€1.00</div>
                 </div>
                 <div class="tariff-item featured" onclick="vibrate(); selectTariff('duo');">
                     <div>
                         <div class="tariff-name">🎧 Duo Earbuds Paket</div>
-                        <div class="tariff-desc">333 переклади для навушників</div>
+                        <div class="tariff-desc">333 голосові переклади для парних навушників</div>
                     </div>
                     <div class="tariff-price">€2.00</div>
                 </div>
@@ -675,7 +693,7 @@
     <div class="sheet-overlay" id="sheetOverlay" onclick="closePhrasesSheet(event)">
         <div class="sheet-content" onclick="event.stopPropagation()">
             <div class="sheet-header">
-                <span class="sheet-title">⚡ Словник швидких фраз</span>
+                <span class="sheet-title">⚡ Туристичний словник</span>
                 <button class="sheet-close" onclick="closePhrasesSheet()">✕</button>
             </div>
             <select id="sheetCategory" onchange="renderSheetPhrases(this.value);" class="sheet-select">
@@ -684,8 +702,11 @@
                 <option value="taxi">🚖 Таксі та транспорт</option>
                 <option value="hotel">🏠 Готель та оренда</option>
                 <option value="sos">💊 Аптека та екстрено</option>
+                <option value="etiquette">👋 Етикет та знайомство</option>
             </select>
-            <div class="sheet-phrases-list" id="sheetPhrasesList"></div>
+            <div class="sheet-phrases-list" id="sheetPhrasesList">
+                <div style="text-align:center; padding:20px; color:var(--text-muted);">Завантаження фраз...</div>
+            </div>
         </div>
     </div>
 
@@ -693,8 +714,28 @@
     <div class="legal-modal-overlay" id="legalModal">
         <div class="legal-modal-card">
             <div class="legal-modal-title" id="legalTitle">Legal Information</div>
-            <div id="legalBody" style="font-size:12px; line-height:1.5;">Loading...</div>
+            <div id="legalBody" style="font-size:12px; line-height:1.6; max-height:50vh; overflow-y:auto;">Loading...</div>
             <button class="btn-legal-close" onclick="closeLegalModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- iOS PWA Modal -->
+    <div class="pwa-modal-overlay" id="pwaIosModal" onclick="closePwaModal()">
+        <div class="pwa-modal-card" onclick="event.stopPropagation()">
+            <div class="duo-modal-title"><span>📲</span> Встановити на iPhone</div>
+            <div class="pwa-step-item">
+                <div class="pwa-step-num">1</div>
+                <div class="pwa-step-txt">Натисніть кнопку <b>«Поширити»</b> ⎋ у нижньому меню Safari.</div>
+            </div>
+            <div class="pwa-step-item">
+                <div class="pwa-step-num">2</div>
+                <div class="pwa-step-txt">Прокрутіть меню та виберіть <b>«На початковий екран» ➕</b>.</div>
+            </div>
+            <div class="pwa-step-item">
+                <div class="pwa-step-num">3</div>
+                <div class="pwa-step-txt">Натисніть <b>«Додати»</b> у правому верхньому кутку.</div>
+            </div>
+            <button class="btn-start-duo" onclick="closePwaModal()">Зрозуміло</button>
         </div>
     </div>
 
@@ -703,6 +744,7 @@
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
+        let deferredPrompt = null;
         
         const TESTER_IDS = ['7848', '5231'];
         let userRawCode = localStorage.getItem('userRawCode') || Math.floor(1000 + Math.random() * 9000).toString();
@@ -739,6 +781,10 @@
             document.getElementById('themeBtn').innerText = newTheme === 'light' ? '☀️' : '🌙';
             localStorage.setItem('theme', newTheme);
         }
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeBtn').innerText = savedTheme === 'light' ? '☀️' : '🌙';
 
         function swapLanguages() {
             const src = document.getElementById('srcLang');
@@ -785,30 +831,80 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // --- Словник фраз ---
-        const phrasesData = {
-            cafe: ["Could I see the menu, please?", "Do you have a table for two?", "I would like to order coffee, please.", "Could we have the bill, please?"],
-            market: ["How much does this cost?", "Can I pay by card?", "Do you offer a discount on this?"],
-            taxi: ["Can you take me to this address, please?", "How much will the trip cost?", "Please turn on the taximeter."],
-            hotel: ["I have a reservation under my name.", "What time is check-out?", "What is the Wi-Fi password?"],
-            sos: ["I need a doctor, please help!", "Where is the nearest pharmacy?", "Please call the emergency services!"]
+        // --- Туристичний словник з динамічним перекладом на обрану мову ---
+        const tourismPhrases = {
+            cafe: [
+                "Could I see the menu, please?",
+                "Do you have a table for two?",
+                "I would like to order coffee, please.",
+                "Is there a vegetarian option?",
+                "Could we have the bill, please?"
+            ],
+            market: [
+                "How much does this cost?",
+                "Can I pay by card?",
+                "Do you offer a discount on this?",
+                "I am looking for local fresh fruits.",
+                "Can I try this on?"
+            ],
+            taxi: [
+                "Can you take me to this address, please?",
+                "How much will the trip cost?",
+                "Please turn on the taximeter.",
+                "Could you stop here for a second?"
+            ],
+            hotel: [
+                "I have a reservation under my name.",
+                "What time is check-out?",
+                "Could I get an extra towel, please?",
+                "What is the Wi-Fi password?"
+            ],
+            sos: [
+                "I need a doctor, please help!",
+                "Where is the nearest pharmacy?",
+                "I have a headache and fever.",
+                "Please call emergency services!"
+            ],
+            etiquette: [
+                "Hello, nice to meet you!",
+                "Thank you very much for your help.",
+                "Excuse me, do you speak English?",
+                "Have a wonderful day!"
+            ]
         };
 
-        function openPhrasesSheet() {
+        async function openPhrasesSheet() {
             document.getElementById('sheetOverlay').classList.add('active');
             renderSheetPhrases('cafe');
         }
 
         function closePhrasesSheet() { document.getElementById('sheetOverlay').classList.remove('active'); }
 
-        function renderSheetPhrases(cat) {
+        async function renderSheetPhrases(cat) {
             const list = document.getElementById('sheetPhrasesList');
-            const phrases = phrasesData[cat] || [];
-            list.innerHTML = phrases.map(p => `
-                <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${p}')">
-                    <span>${p}</span><span>➔</span>
-                </div>
-            `).join('');
+            const phrases = tourismPhrases[cat] || [];
+            const targetLang = document.getElementById('tgtLang').value;
+
+            list.innerHTML = `<div style="text-align:center; padding:15px; color:var(--accent-emerald);">Перекладаємо фрази...</div>`;
+
+            let html = '';
+            for (let phrase of phrases) {
+                let translated = phrase;
+                if (targetLang !== 'en') {
+                    try {
+                        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(phrase)}&langpair=en|${targetLang}`);
+                        const data = await res.json();
+                        if (data && data.responseData) translated = data.responseData.translatedText;
+                    } catch(e) {}
+                }
+                html += `
+                    <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${translated.replace(/'/g, "\\'")}')">
+                        <div><b>${phrase}</b><br><span style="color:var(--accent-emerald); font-size:11px;">${translated}</span></div>
+                        <span style="align-self:center;">➔</span>
+                    </div>
+                `;
+            }
+            list.innerHTML = html;
         }
 
         function selectPhrase(text) {
@@ -853,6 +949,31 @@
                 alert('Помилка з’єднання з сервером оплати.');
             }
         }
+
+        // --- PWA Install Handling ---
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (!isStandalone) document.getElementById('pwaBanner').style.display = 'flex';
+        });
+
+        if (isIos && !isStandalone) { document.getElementById('pwaBanner').style.display = 'flex'; }
+
+        function handlePwaInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(() => {
+                    document.getElementById('pwaBanner').style.display = 'none';
+                    deferredPrompt = null;
+                });
+            } else if (isIos) {
+                document.getElementById('pwaIosModal').classList.add('active');
+            }
+        }
+        function closePwaModal() { document.getElementById('pwaIosModal').classList.remove('active'); }
 
         // --- Розпізнавання мови ---
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -922,7 +1043,7 @@
             }
         }
 
-        // --- Історія та Юридичні модалки ---
+        // --- Історія та Юридичні документи (Underwriting) ---
         function saveToHistory(orig, trans) {
             let history = JSON.parse(localStorage.getItem('history') || '[]');
             history.unshift({ orig, trans });
@@ -936,7 +1057,7 @@
             const list = document.getElementById('historyList');
             if (!list) return;
             list.innerHTML = history.map(item => `
-                <div class="history-row" onclick="vibrate(); document.getElementById('inputText').value='${item.orig}'; document.getElementById('outputText').innerText='${item.trans}';">
+                <div class="history-row" onclick="vibrate(); document.getElementById('inputText').value='${item.orig.replace(/'/g, "\\'")}'; document.getElementById('outputText').innerText='${item.trans.replace(/'/g, "\\'")}';">
                     <div class="history-row-orig">${item.orig}</div>
                     <div>${item.trans}</div>
                 </div>
@@ -949,10 +1070,22 @@
         }
 
         const legalTexts = {
-            terms: { title: "Terms of Service", body: "<b>1. Service Description:</b> Real-time speech & text translation.<br><br><b>2. Plans:</b> Solo (€1.00/mo), Duo (€2.00)." },
-            privacy: { title: "Privacy Policy", body: "<b>1. Processing:</b> Voice/text processed real-time.<br><b>2. Security:</b> Encrypted via 2Checkout." },
-            refund: { title: "Refund Policy", body: "<b>Refunds:</b> Full refund within 14 days if service fails." },
-            contact: { title: "Contact Us", body: "<b>Support:</b> support@voicetranslator.app<br>Durrës, Albania." }
+            terms: { 
+                title: "Terms of Service", 
+                body: "<b>1. Introduction:</b> Welcome to Voice Translator Executive. By accessing or using our real-time translation web application, you agree to be bound by these Terms of Service.<br><br><b>2. Services & Subscriptions:</b> We provide instant speech and text translation services. Subscription and credit packages include:<br>• Solo Unlimited (€1.00/month): Full monthly access to text and voice translations.<br>• Duo Earbuds Package (€2.00 one-time): 333 dual-channel earbud voice translations.<br><br><b>3. User Conduct:</b> You agree not to misuse the service or transmit unlawful content." 
+            },
+            privacy: { 
+                title: "Privacy Policy", 
+                body: "<b>1. Data Collection:</b> Voice Translator Executive respects your privacy. We process audio input and text strictly in real-time to deliver translation results.<br><br><b>2. Data Storage:</b> Voice recordings and translations are NOT permanently stored on our external servers.<br><br><b>3. Secure Payments:</b> All billing operations are securely handled via 2Checkout (Verifone) with industry-standard encryption." 
+            },
+            refund: { 
+                title: "Refund & Cancellation Policy", 
+                body: "<b>1. Refund Eligibility:</b> If you experience technical failures preventing service usage or are unsatisfied with your purchase, you may request a full refund within 14 days of the transaction date.<br><br><b>2. How to Request:</b> Contact our support team with your transaction details and User ID." 
+            },
+            contact: { 
+                title: "Contact Us", 
+                body: "<b>Company / Developer Support:</b><br>Email: support@voicetranslator.app<br>Response Window: Within 24-48 business hours.<br>Location: Durrës, Albania." 
+            }
         };
 
         function openLegalModal(type) {
@@ -964,9 +1097,51 @@
 
         function closeLegalModal() { document.getElementById('legalModal').classList.remove('active'); }
 
+        let brandClickCount = 0;
+        let brandClickTimer = null;
+
         function handleBrandClick() {
-            const newId = prompt("Змінити ID:", userRawCode);
-            if (newId) { userRawCode = newId; localStorage.setItem('userRawCode', userRawCode); location.reload(); }
+            vibrate();
+            brandClickCount++;
+            clearTimeout(brandClickTimer);
+
+            if (brandClickCount >= 5) {
+                brandClickCount = 0;
+                openAdminMenu();
+            } else {
+                brandClickTimer = setTimeout(() => { brandClickCount = 0; }, 2000);
+            }
+        }
+
+        function openAdminMenu() {
+            const currentStatus = isTester() ? 'ТЕСТУВАЛЬНИК (Безліміт)' : `Звичайний (Залишок: ${userBalance})`;
+            const action = prompt(
+                `🛠️ АДМІН-ПАНЕЛЬ\nПоточний ID: ${userRawCode}\nСтатус: ${currentStatus}\n\nОберіть дію:\n1 — Змінити ID\n2 — Встановити новий баланс перекладів`,
+                "1"
+            );
+
+            if (action === "1") {
+                const newId = prompt("Введіть новий ID (наприклад 7848 або 5231 для тестувальника):", userRawCode);
+                if (newId && newId.trim()) {
+                    userRawCode = newId.trim();
+                    localStorage.setItem('userRawCode', userRawCode);
+                    updateBalanceDisplay();
+                    alert(`ID успішно змінено на ${userRawCode}!`);
+                }
+            } else if (action === "2") {
+                const newBal = prompt("Введіть новий баланс перекладів:", userBalance);
+                if (newBal !== null) {
+                    userBalance = parseInt(newBal) || 0;
+                    localStorage.setItem('userBalance', userBalance.toString());
+                    updateBalanceDisplay();
+                    alert(`Баланс змінено на ${userBalance}!`);
+                }
+            }
+        }
+
+        function showUserCodeInfo() {
+            const status = isTester() ? 'Безлімітний тестувальник' : `${userBalance} перекладів`;
+            alert(`Ваш ID: ${userRawCode}\nСтатус: ${status}`);
         }
 
         updateBalanceDisplay();
