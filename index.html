@@ -447,7 +447,6 @@
         .history-row { font-size: 12px; padding: 3px 0; cursor: pointer; }
         .history-row-orig { color: var(--text-muted); font-size: 10px; }
 
-        /* Single-line Footer for 2Checkout Underwriting */
         .app-footer-single-line {
             margin-top: 6px;
             display: flex;
@@ -461,11 +460,7 @@
             padding: 4px 0;
         }
 
-        .footer-link {
-            color: var(--text-muted);
-            text-decoration: underline;
-            cursor: pointer;
-        }
+        .footer-link { color: var(--text-muted); text-decoration: underline; cursor: pointer; }
 
         .legal-modal-overlay {
             position: fixed;
@@ -507,14 +502,6 @@
 <body>
 
     <div class="app-viewport">
-        <!-- PWA Install Banner -->
-        <div class="pwa-banner" id="pwaBanner">
-            <div class="pwa-banner-text">
-                <span>📲</span> Встановити як додаток
-            </div>
-            <button class="btn-pwa-install" onclick="vibrate(); handlePwaInstall();">Встановити</button>
-        </div>
-
         <!-- Header -->
         <div class="header">
             <div class="brand" onclick="handleBrandClick();">
@@ -527,7 +514,6 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button class="btn-header-icon" onclick="vibrate(); openPhrasesSheet();" id="phrasesBtnTxt" title="Фрази">📖</button>
                 <button class="btn-header-icon" onclick="vibrate(); cycleHandMode();" id="handBtn" title="Ергономіка">🖐️</button>
                 <button class="btn-header-icon" onclick="vibrate(); toggleTheme();" id="themeBtn" title="Тема">🌙</button>
             </div>
@@ -541,11 +527,6 @@
             <button class="mode-btn" id="btnModeDuo" onclick="vibrate(); setAppMode('duo');">
                 <span>🎧</span> Duo Earbuds
             </button>
-        </div>
-
-        <!-- Duo Badge -->
-        <div class="duo-speaker-badge" id="duoBadge">
-            🎧 <span id="duoCurrentLangName">Черга: Слухаю ВАС (EN) ➔ Переклад у ЛІВИЙ навушник</span>
         </div>
 
         <!-- Language Bar -->
@@ -577,7 +558,7 @@
 
         <!-- Main Card -->
         <div class="main-card">
-            <textarea class="input-area" id="inputText" placeholder="Type or dictate text..."></textarea>
+            <textarea class="input-area" id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
             
             <div class="wave-container" id="waveBox">
                 <span></span><span></span><span></span><span></span>
@@ -585,14 +566,13 @@
 
             <div class="card-divider"></div>
             
-            <div class="output-area" id="outputText">Translation will appear here...</div>
+            <div class="output-area" id="outputText">Переклад з'явиться тут...</div>
             
             <div class="action-row">
                 <button class="icon-btn" onclick="vibrate(); clearInput();" title="Clear">🗑️</button>
                 <div class="action-group">
-                    <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult('both');"><span id="speakTxt">🔊 Listen</span></button>
+                    <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
                     <button class="icon-btn" onclick="vibrate(); copyResult();">📋</button>
-                    <button class="icon-btn" onclick="vibrate(); shareResult();">📲</button>
                 </div>
             </div>
         </div>
@@ -603,13 +583,13 @@
         <!-- History Card -->
         <div class="history-card">
             <div class="history-top">
-                <span id="historyTitle">History</span>
-                <span id="clearHistoryTxt" style="cursor:pointer;" onclick="vibrate(); clearHistory();">Clear</span>
+                <span id="historyTitle">Історія</span>
+                <span id="clearHistoryTxt" style="cursor:pointer;" onclick="vibrate(); clearHistory();">Очистити</span>
             </div>
             <div class="history-items" id="historyList"></div>
         </div>
 
-        <!-- Legal Footer in One Single Line -->
+        <!-- Legal Footer -->
         <div class="app-footer-single-line">
             <span class="footer-link" onclick="openLegalModal('terms')">Terms</span> • 
             <span class="footer-link" onclick="openLegalModal('privacy')">Privacy</span> • 
@@ -618,7 +598,7 @@
         </div>
     </div>
 
-    <!-- Legal Documents Modal (Required for 2Checkout Review) -->
+    <!-- Legal Modal -->
     <div class="legal-modal-overlay" id="legalModal">
         <div class="legal-modal-card">
             <div class="legal-modal-title" id="legalTitle">Legal Information</div>
@@ -631,8 +611,6 @@
         let isRecording = false;
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
-        let duoModeActive = false;
-        let duoTurn = 'user';
         
         const TESTER_IDS = ['7848', '5231'];
         let userRawCode = localStorage.getItem('userRawCode') || Math.floor(1000 + Math.random() * 9000).toString();
@@ -640,6 +618,134 @@
         let userBalance = parseInt(localStorage.getItem('userBalance') ?? '15');
 
         function isTester() { return TESTER_IDS.includes(userRawCode); }
+
+        function updateBalanceDisplay() {
+            const badgeCode = document.getElementById('userBadgeCode');
+            const badgeCount = document.getElementById('userBadgeCount');
+            if (badgeCode) badgeCode.innerText = userRawCode;
+            if (badgeCount) badgeCount.innerText = isTester() ? '∞' : userBalance;
+        }
+
+        function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            document.getElementById('themeBtn').innerText = newTheme === 'light' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function swapLanguages() {
+            const src = document.getElementById('srcLang');
+            const tgt = document.getElementById('tgtLang');
+            const temp = src.value;
+            src.value = tgt.value;
+            tgt.value = temp;
+        }
+
+        function clearInput() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').innerText = "Переклад з'явиться тут...";
+        }
+
+        async function translateText() {
+            const text = document.getElementById('inputText').value.trim();
+            const sourceLang = document.getElementById('srcLang').value;
+            const targetLang = document.getElementById('tgtLang').value;
+
+            if (!text) return;
+
+            document.getElementById('outputText').innerText = "Зачекайте...";
+
+            try {
+                const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`);
+                const data = await res.json();
+                if (data && data.responseData) {
+                    document.getElementById('outputText').innerText = data.responseData.translatedText;
+                }
+            } catch (e) {
+                document.getElementById('outputText').innerText = "Помилка перекладу";
+            }
+        }
+
+        function speakResult() {
+            const text = document.getElementById('outputText').innerText.trim();
+            if (!text || text.includes("з'явиться")) return;
+            const targetLang = document.getElementById('tgtLang').value;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = targetLang;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+
+            recognition.onresult = (event) => {
+                document.getElementById('inputText').value = event.results[0][0].transcript;
+                stopRecording();
+                translateText();
+            };
+
+            recognition.onerror = () => stopRecording();
+            recognition.onend = () => stopRecording();
+        }
+
+        function toggleRecognition() {
+            if (!recognition) return alert('Speech recognition not supported');
+            if (isRecording) {
+                recognition.stop();
+                stopRecording();
+            } else {
+                recognition.lang = document.getElementById('srcLang').value;
+                try {
+                    recognition.start();
+                    isRecording = true;
+                    renderControlsBar();
+                    document.getElementById('waveBox').style.display = 'flex';
+                } catch(e){}
+            }
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            renderControlsBar();
+            document.getElementById('waveBox').style.display = 'none';
+        }
+
+        function cycleHandMode() {
+            if (handMode === 'center') handMode = 'right';
+            else if (handMode === 'right') handMode = 'left';
+            else handMode = 'center';
+            
+            localStorage.setItem('handMode', handMode);
+            renderControlsBar();
+        }
+
+        function renderControlsBar() {
+            const bar = document.getElementById('controlsBar');
+            if (!bar) return;
+            
+            const micSVG = isRecording ? 
+                `<svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>` : 
+                `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
+
+            bar.className = `controls-bar hand-${handMode}`;
+
+            const micBtnHTML = `<button class="btn-mic-main ${isRecording ? 'recording' : ''}" onclick="vibrate(); toggleRecognition();">${micSVG}</button>`;
+            const translateBtnHTML = `<button class="btn-translate-main" onclick="vibrate(); translateText();">Перекласти</button>`;
+            const clearBtnHTML = `<button class="btn-action-side" onclick="vibrate(); clearInput();">Очистити</button>`;
+
+            if (handMode === 'center') {
+                bar.innerHTML = clearBtnHTML + micBtnHTML + translateBtnHTML;
+            } else if (handMode === 'right') {
+                bar.innerHTML = translateBtnHTML + micBtnHTML;
+            } else {
+                bar.innerHTML = micBtnHTML + translateBtnHTML;
+            }
+        }
 
         const legalTexts = {
             terms: { title: "Terms of Service", body: "<b>1. Service Description:</b> Real-time speech & text translation.<br><br><b>2. Plans:</b> Solo (€1.00/mo), Duo (€2.00)." },
@@ -656,21 +762,13 @@
         }
 
         function closeLegalModal() { document.getElementById('legalModal').classList.remove('active'); }
-        function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
 
         function handleBrandClick() {
             const newId = prompt("Змінити ID:", userRawCode);
             if (newId) { userRawCode = newId; localStorage.setItem('userRawCode', userRawCode); location.reload(); }
         }
 
-        function renderControlsBar() {
-            const bar = document.getElementById('controlsBar');
-            if (!bar) return;
-            const micSVG = `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
-            bar.className = `controls-bar hand-${handMode}`;
-            bar.innerHTML = `<button class="btn-action-side" onclick="clearInput()">Очистити</button><button class="btn-mic-main">${micSVG}</button><button class="btn-translate-main">Перекласти</button>`;
-        }
-
+        updateBalanceDisplay();
         renderControlsBar();
     </script>
 </body>
