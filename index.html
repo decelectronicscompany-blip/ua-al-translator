@@ -12,7 +12,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-main: #030706;
@@ -33,9 +33,7 @@
             --grad-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
             
             --emerald-glow: 0 8px 25px rgba(16, 185, 129, 0.35);
-            --emerald-glow-strong: 0 12px 35px rgba(52, 211, 153, 0.6);
             --glass-btn: rgba(255, 255, 255, 0.06);
-            --glass-btn-hover: rgba(255, 255, 255, 0.12);
         }
 
         [data-theme="light"] {
@@ -54,7 +52,6 @@
             --switcher-btn-active-text: #ffffff;
 
             --glass-btn: #f8fafc;
-            --glass-btn-hover: #e2e8f0;
         }
 
         * {
@@ -148,10 +145,18 @@
         }
 
         .brand-title {
-            font-size: 17px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 19px;
             font-weight: 800;
             color: var(--text-title);
-            letter-spacing: -0.4px;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-title-accent {
+            background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 12px rgba(52, 211, 153, 0.3));
         }
 
         .user-id-chip {
@@ -185,7 +190,6 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .mode-switcher {
@@ -196,7 +200,6 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
         }
 
         .mode-btn {
@@ -212,14 +215,12 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            transition: all 0.2s ease;
         }
 
         .mode-btn.active {
             background: var(--switcher-btn-active-bg);
             border-color: var(--switcher-btn-active-border);
             color: var(--switcher-btn-active-text);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         }
 
         .duo-speaker-badge {
@@ -244,7 +245,6 @@
             border-radius: 18px;
             padding: 6px 10px;
             backdrop-filter: blur(12px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
         select.lang-select {
@@ -297,7 +297,6 @@
             flex-direction: column;
             gap: 12px;
             backdrop-filter: blur(16px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
         }
 
         textarea.input-area {
@@ -399,7 +398,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         }
 
         .btn-mic-main {
@@ -443,357 +441,24 @@
             100% { transform: scale(1.06); }
         }
 
-        /* Paywall Modal */
-        .paywall-modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(3, 10, 7, 0.92);
-            backdrop-filter: blur(18px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-            padding: 16px;
-        }
-
-        .paywall-modal-overlay.active { display: flex; }
-
-        .paywall-card {
-            background: radial-gradient(circle at top, #083323 0%, #030d09 100%);
-            border: 1px solid rgba(52, 211, 153, 0.4);
-            border-radius: 28px;
-            width: 100%;
-            max-width: 390px;
-            padding: 24px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 35px rgba(16, 185, 129, 0.25);
-            text-align: center;
-        }
-
-        .paywall-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #ffffff;
-            line-height: 1.2;
-        }
-
-        .paywall-sub {
-            font-size: 13px;
-            color: #cbd5e1;
-            margin-top: -8px;
-            line-height: 1.4;
-        }
-
-        .tariff-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin: 4px 0;
-        }
-
-        .tariff-item {
-            background: rgba(10, 30, 22, 0.7);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            text-align: left;
-        }
-
-        .tariff-item.featured {
-            border-color: rgba(52, 211, 153, 0.6);
-            background: rgba(16, 185, 129, 0.15);
-            box-shadow: inset 0 0 15px rgba(52, 211, 153, 0.15);
-        }
-
-        .tariff-name { font-size: 14px; font-weight: 800; color: #ffffff; }
-        .tariff-desc { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-        .tariff-price { font-size: 16px; font-weight: 800; color: var(--accent-emerald); }
-
-        .paywall-referral-box {
-            background: rgba(16, 185, 129, 0.08);
-            border: 1px dashed rgba(52, 211, 153, 0.5);
-            border-radius: 16px;
-            padding: 14px 12px;
-            font-size: 12px;
-            color: #f8fafc;
-            line-height: 1.5;
-            text-align: center;
-        }
-
-        .paywall-referral-title {
-            color: #34d399;
-            font-weight: 800;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-bottom: 4px;
-        }
-
-        .paywall-referral-text {
-            color: #e2e8f0;
-            font-size: 12px;
-        }
-
-        .btn-paywall-action {
-            background: var(--grad-primary);
-            border: none;
-            color: white;
-            border-radius: 16px;
-            height: 48px;
-            font-size: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: var(--emerald-glow);
-            width: 100%;
-        }
-
-        .btn-paywall-close {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: -4px;
-            padding: 6px;
-        }
-
-        .pwa-modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(16px);
-            display: none;
-            justify-content: center;
-            align-items: flex-end;
-            z-index: 1000;
-        }
-
-        .pwa-modal-overlay.active { display: flex; }
-
-        .pwa-modal-card {
-            background: #061510;
-            border-top: 1px solid rgba(52, 211, 153, 0.3);
-            border-radius: 28px 28px 0 0;
-            width: 100%;
-            max-width: 440px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
-        }
-
-        [data-theme="light"] .pwa-modal-card {
-            background: #ffffff;
-            border-color: rgba(203, 213, 225, 0.8);
-        }
-
-        .pwa-step-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 12px;
-        }
-
-        .pwa-step-num {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--grad-primary);
-            color: white;
-            font-weight: 800;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .pwa-step-txt {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-main);
-            line-height: 1.3;
-        }
-
-        .duo-modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(16px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-
-        .duo-modal-overlay.active { display: flex; }
-
-        .duo-modal-card {
-            background: #061510;
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            border-radius: 28px;
-            width: 100%;
-            max-width: 380px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-        }
-
-        [data-theme="light"] .duo-modal-card {
-            background: #ffffff;
-            border-color: rgba(203, 213, 225, 0.8);
-        }
-
-        .duo-modal-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-title);
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .earbuds-visual {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 4px;
-        }
-
-        .earbud-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 18px;
-            padding: 14px 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 8px;
-        }
-
-        .earbud-box.emerald {
-            border-color: rgba(52, 211, 153, 0.5);
-            background: rgba(16, 185, 129, 0.08);
-        }
-
-        .earbud-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        .earbud-icon.left-ear {
-            background: var(--grad-primary);
-            box-shadow: 0 0 15px rgba(52, 211, 153, 0.5);
-            color: white;
-        }
-
-        .earbud-icon.right-ear {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-        }
-
-        .earbud-label { font-size: 13px; font-weight: 800; color: var(--text-title); }
-        .earbud-desc { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
-
-        .duo-rule-box {
-            background: rgba(255, 255, 255, 0.04);
-            border-left: 3px solid #34d399;
-            border-radius: 8px;
-            padding: 10px 12px;
-            font-size: 12px;
-            line-height: 1.4;
-            color: var(--text-main);
-        }
-
-        .btn-start-duo {
-            background: var(--grad-primary);
-            border: none;
-            color: white;
-            border-radius: 18px;
-            height: 52px;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: var(--emerald-glow);
-            width: 100%;
-        }
-
-        .sheet-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(12px);
-            display: none;
-            justify-content: center;
-            align-items: flex-end;
-            z-index: 999;
-        }
-
-        .sheet-overlay.active { display: flex; }
-
-        .sheet-content {
-            background: #06120d;
-            border-top: 1px solid var(--card-border);
-            border-radius: 28px 28px 0 0;
-            width: 100%;
-            max-width: 440px;
-            padding: 20px;
-            max-height: 75vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        [data-theme="light"] .sheet-content { background: #ffffff; }
-
-        .sheet-header { display: flex; justify-content: space-between; align-items: center; }
-        .sheet-title { font-size: 16px; font-weight: 800; }
-        .sheet-close { background: var(--glass-btn); border: none; color: var(--text-main); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
-        .sheet-select { background: var(--card-glass); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 10px 12px; font-size: 13px; font-weight: 600; outline: none; width: 100%; }
-        .sheet-phrases-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
-        .sheet-phrase-item { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 14px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-
-        .history-card { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 18px; padding: 12px 14px; backdrop-filter: blur(12px); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .history-card { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 18px; padding: 12px 14px; backdrop-filter: blur(12px); }
         .history-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
         .history-items { display: flex; flex-direction: column; gap: 6px; max-height: 70px; overflow-y: auto; }
         .history-row { font-size: 12px; padding: 3px 0; cursor: pointer; }
         .history-row-orig { color: var(--text-muted); font-size: 10px; }
 
-        /* Legal Footer & Legal Modal */
-        .app-footer {
-            margin-top: 8px;
+        /* Single-line Footer for 2Checkout Underwriting */
+        .app-footer-single-line {
+            margin-top: 6px;
             display: flex;
             justify-content: center;
-            gap: 12px;
-            font-size: 11px;
+            align-items: center;
+            gap: 6px;
+            font-size: 10.5px;
             color: var(--text-muted);
-            flex-wrap: wrap;
+            white-space: nowrap;
+            overflow-x: auto;
+            padding: 4px 0;
         }
 
         .footer-link {
@@ -855,7 +520,7 @@
             <div class="brand" onclick="handleBrandClick();">
                 <div class="brand-top">
                     <div class="brand-badge"></div>
-                    <div class="brand-title">Voice Translator</div>
+                    <div class="brand-title">Voice <span class="brand-title-accent">Translator</span></div>
                 </div>
                 <div class="user-id-chip" onclick="event.stopPropagation(); vibrate(); showUserCodeInfo();">
                     ID <span id="userBadgeCode">0000</span> (<span id="userBadgeCount">15</span>x)
@@ -893,36 +558,10 @@
                 <option value="it">🇮🇹 Italiano (Італійська)</option>
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
-                <option disabled>────── Всі інші мови ──────</option>
-                <option value="es">🇪🇸 Español (Іспанська)</option>
-                <option value="pt">🇵🇹 Português (Португальська)</option>
-                <option value="tr">🇹🇷 Türkçe (Турецька)</option>
-                <option value="ro">🇷🇴 Română (Румунська)</option>
-                <option value="el">🇬🇷 Ελληνικά (Грецька)</option>
-                <option value="hr">🇭🇷 Hrvatski (Хорватська)</option>
-                <option value="sr">🇷🇸 Srpski (Сербська)</option>
-                <option value="bg">🇧🇬 Български (Болгарська)</option>
-                <option value="nl">🇳🇱 Nederlands (Нідерландська)</option>
-                <option value="sv">🇸🇪 Svenska (Шведська)</option>
-                <option value="no">🇳🇴 Norsk (Норвезька)</option>
-                <option value="fi">🇫🇮 Suomi (Фінська)</option>
-                <option value="da">🇩🇰 Dansk (Данська)</option>
-                <option value="cs">🇨🇿 Čeština (Чеська)</option>
-                <option value="hu">🇭🇺 Magyar (Угорська)</option>
-                <option value="sk">🇸🇰 Slovenčina (Словацька)</option>
-                <option value="ar">🇸🇦 العربية (Арабська)</option>
-                <option value="he">🇮🇱 עברית (Іврит)</option>
-                <option value="ja">🇯🇵 日本語 (Японська)</option>
-                <option value="ko">🇰🇷 한국어 (Корейська)</option>
-                <option value="zh">🇨🇳 中文 (Китайська)</option>
-                <option value="hi">🇮🇳 हिन्दी (Хінді)</option>
-                <option value="ru">Русский</option>
             </select>
             
             <button class="swap-btn" onclick="vibrate(); swapLanguages();">
-                <svg viewBox="0 0 24 24">
-                    <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
-                </svg>
+                <svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
             </button>
             
             <select class="lang-select" id="tgtLang" onchange="vibrate();">
@@ -933,30 +572,6 @@
                 <option value="it">🇮🇹 Italiano (Італійська)</option>
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
-                <option disabled>────── Всі інші мови ──────</option>
-                <option value="es">🇪🇸 Español (Іспанська)</option>
-                <option value="pt">🇵🇹 Português (Португальська)</option>
-                <option value="tr">🇹🇷 Türkçe (Турецька)</option>
-                <option value="ro">🇷🇴 Română (Румунська)</option>
-                <option value="el">🇬🇷 Ελληνικά (Грецька)</option>
-                <option value="hr">🇭🇷 Hrvatski (Хорватська)</option>
-                <option value="sr">🇷🇸 Srpski (Сербська)</option>
-                <option value="bg">🇧🇬 Български (Болгарська)</option>
-                <option value="nl">🇳🇱 Nederlands (Нідерландська)</option>
-                <option value="sv">🇸🇪 Svenska (Шведська)</option>
-                <option value="no">🇳🇴 Norsk (Норвезька)</option>
-                <option value="fi">🇫🇮 Suomi (Фінська)</option>
-                <option value="da">🇩🇰 Dansk (Данська)</option>
-                <option value="cs">🇨🇿 Čeština (Чеська)</option>
-                <option value="hu">🇭🇺 Magyar (Угорська)</option>
-                <option value="sk">🇸🇰 Slovenčina (Словацька)</option>
-                <option value="ar">🇸🇦 العربية (Арабська)</option>
-                <option value="he">🇮🇱 עברית (Іврит)</option>
-                <option value="ja">🇯🇵 日本語 (Японська)</option>
-                <option value="ko">🇰🇷 한국어 (Корейська)</option>
-                <option value="zh">🇨🇳 中文 (Китайська)</option>
-                <option value="hi">🇮🇳 हिन्दी (Хінді)</option>
-                <option value="ru">Русский</option>
             </select>
         </div>
 
@@ -994,131 +609,21 @@
             <div class="history-items" id="historyList"></div>
         </div>
 
-        <!-- Legal Footer for 2Checkout Underwriting -->
-        <div class="app-footer">
-            <span class="footer-link" onclick="openLegalModal('terms')">Terms of Service</span> •
-            <span class="footer-link" onclick="openLegalModal('privacy')">Privacy Policy</span> •
-            <span class="footer-link" onclick="openLegalModal('refund')">Refund Policy</span> •
-            <span class="footer-link" onclick="openLegalModal('contact')">Contact Us</span>
+        <!-- Legal Footer in One Single Line -->
+        <div class="app-footer-single-line">
+            <span class="footer-link" onclick="openLegalModal('terms')">Terms</span> • 
+            <span class="footer-link" onclick="openLegalModal('privacy')">Privacy</span> • 
+            <span class="footer-link" onclick="openLegalModal('refund')">Refund Policy</span> • 
+            <span class="footer-link" onclick="openLegalModal('contact')">Contact</span>
         </div>
     </div>
 
-    <!-- Paywall Modal -->
-    <div class="paywall-modal-overlay" id="paywallModal">
-        <div class="paywall-card">
-            <div class="paywall-title" id="pwTitle">Ваші безкоштовні переклади вичерпано!</div>
-            <div class="paywall-sub" id="pwSub">Оберіть тариф або запросіть друга, щоб продовжити спілкування:</div>
-
-            <div class="tariff-grid">
-                <div class="tariff-item" onclick="vibrate(); selectTariff('solo');">
-                    <div>
-                        <div class="tariff-name" id="pwSoloTitle">🎙️ Solo Безлім</div>
-                        <div class="tariff-desc" id="pwSoloDesc">Текстовий та голосовий переклад на місяць</div>
-                    </div>
-                    <div class="tariff-price">€1.00</div>
-                </div>
-
-                <div class="tariff-item featured" onclick="vibrate(); selectTariff('duo');">
-                    <div>
-                        <div class="tariff-name" id="pwDuoTitle">🎧 Duo Earbuds Paket</div>
-                        <div class="tariff-desc" id="pwDuoDesc">333 голосові переклади для навушників</div>
-                    </div>
-                    <div class="tariff-price">€2.00</div>
-                </div>
-            </div>
-
-            <div class="paywall-referral-box">
-                <div class="paywall-referral-title" id="pwRefTitle">🎁 Потрібно безкоштовно?</div>
-                <div class="paywall-referral-text" id="pwRefText">Запросіть друга за своїм посиланням і отримайте <b>+15 перекладів</b> після його першої оплати!</div>
-            </div>
-
-            <button class="btn-paywall-action" onclick="vibrate(); shareReferral();" id="pwBtnInvite">Запросити друга (+15 перекладів)</button>
-            <button class="btn-paywall-close" onclick="closePaywall();" id="pwBtnClose">Закрити</button>
-        </div>
-    </div>
-
-    <!-- Legal Documents Modal (Required for 2Checkout Verification) -->
+    <!-- Legal Documents Modal (Required for 2Checkout Review) -->
     <div class="legal-modal-overlay" id="legalModal">
         <div class="legal-modal-card">
             <div class="legal-modal-title" id="legalTitle">Legal Information</div>
             <div id="legalBody">Loading...</div>
             <button class="btn-legal-close" onclick="closeLegalModal()">Close</button>
-        </div>
-    </div>
-
-    <!-- iOS PWA Modal -->
-    <div class="pwa-modal-overlay" id="pwaIosModal" onclick="closePwaModal()">
-        <div class="pwa-modal-card" onclick="event.stopPropagation()">
-            <div class="duo-modal-title">
-                <span>📲</span> Встановити на iPhone
-            </div>
-            
-            <div class="pwa-step-item">
-                <div class="pwa-step-num">1</div>
-                <div class="pwa-step-txt">Натисніть кнопку <b>«Поширити»</b> ⎋ у нижньому меню Safari.</div>
-            </div>
-
-            <div class="pwa-step-item">
-                <div class="pwa-step-num">2</div>
-                <div class="pwa-step-txt">Прокрутіть меню та виберіть пункт <b>«На початковий екран» ➕</b>.</div>
-            </div>
-
-            <div class="pwa-step-item">
-                <div class="pwa-step-num">3</div>
-                <div class="pwa-step-txt">У правому верхньому кутку натисніть <b>«Додати»</b>. Готово!</div>
-            </div>
-
-            <button class="btn-start-duo" onclick="closePwaModal()">Зрозуміло</button>
-        </div>
-    </div>
-
-    <!-- Duo Modal -->
-    <div class="duo-modal-overlay" id="duoModalOverlay">
-        <div class="duo-modal-card">
-            <div class="duo-modal-title" id="duoModalTitle">
-                <span>🎧</span> Duo Earbuds Mode
-            </div>
-
-            <div class="earbuds-visual">
-                <div class="earbud-box emerald">
-                    <div class="earbud-icon left-ear">L</div>
-                    <div class="earbud-label" id="duoLeftLabel">Лівий навушник</div>
-                    <div class="earbud-desc" id="duoLeftDesc">Віддайте співрозмовнику. Він чує ваш переклад.</div>
-                </div>
-
-                <div class="earbud-box">
-                    <div class="earbud-icon right-ear">R</div>
-                    <div class="earbud-label" id="duoRightLabel">Правий навушник</div>
-                    <div class="earbud-desc" id="duoRightDesc">Залиште собі. Ви чуєте його переклад.</div>
-                </div>
-            </div>
-
-            <div class="duo-rule-box" id="duoRuleBox">
-                <b>🎙️ Повністю без рук:</b> Додаток почергово слухає вас та співрозмовника. Натисніть червону кнопку стоп у будь-який момент, щоб зупинити розмову.
-            </div>
-
-            <button class="btn-start-duo" onclick="vibrate(); startDuoLiveMode();" id="duoStartBtn">Зрозуміло, розпочати!</button>
-        </div>
-    </div>
-
-    <!-- Phrases Sheet -->
-    <div class="sheet-overlay" id="sheetOverlay" onclick="closePhrasesSheet(event)">
-        <div class="sheet-content" onclick="event.stopPropagation()">
-            <div class="sheet-header">
-                <span class="sheet-title" id="sheetTitleTxt">⚡ Quick Phrases</span>
-                <button class="sheet-close" onclick="closePhrasesSheet()">✕</button>
-            </div>
-            
-            <select id="sheetCategory" onchange="renderSheetPhrases(this.value);" class="sheet-select">
-                <option value="cafe">☕ Cafe & Dining</option>
-                <option value="market">🛒 Market & Shopping</option>
-                <option value="taxi">🚖 Taxi & Transport</option>
-                <option value="hotel">🏠 Hotel & Rental</option>
-                <option value="sos">💊 Pharmacy & SOS</option>
-                <option value="basic">👋 Etiquette & Chat</option>
-            </select>
-
-            <div class="sheet-phrases-list" id="sheetPhrasesList"></div>
         </div>
     </div>
 
@@ -1128,601 +633,45 @@
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
         let duoTurn = 'user';
-        let deferredPrompt = null;
         
         const TESTER_IDS = ['7848', '5231'];
-
-        let userRawCode = localStorage.getItem('userRawCode');
-        if (!userRawCode) {
-            userRawCode = Math.floor(1000 + Math.random() * 9000).toString();
-            localStorage.setItem('userRawCode', userRawCode);
-        }
-
+        let userRawCode = localStorage.getItem('userRawCode') || Math.floor(1000 + Math.random() * 9000).toString();
+        localStorage.setItem('userRawCode', userRawCode);
         let userBalance = parseInt(localStorage.getItem('userBalance') ?? '15');
 
         function isTester() { return TESTER_IDS.includes(userRawCode); }
 
-        async function syncUserWithServer() {
-            try {
-                await fetch('/api/register-user', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: userRawCode, balance: userBalance })
-                });
-            } catch(e) {}
-        }
-
-        function updateBalanceDisplay() {
-            const badgeCode = document.getElementById('userBadgeCode');
-            const badgeCount = document.getElementById('userBadgeCount');
-            if (badgeCode) badgeCode.innerText = userRawCode;
-            if (badgeCount) badgeCount.innerText = isTester() ? '∞' : userBalance;
-        }
-
-        function checkAndDeductBalance() {
-            if (isTester()) {
-                updateBalanceDisplay();
-                syncUserWithServer();
-                return true;
-            }
-            if (userBalance <= 0) {
-                openPaywall();
-                return false;
-            }
-            userBalance--;
-            localStorage.setItem('userBalance', userBalance.toString());
-            updateBalanceDisplay();
-            syncUserWithServer();
-            return true;
-        }
-
-        let brandClickCount = 0;
-        let brandClickTimer = null;
-
-        function handleBrandClick() {
-            vibrate();
-            brandClickCount++;
-            clearTimeout(brandClickTimer);
-
-            if (brandClickCount >= 5) {
-                brandClickCount = 0;
-                openAdminMenu();
-            } else {
-                brandClickTimer = setTimeout(() => { brandClickCount = 0; }, 2000);
-            }
-        }
-
-        function openAdminMenu() {
-            const currentStatus = isTester() ? 'ТЕСТУВАЛЬНИК (Безліміт)' : `Ззвичайний (Залишок: ${userBalance})`;
-            const action = prompt(
-                `🛠️ АДМІН-ПАНЕЛЬ\nПоточний ID: ${userRawCode}\nСтатус: ${currentStatus}\n\nОберіть дію:\n1 — Змінити ID\n2 — Встановити новий баланс перекладів`,
-                "1"
-            );
-
-            if (action === "1") {
-                const newId = prompt("Введіть новий ID (наприклад 7848 або 5231 для тестувальника):", userRawCode);
-                if (newId && newId.trim()) {
-                    userRawCode = newId.trim();
-                    localStorage.setItem('userRawCode', userRawCode);
-                    updateBalanceDisplay();
-                    syncUserWithServer();
-                    alert(`ID успішно змінено на ${userRawCode}!`);
-                }
-            } else if (action === "2") {
-                const newBal = prompt("Введіть новий баланс перекладів:", userBalance);
-                if (newBal !== null) {
-                    userBalance = parseInt(newBal) || 0;
-                    localStorage.setItem('userBalance', userBalance.toString());
-                    updateBalanceDisplay();
-                    syncUserWithServer();
-                    alert(`Баланс змінено на ${userBalance}!`);
-                }
-            }
-        }
-
-        function openPaywall() { document.getElementById('paywallModal').classList.add('active'); }
-        function closePaywall() { document.getElementById('paywallModal').classList.remove('active'); }
-
-        // Legal Modal Functions (For 2Checkout Review)
         const legalTexts = {
-            terms: {
-                title: "Terms of Service",
-                body: "<b>1. Service Description:</b> Voice Translator Executive provides real-time speech and text translation services.<br><br><b>2. Digital Subscriptions & Credit Packages:</b><br>• Solo Unlimited: €1.00/month for unlimited text/speech translations.<br>• Duo Earbuds Paket: €2.00 one-time payment for 333 dual-earbud voice translations.<br><br><b>3. Fair Usage:</b> Users agree to use the service for personal communication only."
-            },
-            privacy: {
-                title: "Privacy Policy",
-                body: "<b>1. Data Processing:</b> Voice Translator Executive processes audio input solely for translation purposes.<br><br><b>2. Speech & Text Storage:</b> Voice recordings and translated text are processed in real-time and are NOT stored permanently on external servers.<br><br><b>3. Payment Security:</b> All transactions are securely processed via 2Checkout / Verifone using end-to-end encryption."
-            },
-            refund: {
-                title: "Refund & Cancellation Policy",
-                body: "<b>1. Refund Policy:</b> If you are unsatisfied with the translation service or encounter technical issues, you may request a full refund within 14 days of purchase.<br><br><b>2. Cancellation:</b> Subscriptions can be canceled at any time from your account settings or by contacting customer support."
-            },
-            contact: {
-                title: "Contact & Support",
-                body: "<b>Customer Support:</b><br>Email: support@voicetranslator.app<br>Response Time: Within 24-48 hours.<br>Location: Durrës, Albania."
-            }
+            terms: { title: "Terms of Service", body: "<b>1. Service Description:</b> Real-time speech & text translation.<br><br><b>2. Plans:</b> Solo (€1.00/mo), Duo (€2.00)." },
+            privacy: { title: "Privacy Policy", body: "<b>1. Processing:</b> Voice/text processed real-time.<br><b>2. Security:</b> Encrypted via 2Checkout." },
+            refund: { title: "Refund Policy", body: "<b>Refunds:</b> Full refund within 14 days if service fails." },
+            contact: { title: "Contact Us", body: "<b>Support:</b> support@voicetranslator.app<br>Durrës, Albania." }
         };
 
         function openLegalModal(type) {
-            const modal = document.getElementById('legalModal');
             const data = legalTexts[type] || legalTexts['terms'];
             document.getElementById('legalTitle').innerHTML = data.title;
             document.getElementById('legalBody').innerHTML = data.body;
-            modal.classList.add('active');
+            document.getElementById('legalModal').classList.add('active');
         }
 
-        function closeLegalModal() {
-            document.getElementById('legalModal').classList.remove('active');
-        }
-
-        function showUserCodeInfo() {
-            const status = isTester() ? 'Безлімітний тестувальник' : `${userBalance} перекладів`;
-            alert(`Ваш ID: ${userRawCode}\nСтатус: ${status}`);
-        }
-
-        async function shareReferral() {
-            const refLink = `${window.location.origin}?ref=USR-${userRawCode}`;
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: 'Voice Translator Executive',
-                        text: 'Спробуй новий голосовий перекладач для навушників Duo Earbuds!',
-                        url: refLink
-                    });
-                } catch(e) {}
-            } else {
-                navigator.clipboard.writeText(refLink);
-                alert('Посилання скопійовано: ' + refLink);
-            }
-        }
-
-        async function selectTariff(plan) {
-            vibrate();
-            try {
-                const response = await fetch('/api/create-2checkout-payment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: userRawCode, plan: plan })
-                });
-
-                const data = await response.json();
-                if (data.url) {
-                    window.location.href = data.url;
-                } else {
-                    alert('Помилка створення платежу 2Checkout.');
-                }
-            } catch (e) {
-                alert('Помилка зєднання з сервером оплати.');
-            }
-        }
-
-        const phrasesCache = {};
-        const basePhrasesData = {
-            cafe: ["Could I see the menu, please?", "Do you have a table for two?", "I would like to order coffee, please?", "Could we have the bill, please?"],
-            market: ["How much does this cost?", "Can I pay by card?", "Do you offer a discount on this?"],
-            taxi: ["Can you take me to this address, please?", "How much will the trip cost?", "Please turn on the taximeter."],
-            hotel: ["I have a reservation under my name.", "What time is check-out?", "What is the Wi-Fi password?"],
-            sos: ["I need a doctor, please help!", "Where is the nearest pharmacy?", "Please call the emergency services!"],
-            basic: ["Hello, nice to meet you!", "Thank you very much for your help.", "Excuse me, do you speak English?"]
-        };
-
-        const uiTranslations = {
-            'uk': { phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", duoTurnUser: "Черга: Слухаю ВАС ({LANG}) ➔ Переклад у ЛІВИЙ навушник", duoTurnPartner: "Черга: Слухаю СПІВРОЗМОВНИКА ({LANG}) ➔ Переклад у ПРАВИЙ навушник" },
-            'sq': { phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", duoTurnUser: "Radha: Po ju dëgjoj JUVE ({LANG}) ➔ Përkthimi në KUFJEN E MAJTË", duoTurnPartner: "Radha: Po dëgjoj BASHKËBISEDUESIN ({LANG}) ➔ Përkthimi në KUFJEN E DJATHTË" },
-            'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", duoTurnUser: "Turn: Listening to YOU ({LANG}) ➔ Translation to LEFT earbud", duoTurnPartner: "Turn: Listening to PARTNER ({LANG}) ➔ Translation to RIGHT earbud" }
-        };
-
-        function openPhrasesSheet() {
-            document.getElementById('sheetOverlay').classList.add('active');
-            renderSheetPhrases(document.getElementById('sheetCategory').value);
-        }
-
-        async function renderSheetPhrases(category) {
-            const listContainer = document.getElementById('sheetPhrasesList');
-            const targetLang = document.getElementById('srcLang').value;
-            const baseList = basePhrasesData[category] || [];
-
-            if (targetLang === 'en') { renderPhrasesList(baseList); return; }
-
-            const cacheKey = `${targetLang}_${category}`;
-            if (phrasesCache[cacheKey]) { renderPhrasesList(phrasesCache[cacheKey]); return; }
-
-            listContainer.innerHTML = `<div style="text-align:center; padding: 20px; font-weight:700; color:var(--accent-emerald);">⏳ Завантаження...</div>`;
-
-            try {
-                const translatedList = await Promise.all(
-                    baseList.map(async (text) => await performDirectTranslation(text, 'en', targetLang))
-                );
-                phrasesCache[cacheKey] = translatedList;
-                renderPhrasesList(translatedList);
-            } catch (e) {
-                renderPhrasesList(baseList);
-            }
-        }
-
-        function renderPhrasesList(phrases) {
-            const listContainer = document.getElementById('sheetPhrasesList');
-            listContainer.innerHTML = phrases.map(p => `
-                <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${p.replace(/'/g, "\\'")}');">
-                    <span>${p}</span>
-                    <span style="opacity:0.5;">➔</span>
-                </div>
-            `).join('');
-        }
-
-        function selectPhrase(phraseText) {
-            document.getElementById('inputText').value = phraseText;
-            closePhrasesSheet();
-            translateText('both');
-        }
-
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-        const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (!isStandalone) document.getElementById('pwaBanner').style.display = 'flex';
-        });
-
-        if (isIos && !isStandalone) { document.getElementById('pwaBanner').style.display = 'flex'; }
-
-        function handlePwaInstall() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => {
-                    document.getElementById('pwaBanner').style.display = 'none';
-                    deferredPrompt = null;
-                });
-            } else if (isIos) {
-                document.getElementById('pwaIosModal').classList.add('active');
-            }
-        }
-
-        function closePwaModal() { document.getElementById('pwaIosModal').classList.remove('active'); }
-
-        function setAppMode(mode) {
-            document.getElementById('btnModeSolo').classList.toggle('active', mode === 'solo');
-            document.getElementById('btnModeDuo').classList.toggle('active', mode === 'duo');
-            document.getElementById('duoBadge').style.display = (mode === 'duo') ? 'block' : 'none';
-
-            if (mode === 'duo') {
-                openDuoModal();
-            } else {
-                duoModeActive = false;
-                if (isRecording) stopRecording();
-            }
-        }
-
-        function openDuoModal() { document.getElementById('duoModalOverlay').classList.add('active'); }
-        function closeDuoModal() { document.getElementById('duoModalOverlay').classList.remove('active'); }
-
-        function startDuoLiveMode() {
-            closeDuoModal();
-            duoModeActive = true;
-            duoTurn = 'user';
-            startTurnRecognition();
-        }
-
-        function startTurnRecognition() {
-            if (!recognition || !duoModeActive) return;
-
-            const srcLang = document.getElementById('srcLang').value;
-            const tgtLang = document.getElementById('tgtLang').value;
-            const badgeTxt = document.getElementById('duoCurrentLangName');
-            const t = uiTranslations[srcLang] || uiTranslations['en'];
-
-            if (duoTurn === 'user') {
-                recognition.lang = srcLang;
-                if (badgeTxt) badgeTxt.innerText = (t.duoTurnUser || uiTranslations['en'].duoTurnUser).replace('{LANG}', srcLang.toUpperCase());
-            } else {
-                recognition.lang = tgtLang;
-                if (badgeTxt) badgeTxt.innerText = (t.duoTurnPartner || uiTranslations['en'].duoTurnPartner).replace('{LANG}', tgtLang.toUpperCase());
-            }
-
-            try {
-                recognition.start();
-                isRecording = true;
-                renderControlsBar();
-                document.getElementById('waveBox').style.display = 'flex';
-            } catch(e) {}
-        }
-
-        function detectUserLanguage() {
-            const savedSrc = localStorage.getItem('srcLang');
-            if (savedSrc) { document.getElementById('srcLang').value = savedSrc; return; }
-            const userLang = (navigator.language || navigator.userLanguage || '').slice(0, 2).toLowerCase();
-            const srcSelect = document.getElementById('srcLang');
-            
-            let matched = false;
-            for (let i = 0; i < srcSelect.options.length; i++) {
-                if (srcSelect.options[i].value === userLang) {
-                    srcSelect.value = userLang;
-                    matched = true;
-                    break;
-                }
-            }
-            if (!matched) srcSelect.value = 'uk';
-        }
-
+        function closeLegalModal() { document.getElementById('legalModal').classList.remove('active'); }
         function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
 
-        function cycleHandMode() {
-            if (handMode === 'center') handMode = 'right';
-            else if (handMode === 'right') handMode = 'left';
-            else handMode = 'center';
-            
-            localStorage.setItem('handMode', handMode);
-            renderControlsBar();
+        function handleBrandClick() {
+            const newId = prompt("Змінити ID:", userRawCode);
+            if (newId) { userRawCode = newId; localStorage.setItem('userRawCode', userRawCode); location.reload(); }
         }
 
         function renderControlsBar() {
             const bar = document.getElementById('controlsBar');
-            const handBtn = document.getElementById('handBtn');
             if (!bar) return;
-            
-            const srcLang = document.getElementById('srcLang').value;
-            const t = uiTranslations[srcLang] || uiTranslations['en'];
-
+            const micSVG = `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
             bar.className = `controls-bar hand-${handMode}`;
-
-            const micIconSVG = isRecording ? 
-                `<svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>` : 
-                `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
-
-            const micHTML = `<button class="btn-mic-main ${isRecording ? 'recording' : ''}" id="micBtn" onclick="vibrate(); toggleRecognition();">${micIconSVG}</button>`;
-            const translateHTML = `<button class="btn-translate-main" id="translateBtn" onclick="vibrate(); translateText();">${t.translate}</button>`;
-            const clearHTML = `<button class="btn-action-side" id="clearBtnSide" onclick="vibrate(); clearInput();">${t.clearBtn}</button>`;
-
-            if (handMode === 'center') {
-                if (handBtn) handBtn.innerText = '🖐️';
-                bar.innerHTML = clearHTML + micHTML + translateHTML;
-            } else if (handMode === 'right') {
-                if (handBtn) handBtn.innerText = '👉';
-                bar.innerHTML = translateHTML + micHTML;
-            } else {
-                if (handBtn) handBtn.innerText = '👈';
-                bar.innerHTML = micHTML + translateHTML;
-            }
+            bar.innerHTML = `<button class="btn-action-side" onclick="clearInput()">Очистити</button><button class="btn-mic-main">${micSVG}</button><button class="btn-translate-main">Перекласти</button>`;
         }
 
-        function closePhrasesSheet() { document.getElementById('sheetOverlay').classList.remove('active'); }
-
-        async function updateUI() {
-            const srcLang = document.getElementById('srcLang').value;
-            localStorage.setItem('srcLang', srcLang);
-            
-            let t = uiTranslations[srcLang] || uiTranslations['en'];
-
-            document.getElementById('inputText').placeholder = t.placeholder;
-
-            const sheetTitle = document.getElementById('sheetTitleTxt');
-            if (sheetTitle) sheetTitle.innerText = t.sheetTitle;
-
-            const currentOutput = document.getElementById('outputText').innerText;
-            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear")) {
-                document.getElementById('outputText').innerText = t.resultPlaceholder;
-            }
-            
-            document.getElementById('speakTxt').innerText = t.speak;
-            document.getElementById('historyTitle').innerText = t.history;
-            document.getElementById('clearHistoryTxt').innerText = t.clearHistory;
-
-            updateBalanceDisplay();
-            renderControlsBar();
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            document.getElementById('themeBtn').innerText = newTheme === 'light' ? '☀️' : '🌙';
-            localStorage.setItem('theme', newTheme);
-        }
-
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeBtn').innerText = savedTheme === 'light' ? '☀️' : '🌙';
-
-        function swapLanguages() {
-            const src = document.getElementById('srcLang');
-            const tgt = document.getElementById('tgtLang');
-            const temp = src.value;
-            src.value = tgt.value;
-            tgt.value = temp;
-            updateUI();
-            if (document.getElementById('inputText').value.trim()) translateText();
-        }
-
-        function clearInput() {
-            const srcLang = document.getElementById('srcLang').value;
-            const t = uiTranslations[srcLang] || uiTranslations['en'];
-            document.getElementById('inputText').value = '';
-            document.getElementById('outputText').innerText = t.resultPlaceholder;
-        }
-
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-
-            recognition.onresult = async (event) => {
-                const text = event.results[0][0].transcript;
-                document.getElementById('inputText').value = text;
-                
-                isRecording = false;
-                renderControlsBar();
-                document.getElementById('waveBox').style.display = 'none';
-
-                if (duoModeActive) {
-                    const currentEar = (duoTurn === 'user') ? 'left' : 'right';
-                    const src = (duoTurn === 'user') ? document.getElementById('srcLang').value : document.getElementById('tgtLang').value;
-                    const tgt = (duoTurn === 'user') ? document.getElementById('tgtLang').value : document.getElementById('srcLang').value;
-
-                    await executeDuoTranslation(text, src, tgt, currentEar);
-
-                    duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
-
-                    if (duoModeActive) {
-                        setTimeout(() => {
-                            if (duoModeActive) startTurnRecognition();
-                        }, 800);
-                    }
-                } else {
-                    translateText('both');
-                }
-            };
-
-            recognition.onerror = () => { stopRecording(); };
-            recognition.onend = () => { stopRecording(); };
-        }
-
-        function toggleRecognition() {
-            if (!recognition) return alert('Speech recognition not supported');
-            
-            if (isRecording) {
-                duoModeActive = false;
-                recognition.stop();
-                stopRecording();
-            } else {
-                if (duoModeActive) {
-                    startTurnRecognition();
-                } else {
-                    recognition.lang = document.getElementById('srcLang').value;
-                    try {
-                        recognition.start();
-                        isRecording = true;
-                        renderControlsBar();
-                        document.getElementById('waveBox').style.display = 'flex';
-                    } catch(e){}
-                }
-            }
-        }
-
-        function stopRecording() {
-            isRecording = false;
-            renderControlsBar();
-            document.getElementById('waveBox').style.display = 'none';
-        }
-
-        async function performDirectTranslation(text, sourceLang, targetLang) {
-            try {
-                const response = await fetch('/api/translate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text, sourceLang, targetLang })
-                });
-                const data = await response.json();
-                if (data && data.translation && !data.error) return data.translation;
-            } catch (e) {}
-
-            try {
-                const fallbackUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
-                const res = await fetch(fallbackUrl);
-                const data = await res.json();
-                if (data && data.responseData && data.responseData.translatedText) {
-                    return data.responseData.translatedText;
-                }
-            } catch (e) {}
-
-            return text;
-        }
-
-        async function executeDuoTranslation(text, sourceLang, targetLang, targetEar) {
-            if (!checkAndDeductBalance()) return;
-            document.getElementById('outputText').innerText = "Перекладаю...";
-            const resText = await performDirectTranslation(text, sourceLang, targetLang);
-            document.getElementById('outputText').innerText = resText;
-            saveToHistory(text, resText);
-            await speakResult(targetEar, resText);
-        }
-
-        async function translateText(targetEar = 'both') {
-            const text = document.getElementById('inputText').value.trim();
-            const sourceLang = document.getElementById('srcLang').value;
-            const targetLang = document.getElementById('tgtLang').value;
-            const t = uiTranslations[sourceLang] || uiTranslations['en'];
-
-            if (!text) return;
-            if (!checkAndDeductBalance()) return;
-
-            document.getElementById('outputText').innerText = t.loading;
-            const resText = await performDirectTranslation(text, sourceLang, targetLang);
-            document.getElementById('outputText').innerText = resText;
-            saveToHistory(text, resText);
-            speakResult(targetEar, resText);
-        }
-
-        async function speakResult(ear = 'both', textToSpeak = null) {
-            const text = textToSpeak || document.getElementById('outputText').innerText.trim();
-            if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear")) return;
-
-            return new Promise((resolve) => {
-                try {
-                    const targetLang = document.getElementById('tgtLang').value;
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    utterance.lang = targetLang;
-                    utterance.onend = () => resolve();
-                    utterance.onerror = () => resolve();
-                    window.speechSynthesis.speak(utterance);
-                } catch (err) { resolve(); }
-            });
-        }
-
-        function copyResult() {
-            const text = document.getElementById('outputText').innerText;
-            if (text) navigator.clipboard.writeText(text);
-        }
-
-        async function shareResult() {
-            const text = document.getElementById('outputText').innerText;
-            if (navigator.share && text) {
-                try { await navigator.share({ text }); } catch (e) {}
-            } else { copyResult(); }
-        }
-
-        function saveToHistory(orig, trans) {
-            let history = JSON.parse(localStorage.getItem('history') || '[]');
-            if (history.length > 0 && history[0].orig === orig) return;
-            history.unshift({ orig, trans });
-            history = history.slice(0, 5);
-            localStorage.setItem('history', JSON.stringify(history));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('history') || '[]');
-            const list = document.getElementById('historyList');
-            if (!list) return;
-            list.innerHTML = history.map(item => `
-                <div class="history-row" onclick="vibrate(); loadHistory('${item.orig.replace(/'/g, "\\'")}', '${item.trans.replace(/'/g, "\\'")}')">
-                    <div class="history-row-orig">${item.orig}</div>
-                    <div>${item.trans}</div>
-                </div>
-            `).join('');
-        }
-
-        function loadHistory(orig, trans) {
-            document.getElementById('inputText').value = orig;
-            document.getElementById('outputText').innerText = trans;
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('history');
-            renderHistory();
-        }
-
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('payment') === 'success') {
-            alert('🎉 Дякуємо за покупку! Вашу оплату успішно прийнято.');
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        detectUserLanguage();
-        updateUI();
-        renderHistory();
-        syncUserWithServer();
+        renderControlsBar();
     </script>
 </body>
 </html>
