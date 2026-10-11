@@ -447,6 +447,61 @@
         .history-row { font-size: 12px; padding: 3px 0; cursor: pointer; }
         .history-row-orig { color: var(--text-muted); font-size: 10px; }
 
+        /* Modals (Duo, Paywall, Phrases, Legal) */
+        .duo-modal-overlay, .paywall-modal-overlay, .sheet-overlay, .legal-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(16px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .duo-modal-overlay.active, .paywall-modal-overlay.active, .sheet-overlay.active, .legal-modal-overlay.active { display: flex; }
+
+        .duo-modal-card, .paywall-card, .sheet-content, .legal-modal-card {
+            background: #061510;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 28px;
+            width: 100%;
+            max-width: 390px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            color: var(--text-main);
+        }
+        [data-theme="light"] .duo-modal-card, [data-theme="light"] .paywall-card, [data-theme="light"] .sheet-content, [data-theme="light"] .legal-modal-card { background: #ffffff; }
+
+        .duo-modal-title { font-size: 18px; font-weight: 800; color: var(--text-title); text-align: center; }
+        .earbuds-visual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .earbud-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 18px; padding: 14px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+        .earbud-box.emerald { border-color: rgba(52, 211, 153, 0.5); background: rgba(16, 185, 129, 0.08); }
+        .earbud-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; }
+        .earbud-icon.left-ear { background: var(--grad-primary); color: white; }
+        .earbud-icon.right-ear { background: rgba(255,255,255,0.1); color: var(--text-main); }
+        .earbud-label { font-size: 12px; font-weight: 800; }
+        .earbud-desc { font-size: 10px; color: var(--text-muted); }
+
+        .btn-start-duo { background: var(--grad-primary); border: none; color: white; border-radius: 16px; height: 48px; font-weight: 800; cursor: pointer; width: 100%; }
+
+        .sheet-header { display: flex; justify-content: space-between; align-items: center; }
+        .sheet-title { font-size: 16px; font-weight: 800; }
+        .sheet-close { background: var(--glass-btn); border: none; color: var(--text-main); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; }
+        .sheet-select { background: var(--card-glass); border: 1px solid var(--card-border); color: var(--text-main); border-radius: 12px; padding: 10px; font-weight: 600; width: 100%; outline: none; }
+        .sheet-phrases-list { display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; }
+        .sheet-phrase-item { background: var(--card-glass); border: 1px solid var(--card-border); border-radius: 12px; padding: 10px 12px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; }
+
+        .tariff-grid { display: flex; flex-direction: column; gap: 10px; }
+        .tariff-item { background: rgba(10, 30, 22, 0.7); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .tariff-item.featured { border-color: rgba(52, 211, 153, 0.6); background: rgba(16, 185, 129, 0.15); }
+        .tariff-name { font-size: 13px; font-weight: 800; color: #fff; }
+        .tariff-desc { font-size: 10px; color: #94a3b8; }
+        .tariff-price { font-size: 15px; font-weight: 800; color: var(--accent-emerald); }
+
         .app-footer-single-line {
             margin-top: 6px;
             display: flex;
@@ -459,44 +514,9 @@
             overflow-x: auto;
             padding: 4px 0;
         }
-
         .footer-link { color: var(--text-muted); text-decoration: underline; cursor: pointer; }
-
-        .legal-modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(16px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1002;
-            padding: 16px;
-        }
-
-        .legal-modal-overlay.active { display: flex; }
-
-        .legal-modal-card {
-            background: #061510;
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            max-height: 80vh;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            color: var(--text-main);
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        [data-theme="light"] .legal-modal-card { background: #ffffff; }
-
         .legal-modal-title { font-size: 16px; font-weight: 800; color: var(--accent-emerald); }
-        .btn-legal-close { background: var(--grad-primary); border: none; color: white; border-radius: 12px; height: 40px; font-weight: 800; cursor: pointer; margin-top: 8px; }
+        .btn-legal-close { background: var(--grad-primary); border: none; color: white; border-radius: 12px; height: 40px; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -514,6 +534,7 @@
                 </div>
             </div>
             <div class="header-actions">
+                <button class="btn-header-icon" onclick="vibrate(); openPhrasesSheet();" title="Словник фраз">📖</button>
                 <button class="btn-header-icon" onclick="vibrate(); cycleHandMode();" id="handBtn" title="Ергономіка">🖐️</button>
                 <button class="btn-header-icon" onclick="vibrate(); toggleTheme();" id="themeBtn" title="Тема">🌙</button>
             </div>
@@ -527,6 +548,11 @@
             <button class="mode-btn" id="btnModeDuo" onclick="vibrate(); setAppMode('duo');">
                 <span>🎧</span> Duo Earbuds
             </button>
+        </div>
+
+        <!-- Duo Badge -->
+        <div class="duo-speaker-badge" id="duoBadge">
+            🎧 <span id="duoCurrentLangName">Режим Duo Earbuds активний</span>
         </div>
 
         <!-- Language Bar -->
@@ -560,8 +586,10 @@
         <div class="main-card">
             <textarea class="input-area" id="inputText" placeholder="Введіть або продиктуйте текст..."></textarea>
             
-            <div class="wave-container" id="waveBox">
-                <span></span><span></span><span></span><span></span>
+            <div class="wave-container" id="waveBox" style="display:none; justify-content:center; gap:4px; height:20px;">
+                <span style="width:3px; height:100%; background:#34d399; animation:wave 1s infinite;"></span>
+                <span style="width:3px; height:100%; background:#34d399; animation:wave 1s infinite 0.2s;"></span>
+                <span style="width:3px; height:100%; background:#34d399; animation:wave 1s infinite 0.4s;"></span>
             </div>
 
             <div class="card-divider"></div>
@@ -598,11 +626,74 @@
         </div>
     </div>
 
+    <!-- Duo Earbuds Modal -->
+    <div class="duo-modal-overlay" id="duoModalOverlay">
+        <div class="duo-modal-card">
+            <div class="duo-modal-title">🎧 Duo Earbuds Mode</div>
+            <div class="earbuds-visual">
+                <div class="earbud-box emerald">
+                    <div class="earbud-icon left-ear">L</div>
+                    <div class="earbud-label">Лівий навушник</div>
+                    <div class="earbud-desc">Віддайте співрозмовнику. Він чує переклад.</div>
+                </div>
+                <div class="earbud-box">
+                    <div class="earbud-icon right-ear">R</div>
+                    <div class="earbud-label">Правий навушник</div>
+                    <div class="earbud-desc">Залиште собі. Ви чуєте його переклад.</div>
+                </div>
+            </div>
+            <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Розпочати сесію</button>
+        </div>
+    </div>
+
+    <!-- Paywall Modal (Verifone / 2Checkout) -->
+    <div class="paywall-modal-overlay" id="paywallModal">
+        <div class="paywall-card">
+            <div class="duo-modal-title">Ваші переклади вичерпано!</div>
+            <div style="font-size:12px; color:#cbd5e1; text-align:center;">Оберіть тариф для продовження роботи через Verifone:</div>
+            <div class="tariff-grid">
+                <div class="tariff-item" onclick="vibrate(); selectTariff('solo');">
+                    <div>
+                        <div class="tariff-name">🎙️ Solo Безлім</div>
+                        <div class="tariff-desc">Місячний безлімітний переклад</div>
+                    </div>
+                    <div class="tariff-price">€1.00</div>
+                </div>
+                <div class="tariff-item featured" onclick="vibrate(); selectTariff('duo');">
+                    <div>
+                        <div class="tariff-name">🎧 Duo Earbuds Paket</div>
+                        <div class="tariff-desc">333 переклади для навушників</div>
+                    </div>
+                    <div class="tariff-price">€2.00</div>
+                </div>
+            </div>
+            <button class="btn-legal-close" onclick="closePaywall()">Закрити</button>
+        </div>
+    </div>
+
+    <!-- Phrases Dictionary Sheet -->
+    <div class="sheet-overlay" id="sheetOverlay" onclick="closePhrasesSheet(event)">
+        <div class="sheet-content" onclick="event.stopPropagation()">
+            <div class="sheet-header">
+                <span class="sheet-title">⚡ Словник швидких фраз</span>
+                <button class="sheet-close" onclick="closePhrasesSheet()">✕</button>
+            </div>
+            <select id="sheetCategory" onchange="renderSheetPhrases(this.value);" class="sheet-select">
+                <option value="cafe">☕ Кафе та ресторани</option>
+                <option value="market">🛒 Ринок та шопінг</option>
+                <option value="taxi">🚖 Таксі та транспорт</option>
+                <option value="hotel">🏠 Готель та оренда</option>
+                <option value="sos">💊 Аптека та екстрено</option>
+            </select>
+            <div class="sheet-phrases-list" id="sheetPhrasesList"></div>
+        </div>
+    </div>
+
     <!-- Legal Modal -->
     <div class="legal-modal-overlay" id="legalModal">
         <div class="legal-modal-card">
             <div class="legal-modal-title" id="legalTitle">Legal Information</div>
-            <div id="legalBody">Loading...</div>
+            <div id="legalBody" style="font-size:12px; line-height:1.5;">Loading...</div>
             <button class="btn-legal-close" onclick="closeLegalModal()">Close</button>
         </div>
     </div>
@@ -611,6 +702,7 @@
         let isRecording = false;
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
+        let duoModeActive = false;
         
         const TESTER_IDS = ['7848', '5231'];
         let userRawCode = localStorage.getItem('userRawCode') || Math.floor(1000 + Math.random() * 9000).toString();
@@ -624,6 +716,18 @@
             const badgeCount = document.getElementById('userBadgeCount');
             if (badgeCode) badgeCode.innerText = userRawCode;
             if (badgeCount) badgeCount.innerText = isTester() ? '∞' : userBalance;
+        }
+
+        function checkAndDeductBalance() {
+            if (isTester()) return true;
+            if (userBalance <= 0) {
+                document.getElementById('paywallModal').classList.add('active');
+                return false;
+            }
+            userBalance--;
+            localStorage.setItem('userBalance', userBalance.toString());
+            updateBalanceDisplay();
+            return true;
         }
 
         function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
@@ -655,6 +759,7 @@
             const targetLang = document.getElementById('tgtLang').value;
 
             if (!text) return;
+            if (!checkAndDeductBalance()) return;
 
             document.getElementById('outputText').innerText = "Зачекайте...";
 
@@ -662,7 +767,9 @@
                 const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`);
                 const data = await res.json();
                 if (data && data.responseData) {
-                    document.getElementById('outputText').innerText = data.responseData.translatedText;
+                    const translated = data.responseData.translatedText;
+                    document.getElementById('outputText').innerText = translated;
+                    saveToHistory(text, translated);
                 }
             } catch (e) {
                 document.getElementById('outputText').innerText = "Помилка перекладу";
@@ -678,6 +785,76 @@
             window.speechSynthesis.speak(utterance);
         }
 
+        // --- Словник фраз ---
+        const phrasesData = {
+            cafe: ["Could I see the menu, please?", "Do you have a table for two?", "I would like to order coffee, please.", "Could we have the bill, please?"],
+            market: ["How much does this cost?", "Can I pay by card?", "Do you offer a discount on this?"],
+            taxi: ["Can you take me to this address, please?", "How much will the trip cost?", "Please turn on the taximeter."],
+            hotel: ["I have a reservation under my name.", "What time is check-out?", "What is the Wi-Fi password?"],
+            sos: ["I need a doctor, please help!", "Where is the nearest pharmacy?", "Please call the emergency services!"]
+        };
+
+        function openPhrasesSheet() {
+            document.getElementById('sheetOverlay').classList.add('active');
+            renderSheetPhrases('cafe');
+        }
+
+        function closePhrasesSheet() { document.getElementById('sheetOverlay').classList.remove('active'); }
+
+        function renderSheetPhrases(cat) {
+            const list = document.getElementById('sheetPhrasesList');
+            const phrases = phrasesData[cat] || [];
+            list.innerHTML = phrases.map(p => `
+                <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${p}')">
+                    <span>${p}</span><span>➔</span>
+                </div>
+            `).join('');
+        }
+
+        function selectPhrase(text) {
+            document.getElementById('inputText').value = text;
+            closePhrasesSheet();
+            translateText();
+        }
+
+        // --- Режими Solo / Duo ---
+        function setAppMode(mode) {
+            document.getElementById('btnModeSolo').classList.toggle('active', mode === 'solo');
+            document.getElementById('btnModeDuo').classList.toggle('active', mode === 'duo');
+            document.getElementById('duoBadge').style.display = (mode === 'duo') ? 'block' : 'none';
+
+            if (mode === 'duo') {
+                duoModeActive = true;
+                document.getElementById('duoModalOverlay').classList.add('active');
+            } else {
+                duoModeActive = false;
+            }
+        }
+
+        function closeDuoModal() { document.getElementById('duoModalOverlay').classList.remove('active'); }
+        function closePaywall() { document.getElementById('paywallModal').classList.remove('active'); }
+
+        // --- Оплата через 2Checkout / Verifone ---
+        async function selectTariff(plan) {
+            vibrate();
+            try {
+                const response = await fetch('/api/create-2checkout-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userRawCode, plan: plan })
+                });
+                const data = await response.json();
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    alert('Помилка створення платежу.');
+                }
+            } catch (e) {
+                alert('Помилка з’єднання з сервером оплати.');
+            }
+        }
+
+        // --- Розпізнавання мови ---
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
@@ -688,7 +865,6 @@
                 stopRecording();
                 translateText();
             };
-
             recognition.onerror = () => stopRecording();
             recognition.onend = () => stopRecording();
         }
@@ -719,7 +895,6 @@
             if (handMode === 'center') handMode = 'right';
             else if (handMode === 'right') handMode = 'left';
             else handMode = 'center';
-            
             localStorage.setItem('handMode', handMode);
             renderControlsBar();
         }
@@ -729,8 +904,8 @@
             if (!bar) return;
             
             const micSVG = isRecording ? 
-                `<svg viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>` : 
-                `<svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
+                `<svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M6 6h12v12H6z"/></svg>` : 
+                `<svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>`;
 
             bar.className = `controls-bar hand-${handMode}`;
 
@@ -745,6 +920,32 @@
             } else {
                 bar.innerHTML = micBtnHTML + translateBtnHTML;
             }
+        }
+
+        // --- Історія та Юридичні модалки ---
+        function saveToHistory(orig, trans) {
+            let history = JSON.parse(localStorage.getItem('history') || '[]');
+            history.unshift({ orig, trans });
+            history = history.slice(0, 5);
+            localStorage.setItem('history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('history') || '[]');
+            const list = document.getElementById('historyList');
+            if (!list) return;
+            list.innerHTML = history.map(item => `
+                <div class="history-row" onclick="vibrate(); document.getElementById('inputText').value='${item.orig}'; document.getElementById('outputText').innerText='${item.trans}';">
+                    <div class="history-row-orig">${item.orig}</div>
+                    <div>${item.trans}</div>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('history');
+            renderHistory();
         }
 
         const legalTexts = {
@@ -770,6 +971,7 @@
 
         updateBalanceDisplay();
         renderControlsBar();
+        renderHistory();
     </script>
 </body>
 </html>
