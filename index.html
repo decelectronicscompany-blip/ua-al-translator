@@ -822,7 +822,18 @@
             }
         }
 
-        // --- Виправлене озвучення (підтримка Android та асинхронних голосів) ---
+        // --- Розблокування аудіо для Android та покращене озвучення ---
+        let audioUnlocked = false;
+        function unlockAndroidAudio() {
+            if (audioUnlocked || !('speechSynthesis' in window)) return;
+            const dummy = new SpeechSynthesisUtterance('');
+            dummy.volume = 0;
+            window.speechSynthesis.speak(dummy);
+            audioUnlocked = true;
+        }
+        document.addEventListener('click', unlockAndroidAudio, { once: true });
+        document.addEventListener('touchstart', unlockAndroidAudio, { once: true });
+
         function speakResult() {
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
@@ -832,9 +843,13 @@
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = targetLang;
+                utterance.rate = 0.95;
 
                 const voices = window.speechSynthesis.getVoices();
-                const matchingVoice = voices.find(v => v.lang.toLowerCase().startsWith(targetLang.toLowerCase()) || v.lang.toLowerCase().replace('_', '-').startsWith(targetLang.toLowerCase()));
+                const matchingVoice = voices.find(v => 
+                    v.lang.toLowerCase().startsWith(targetLang.toLowerCase()) || 
+                    v.lang.toLowerCase().replace('_', '-').startsWith(targetLang.toLowerCase())
+                );
                 if (matchingVoice) {
                     utterance.voice = matchingVoice;
                 }
@@ -849,7 +864,7 @@
             };
         }
 
-        // --- Туристичний словник (з перекладом на мову з ЛІВОГО списку srcLang) ---
+        // --- Туристичний словник (з динамічним перекладом на мову з ЛІВОГО списку srcLang) ---
         const tourismPhrases = {
             cafe: [
                 "Could I see the menu, please?",
@@ -901,7 +916,6 @@
         async function renderSheetPhrases(cat) {
             const list = document.getElementById('sheetPhrasesList');
             const phrases = tourismPhrases[cat] || [];
-            // Використовуємо мову з ЛІВОГО віконця (srcLang)
             const userSrcLang = document.getElementById('srcLang').value;
 
             list.innerHTML = `<div style="text-align:center; padding:15px; color:var(--accent-emerald);">Перекладаємо фрази...</div>`;
@@ -1150,6 +1164,7 @@
                     userRawCode = newId.trim();
                     localStorage.setItem('userRawCode', userRawCode);
                     updateBalanceDisplay();
+                    if (window.speechSynthesis) window.speechSynthesis.cancel();
                     alert(`ID успішно змінено на ${userRawCode}!`);
                 }
             } else if (action === "2") {
