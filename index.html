@@ -822,16 +822,34 @@
             }
         }
 
+        // --- Виправлене озвучення (підтримка Android та асинхронних голосів) ---
         function speakResult() {
             const text = document.getElementById('outputText').innerText.trim();
-            if (!text || text.includes("з'явиться")) return;
+            if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
             const targetLang = document.getElementById('tgtLang').value;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = targetLang;
-            window.speechSynthesis.speak(utterance);
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = targetLang;
+
+                const voices = window.speechSynthesis.getVoices();
+                const matchingVoice = voices.find(v => v.lang.toLowerCase().startsWith(targetLang.toLowerCase()) || v.lang.toLowerCase().replace('_', '-').startsWith(targetLang.toLowerCase()));
+                if (matchingVoice) {
+                    utterance.voice = matchingVoice;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
-        // --- Туристичний словник з динамічним перекладом на обрану мову ---
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
+        // --- Туристичний словник (з перекладом на мову з ЛІВОГО списку srcLang) ---
         const tourismPhrases = {
             cafe: [
                 "Could I see the menu, please?",
@@ -883,23 +901,29 @@
         async function renderSheetPhrases(cat) {
             const list = document.getElementById('sheetPhrasesList');
             const phrases = tourismPhrases[cat] || [];
-            const targetLang = document.getElementById('tgtLang').value;
+            // Використовуємо мову з ЛІВОГО віконця (srcLang)
+            const userSrcLang = document.getElementById('srcLang').value;
 
             list.innerHTML = `<div style="text-align:center; padding:15px; color:var(--accent-emerald);">Перекладаємо фрази...</div>`;
 
             let html = '';
             for (let phrase of phrases) {
                 let translated = phrase;
-                if (targetLang !== 'en') {
+                if (userSrcLang !== 'en') {
                     try {
-                        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(phrase)}&langpair=en|${targetLang}`);
+                        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(phrase)}&langpair=en|${userSrcLang}`);
                         const data = await res.json();
-                        if (data && data.responseData) translated = data.responseData.translatedText;
+                        if (data && data.responseData) {
+                            translated = data.responseData.translatedText;
+                        }
                     } catch(e) {}
                 }
                 html += `
                     <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${translated.replace(/'/g, "\\'")}')">
-                        <div><b>${phrase}</b><br><span style="color:var(--accent-emerald); font-size:11px;">${translated}</span></div>
+                        <div>
+                            <b>${translated}</b>
+                            <br><span style="color:var(--text-muted); font-size:11px;">${phrase}</span>
+                        </div>
                         <span style="align-self:center;">➔</span>
                     </div>
                 `;
