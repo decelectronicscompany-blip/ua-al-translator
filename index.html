@@ -784,6 +784,59 @@
         .history-items { display: flex; flex-direction: column; gap: 6px; max-height: 70px; overflow-y: auto; }
         .history-row { font-size: 12px; padding: 3px 0; cursor: pointer; }
         .history-row-orig { color: var(--text-muted); font-size: 10px; }
+
+        /* Legal Footer & Legal Modal */
+        .app-footer {
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            font-size: 11px;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--text-muted);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .legal-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(16px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            padding: 16px;
+        }
+
+        .legal-modal-overlay.active { display: flex; }
+
+        .legal-modal-card {
+            background: #061510;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            color: var(--text-main);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        [data-theme="light"] .legal-modal-card { background: #ffffff; }
+
+        .legal-modal-title { font-size: 16px; font-weight: 800; color: var(--accent-emerald); }
+        .btn-legal-close { background: var(--grad-primary); border: none; color: white; border-radius: 12px; height: 40px; font-weight: 800; cursor: pointer; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -940,6 +993,14 @@
             </div>
             <div class="history-items" id="historyList"></div>
         </div>
+
+        <!-- Legal Footer for 2Checkout Underwriting -->
+        <div class="app-footer">
+            <span class="footer-link" onclick="openLegalModal('terms')">Terms of Service</span> •
+            <span class="footer-link" onclick="openLegalModal('privacy')">Privacy Policy</span> •
+            <span class="footer-link" onclick="openLegalModal('refund')">Refund Policy</span> •
+            <span class="footer-link" onclick="openLegalModal('contact')">Contact Us</span>
+        </div>
     </div>
 
     <!-- Paywall Modal -->
@@ -973,6 +1034,15 @@
 
             <button class="btn-paywall-action" onclick="vibrate(); shareReferral();" id="pwBtnInvite">Запросити друга (+15 перекладів)</button>
             <button class="btn-paywall-close" onclick="closePaywall();" id="pwBtnClose">Закрити</button>
+        </div>
+    </div>
+
+    <!-- Legal Documents Modal (Required for 2Checkout Verification) -->
+    <div class="legal-modal-overlay" id="legalModal">
+        <div class="legal-modal-card">
+            <div class="legal-modal-title" id="legalTitle">Legal Information</div>
+            <div id="legalBody">Loading...</div>
+            <button class="btn-legal-close" onclick="closeLegalModal()">Close</button>
         </div>
     </div>
 
@@ -1058,7 +1128,6 @@
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
         let duoTurn = 'user';
-        let audioCtx = null;
         let deferredPrompt = null;
         
         const TESTER_IDS = ['7848', '5231'];
@@ -1071,19 +1140,14 @@
 
         let userBalance = parseInt(localStorage.getItem('userBalance') ?? '15');
 
-        function isTester() {
-            return TESTER_IDS.includes(userRawCode);
-        }
+        function isTester() { return TESTER_IDS.includes(userRawCode); }
 
         async function syncUserWithServer() {
             try {
                 await fetch('/api/register-user', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        userId: userRawCode,
-                        balance: userBalance 
-                    })
+                    body: JSON.stringify({ userId: userRawCode, balance: userBalance })
                 });
             } catch(e) {}
         }
@@ -1092,9 +1156,7 @@
             const badgeCode = document.getElementById('userBadgeCode');
             const badgeCount = document.getElementById('userBadgeCount');
             if (badgeCode) badgeCode.innerText = userRawCode;
-            if (badgeCount) {
-                badgeCount.innerText = isTester() ? '∞' : userBalance;
-            }
+            if (badgeCount) badgeCount.innerText = isTester() ? '∞' : userBalance;
         }
 
         function checkAndDeductBalance() {
@@ -1131,7 +1193,7 @@
         }
 
         function openAdminMenu() {
-            const currentStatus = isTester() ? 'ТЕСТУВАЛЬНИК (Безліміт)' : `Звичайний (Залишок: ${userBalance})`;
+            const currentStatus = isTester() ? 'ТЕСТУВАЛЬНИК (Безліміт)' : `Ззвичайний (Залишок: ${userBalance})`;
             const action = prompt(
                 `🛠️ АДМІН-ПАНЕЛЬ\nПоточний ID: ${userRawCode}\nСтатус: ${currentStatus}\n\nОберіть дію:\n1 — Змінити ID\n2 — Встановити новий баланс перекладів`,
                 "1"
@@ -1161,6 +1223,38 @@
         function openPaywall() { document.getElementById('paywallModal').classList.add('active'); }
         function closePaywall() { document.getElementById('paywallModal').classList.remove('active'); }
 
+        // Legal Modal Functions (For 2Checkout Review)
+        const legalTexts = {
+            terms: {
+                title: "Terms of Service",
+                body: "<b>1. Service Description:</b> Voice Translator Executive provides real-time speech and text translation services.<br><br><b>2. Digital Subscriptions & Credit Packages:</b><br>• Solo Unlimited: €1.00/month for unlimited text/speech translations.<br>• Duo Earbuds Paket: €2.00 one-time payment for 333 dual-earbud voice translations.<br><br><b>3. Fair Usage:</b> Users agree to use the service for personal communication only."
+            },
+            privacy: {
+                title: "Privacy Policy",
+                body: "<b>1. Data Processing:</b> Voice Translator Executive processes audio input solely for translation purposes.<br><br><b>2. Speech & Text Storage:</b> Voice recordings and translated text are processed in real-time and are NOT stored permanently on external servers.<br><br><b>3. Payment Security:</b> All transactions are securely processed via 2Checkout / Verifone using end-to-end encryption."
+            },
+            refund: {
+                title: "Refund & Cancellation Policy",
+                body: "<b>1. Refund Policy:</b> If you are unsatisfied with the translation service or encounter technical issues, you may request a full refund within 14 days of purchase.<br><br><b>2. Cancellation:</b> Subscriptions can be canceled at any time from your account settings or by contacting customer support."
+            },
+            contact: {
+                title: "Contact & Support",
+                body: "<b>Customer Support:</b><br>Email: support@voicetranslator.app<br>Response Time: Within 24-48 hours.<br>Location: Durrës, Albania."
+            }
+        };
+
+        function openLegalModal(type) {
+            const modal = document.getElementById('legalModal');
+            const data = legalTexts[type] || legalTexts['terms'];
+            document.getElementById('legalTitle').innerHTML = data.title;
+            document.getElementById('legalBody').innerHTML = data.body;
+            modal.classList.add('active');
+        }
+
+        function closeLegalModal() {
+            document.getElementById('legalModal').classList.remove('active');
+        }
+
         function showUserCodeInfo() {
             const status = isTester() ? 'Безлімітний тестувальник' : `${userBalance} перекладів`;
             alert(`Ваш ID: ${userRawCode}\nСтатус: ${status}`);
@@ -1182,17 +1276,13 @@
             }
         }
 
-        // Оплата через Verifone / 2Checkout
         async function selectTariff(plan) {
             vibrate();
             try {
                 const response = await fetch('/api/create-2checkout-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        userId: userRawCode,
-                        plan: plan 
-                    })
+                    body: JSON.stringify({ userId: userRawCode, plan: plan })
                 });
 
                 const data = await response.json();
@@ -1207,101 +1297,19 @@
         }
 
         const phrasesCache = {};
-
         const basePhrasesData = {
-            cafe: [
-                "Could I see the menu, please?",
-                "Do you have a table for two?",
-                "I would like to order coffee, please.",
-                "Is there a vegetarian option?",
-                "Could we have the bill, please?",
-                "Is service included in the bill?",
-                "Where is the restroom?"
-            ],
-            market: [
-                "How much does this cost?",
-                "Can I pay by card?",
-                "Do you offer a discount on this?",
-                "I am looking for local fruits.",
-                "Can I try this on?",
-                "Do you have this in a different size?",
-                "I will take this one, thank you!"
-            ],
-            taxi: [
-                "Can you take me to this address, please?",
-                "How much will the trip cost?",
-                "Please turn on the taximeter.",
-                "Can I pay with credit card?",
-                "Could you stop here for a second?",
-                "I need to get to the airport by 5 PM.",
-                "Thank you for the ride!"
-            ],
-            hotel: [
-                "I have a reservation under my name.",
-                "What time is check-out?",
-                "Could I get an extra towel, please?",
-                "What is the Wi-Fi password?",
-                "Can I store my luggage here for a few hours?",
-                "The air conditioner is not working.",
-                "Can you call a taxi for me, please?"
-            ],
-            sos: [
-                "I need a doctor, please help!",
-                "Where is the nearest pharmacy?",
-                "I have a headache and fever.",
-                "Do you have medication for stomach pain?",
-                "I lost my passport and wallet.",
-                "Please call the emergency services!",
-                "I am allergic to penicillin."
-            ],
-            basic: [
-                "Hello, nice to meet you!",
-                "Thank you very much for your help.",
-                "Excuse me, do you speak English?",
-                "I am sorry, I didn't catch that.",
-                "Could you speak a little slower, please?",
-                "No problem at all!",
-                "Have a wonderful day!"
-            ]
+            cafe: ["Could I see the menu, please?", "Do you have a table for two?", "I would like to order coffee, please?", "Could we have the bill, please?"],
+            market: ["How much does this cost?", "Can I pay by card?", "Do you offer a discount on this?"],
+            taxi: ["Can you take me to this address, please?", "How much will the trip cost?", "Please turn on the taximeter."],
+            hotel: ["I have a reservation under my name.", "What time is check-out?", "What is the Wi-Fi password?"],
+            sos: ["I need a doctor, please help!", "Where is the nearest pharmacy?", "Please call the emergency services!"],
+            basic: ["Hello, nice to meet you!", "Thank you very much for your help.", "Excuse me, do you speak English?"]
         };
 
         const uiTranslations = {
-            'uk': { 
-                phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", error: "Помилка перекладу", connectionError: "Помилка з’єднання",
-                catCafe: "☕ Кафе та ресторани", catMarket: "🛒 Ринок та шопінг", catTaxi: "🚖 Таксі та транспорт", catHotel: "🏠 Готель та оренда", catSos: "💊 Аптека та SOS", catBasic: "👋 Етикет та розмова",
-                pwTitle: "Ваші безкоштовні переклади вичерпано!", pwSub: "Оберіть тариф або запросіть друга, щоб продовжити спілкування:",
-                pwSoloTitle: "🎙️ Solo Безлім", pwSoloDesc: "Текстовий та голосовий переклад на місяць",
-                pwDuoTitle: "🎧 Duo Earbuds Paket", pwDuoDesc: "333 голосові переклади для навушників",
-                pwRefTitle: "🎁 Потрібно безкоштовно?", pwRefText: "Запросіть друга за своїм посиланням і отримайте +15 перекладів після його першої оплати!",
-                pwBtnInvite: "Запросити друга (+15 перекладів)", pwBtnClose: "Закрити",
-                duoModalTitle: "🎧 Duo Earbuds Mode", duoLeftLabel: "Лівий навушник", duoLeftDesc: "Віддайте співрозмовнику. Він чує ваш переклад.", duoRightLabel: "Правий навушник", duoRightDesc: "Залиште собі. Ви чуєте його переклад.", duoRuleBox: "<b>🎙️ Повністю без рук:</b> Додаток почергово слухає вас та співрозмовника. Натисніть червону кнопку стоп у будь-який момент, щоб зупинити розмову.", duoStartBtn: "Зрозуміло, розпочати!",
-                duoTurnUser: "Черга: Слухаю ВАС ({LANG}) ➔ Переклад у ЛІВИЙ навушник",
-                duoTurnPartner: "Черга: Слухаю СПІВРОЗМОВНИКА ({LANG}) ➔ Переклад у ПРАВИЙ навушник"
-            },
-            'sq': { 
-                phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", error: "Gabim në përkthim", connectionError: "Gabim në lidhje",
-                catCafe: "☕ Kafe & Restorante", catMarket: "🛒 Tregu & Blerjet", catTaxi: "🚖 Taksi & Transporti", catHotel: "🏠 Hoteli & Me qira", catSos: "💊 Farmacia & SOS", catBasic: "👋 Etiketa & Biseda",
-                pwTitle: "Përkthimet tuaja falas kanë mbaruar!", pwSub: "Zgjidhni një plan ose ftoni një mik për të vazhduar bisedën:",
-                pwSoloTitle: "🎙️ Solo Pa limit", pwSoloDesc: "Përkthim me tekst dhe zë për një muaj",
-                pwDuoTitle: "🎧 Duo Earbuds Paket", pwDuoDesc: "333 përkthime me zë për kufje",
-                pwRefTitle: "🎁 E dëshironi falas?", pwRefText: "Ftoni një mik me lidhjen tuaj dhe merrni +15 përkthime falas!",
-                pwBtnInvite: "Ftoni një mik (+15 përkthime)", pwBtnClose: "Mbyll",
-                duoModalTitle: "🎧 Modaliteti Duo Earbuds", duoLeftLabel: "Kufja e majtë", duoLeftDesc: "Jepjani bashkëbiseduesit. Ai dëgjon përkthimin tuaj.", duoRightLabel: "Kufja e djathtë", duoRightDesc: "Mbajeni për vete. Ju dëgjoni përkthimin e tij.", duoRuleBox: "<b>🎙️ Tërësisht pa duar:</b> Aplikacioni dëgjon me radhë juve dhe bashkëbiseduesin.", duoStartBtn: "E kuptova, fillo!",
-                duoTurnUser: "Radha: Po ju dëgjoj JUVE ({LANG}) ➔ Përkthimi në KUFJEN E MAJTË",
-                duoTurnPartner: "Radha: Po dëgjoj BASHKËBISEDUESIN ({LANG}) ➔ Përkthimi në KUFJEN E DJATHTË"
-            },
-            'en': { 
-                phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", error: "Translation error", connectionError: "Connection error",
-                catCafe: "☕ Cafe & Dining", catMarket: "🛒 Market & Shopping", catTaxi: "🚖 Taxi & Transport", catHotel: "🏠 Hotel & Rental", catSos: "💊 Pharmacy & SOS", catBasic: "👋 Etiquette & Chat",
-                pwTitle: "Your free translations are used up!", pwSub: "Choose a plan or invite a friend to keep chatting:",
-                pwSoloTitle: "🎙️ Solo Unlimited", pwSoloDesc: "Text & voice translation for 1 month",
-                pwDuoTitle: "🎧 Duo Earbuds Package", pwDuoDesc: "333 voice translations for earbuds",
-                pwRefTitle: "🎁 Need it for free?", pwRefText: "Invite a friend with your link and get +15 translations after their first payment!",
-                pwBtnInvite: "Invite a Friend (+15 translations)", pwBtnClose: "Close",
-                duoModalTitle: "🎧 Duo Earbuds Mode", duoLeftLabel: "Left Earbud", duoLeftDesc: "Give to partner. They hear your translation.", duoRightLabel: "Right Earbud", duoRightDesc: "Keep for yourself. You hear their translation.", duoRuleBox: "<b>🎙️ Hands-free:</b> App automatically listens to you and your partner in turns.", duoStartBtn: "Got it, start!",
-                duoTurnUser: "Turn: Listening to YOU ({LANG}) ➔ Translation to LEFT earbud",
-                duoTurnPartner: "Turn: Listening to PARTNER ({LANG}) ➔ Translation to RIGHT earbud"
-            }
+            'uk': { phrasesBtn: "📖", sheetTitle: "⚡ Швидкі фрази", clearBtn: "Очистити", placeholder: "Введіть або продиктуйте текст...", translate: "Перекласти", resultPlaceholder: "Переклад з'явиться тут...", speak: "🔊 Озвучити", history: "Історія", clearHistory: "Очистити", loading: "Зачекайте...", duoTurnUser: "Черга: Слухаю ВАС ({LANG}) ➔ Переклад у ЛІВИЙ навушник", duoTurnPartner: "Черга: Слухаю СПІВРОЗМОВНИКА ({LANG}) ➔ Переклад у ПРАВИЙ навушник" },
+            'sq': { phrasesBtn: "📖", sheetTitle: "⚡ Frazat e shpejta", clearBtn: "Pastro", placeholder: "Shkruani ose flisni tekstin...", translate: "Përkthe", resultPlaceholder: "Përkthimi do të shfaqet këtu...", speak: "🔊 Dëgjo", history: "Historiku", clearHistory: "Pastro", loading: "Ju lutem prisni...", duoTurnUser: "Radha: Po ju dëgjoj JUVE ({LANG}) ➔ Përkthimi në KUFJEN E MAJTË", duoTurnPartner: "Radha: Po dëgjoj BASHKËBISEDUESIN ({LANG}) ➔ Përkthimi në KUFJEN E DJATHTË" },
+            'en': { phrasesBtn: "📖", sheetTitle: "⚡ Quick Phrases", clearBtn: "Clear", placeholder: "Type or dictate text...", translate: "Translate", resultPlaceholder: "Translation will appear here...", speak: "🔊 Listen", history: "History", clearHistory: "Clear", loading: "Please wait...", duoTurnUser: "Turn: Listening to YOU ({LANG}) ➔ Translation to LEFT earbud", duoTurnPartner: "Turn: Listening to PARTNER ({LANG}) ➔ Translation to RIGHT earbud" }
         };
 
         function openPhrasesSheet() {
@@ -1314,26 +1322,17 @@
             const targetLang = document.getElementById('srcLang').value;
             const baseList = basePhrasesData[category] || [];
 
-            if (targetLang === 'en') {
-                renderPhrasesList(baseList);
-                return;
-            }
+            if (targetLang === 'en') { renderPhrasesList(baseList); return; }
 
             const cacheKey = `${targetLang}_${category}`;
-            if (phrasesCache[cacheKey]) {
-                renderPhrasesList(phrasesCache[cacheKey]);
-                return;
-            }
+            if (phrasesCache[cacheKey]) { renderPhrasesList(phrasesCache[cacheKey]); return; }
 
-            listContainer.innerHTML = `<div style="text-align:center; padding: 20px; font-weight:700; color:var(--accent-emerald);">⏳ Завантаження фраз...</div>`;
+            listContainer.innerHTML = `<div style="text-align:center; padding: 20px; font-weight:700; color:var(--accent-emerald);">⏳ Завантаження...</div>`;
 
             try {
                 const translatedList = await Promise.all(
-                    baseList.map(async (text) => {
-                        return await performDirectTranslation(text, 'en', targetLang);
-                    })
+                    baseList.map(async (text) => await performDirectTranslation(text, 'en', targetLang))
                 );
-
                 phrasesCache[cacheKey] = translatedList;
                 renderPhrasesList(translatedList);
             } catch (e) {
@@ -1366,9 +1365,7 @@
             if (!isStandalone) document.getElementById('pwaBanner').style.display = 'flex';
         });
 
-        if (isIos && !isStandalone) {
-            document.getElementById('pwaBanner').style.display = 'flex';
-        }
+        if (isIos && !isStandalone) { document.getElementById('pwaBanner').style.display = 'flex'; }
 
         function handlePwaInstall() {
             if (deferredPrompt) {
@@ -1382,9 +1379,7 @@
             }
         }
 
-        function closePwaModal() {
-            document.getElementById('pwaIosModal').classList.remove('active');
-        }
+        function closePwaModal() { document.getElementById('pwaIosModal').classList.remove('active'); }
 
         function setAppMode(mode) {
             document.getElementById('btnModeSolo').classList.toggle('active', mode === 'solo');
@@ -1435,10 +1430,7 @@
 
         function detectUserLanguage() {
             const savedSrc = localStorage.getItem('srcLang');
-            if (savedSrc) {
-                document.getElementById('srcLang').value = savedSrc;
-                return;
-            }
+            if (savedSrc) { document.getElementById('srcLang').value = savedSrc; return; }
             const userLang = (navigator.language || navigator.userLanguage || '').slice(0, 2).toLowerCase();
             const srcSelect = document.getElementById('srcLang');
             
@@ -1498,7 +1490,6 @@
 
         async function updateUI() {
             const srcLang = document.getElementById('srcLang').value;
-            const tgtLang = document.getElementById('tgtLang').value;
             localStorage.setItem('srcLang', srcLang);
             
             let t = uiTranslations[srcLang] || uiTranslations['en'];
@@ -1509,7 +1500,7 @@
             if (sheetTitle) sheetTitle.innerText = t.sheetTitle;
 
             const currentOutput = document.getElementById('outputText').innerText;
-            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear") || currentOutput.includes("erscheint")) {
+            if (currentOutput.includes("з'явиться") || currentOutput.includes("shfaqet") || currentOutput.includes("appear")) {
                 document.getElementById('outputText').innerText = t.resultPlaceholder;
             }
             
@@ -1583,26 +1574,12 @@
                 }
             };
 
-            recognition.onerror = (event) => {
-                if (duoModeActive && (event.error === 'no-speech' || event.error === 'network')) {
-                    isRecording = false;
-                    setTimeout(() => {
-                        if (duoModeActive) startTurnRecognition();
-                    }, 1000);
-                } else {
-                    stopRecording();
-                }
-            };
-
-            recognition.onend = () => {
-                isRecording = false;
-                renderControlsBar();
-                document.getElementById('waveBox').style.display = 'none';
-            };
+            recognition.onerror = () => { stopRecording(); };
+            recognition.onend = () => { stopRecording(); };
         }
 
         function toggleRecognition() {
-            if (!recognition) return alert('Speech recognition not supported in this browser');
+            if (!recognition) return alert('Speech recognition not supported');
             
             if (isRecording) {
                 duoModeActive = false;
@@ -1629,23 +1606,18 @@
             document.getElementById('waveBox').style.display = 'none';
         }
 
-        // Автономний універсальний функціонал перекладу
         async function performDirectTranslation(text, sourceLang, targetLang) {
             try {
-                // Спроба 1: Через власний сервер
                 const response = await fetch('/api/translate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ text, sourceLang, targetLang })
                 });
                 const data = await response.json();
-                if (data && data.translation && !data.error) {
-                    return data.translation;
-                }
+                if (data && data.translation && !data.error) return data.translation;
             } catch (e) {}
 
             try {
-                // Спроба 2: Пряме фолбек-API (MyMemory Translate API)
                 const fallbackUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
                 const res = await fetch(fallbackUrl);
                 const data = await res.json();
@@ -1654,17 +1626,14 @@
                 }
             } catch (e) {}
 
-            return text; // Якщо мережа повністю відсутня
+            return text;
         }
 
         async function executeDuoTranslation(text, sourceLang, targetLang, targetEar) {
             if (!checkAndDeductBalance()) return;
-            
-            const outputDiv = document.getElementById('outputText');
-            outputDiv.innerText = "Перекладаю...";
-
+            document.getElementById('outputText').innerText = "Перекладаю...";
             const resText = await performDirectTranslation(text, sourceLang, targetLang);
-            outputDiv.innerText = resText;
+            document.getElementById('outputText').innerText = resText;
             saveToHistory(text, resText);
             await speakResult(targetEar, resText);
         }
@@ -1678,11 +1647,9 @@
             if (!text) return;
             if (!checkAndDeductBalance()) return;
 
-            const outputDiv = document.getElementById('outputText');
-            outputDiv.innerText = t.loading;
-
+            document.getElementById('outputText').innerText = t.loading;
             const resText = await performDirectTranslation(text, sourceLang, targetLang);
-            outputDiv.innerText = resText;
+            document.getElementById('outputText').innerText = resText;
             saveToHistory(text, resText);
             speakResult(targetEar, resText);
         }
@@ -1691,19 +1658,15 @@
             const text = textToSpeak || document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("shfaqet") || text.includes("appear")) return;
 
-            return new Promise(async (resolve) => {
+            return new Promise((resolve) => {
                 try {
                     const targetLang = document.getElementById('tgtLang').value;
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = targetLang;
-
                     utterance.onend = () => resolve();
                     utterance.onerror = () => resolve();
-
                     window.speechSynthesis.speak(utterance);
-                } catch (err) {
-                    resolve();
-                }
+                } catch (err) { resolve(); }
             });
         }
 
@@ -1750,10 +1713,9 @@
             renderHistory();
         }
 
-        // Перевірка повернення після Verifone/2Checkout
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('payment') === 'success') {
-            alert('🎉 Дякуємо за покупку! Вашу оплату через 2Checkout успішно прийнято.');
+            alert('🎉 Дякуємо за покупку! Вашу оплату успішно прийнято.');
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
