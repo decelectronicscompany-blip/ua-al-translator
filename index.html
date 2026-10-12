@@ -593,10 +593,14 @@
             </button>
         </div>
 
-        <!-- Duo Control Panel (З вибором затримки 2s / 4s / 6s) -->
+        <!-- Duo Control Panel (Панель керування чергою та затримкою) -->
         <div class="duo-control-panel" id="duoControlPanel">
             <div class="duo-panel-row">
-                <span id="duoStatusText">🎧 Duo активний: Очікування розмови...</span>
+                <span id="duoStatusText">🎧 Ваша черга говорить (Правий навушник)</span>
+                <button onclick="vibrate(); forceNextDuoTurn();" style="background:var(--accent-emerald); color:#030706; border:none; border-radius:8px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">Далі ➔</button>
+            </div>
+            <div class="duo-panel-row" style="font-size:11px; color:var(--text-muted);">
+                <span>Пауза очікування:</span>
                 <div class="delay-buttons">
                     <button class="delay-btn active" onclick="vibrate(); setDuoDelay(2);">2с</button>
                     <button class="delay-btn" onclick="vibrate(); setDuoDelay(4);">4с</button>
@@ -686,16 +690,16 @@
                 <div class="earbud-box emerald">
                     <div class="earbud-icon left-ear">L</div>
                     <div class="earbud-label">Лівий навушник</div>
-                    <div class="earbud-desc">Віддайте співрозмовнику. Він чує переклад у лівому каналі (пан -1).</div>
+                    <div class="earbud-desc">Співрозмовник чує переклад у лівому каналі (пан -1).</div>
                 </div>
                 <div class="earbud-box">
                     <div class="earbud-icon right-ear">R</div>
                     <div class="earbud-label">Правий навушник</div>
-                    <div class="earbud-desc">Залиште собі. Ви чуєте переклад у правому каналі (пан +1).</div>
+                    <div class="earbud-desc">Ви чуєте переклад у правому каналі (пан +1).</div>
                 </div>
             </div>
             <div class="duo-rule-box">
-                <b>🎙️ Перехресний переклад без рук:</b> Автоматичне визначення пауз (2с, 4с або 6с) та маршрутизація аудіо через Web Audio API.
+                <b>🎙️ Повністю автоматичний ланцюжок:</b> Після озвучення перекладу в навушник мікрофон автоматично перемикається на наступного учасника.
             </div>
             <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Зрозуміло, розпочати!</button>
         </div>
@@ -781,9 +785,8 @@
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
-        let duoDelaySec = 2; // За замовчуванням 2 секунди
-        let duoTurn = 'user'; // 'user' (правір навушник) або 'partner' (лівий навушник)
-        let duoIntervalTimer = null;
+        let duoDelaySec = 2; // За замовчуванням 2с
+        let duoTurn = 'user'; // 'user' (правий) або 'partner' (лівий)
         let deferredPrompt = null;
         
         const TESTER_IDS = ['7848', '5231'];
@@ -857,12 +860,27 @@
                     document.getElementById('outputText').innerText = translated;
                     saveToHistory(text, translated);
                     
-                    // Якщо активний Duo режим — озвучуємо у відповідний навушник із крос-панінгом
                     if (duoModeActive) {
-                        // Якщо говорив юзер (srcLang -> tgtLang), озвучуємо співрозмовнику в лівий навушник (pan = -1)
-                        // Якщо говорив партнер, озвучуємо юзеру в правий навушник (pan = +1)
+                        // Якщо говорив юзер -> озвучуємо співрозмовнику в лівий навушник (pan = -1)
+                        // Якщо говорив партнер -> озвучуємо юзеру в правий навушник (pan = +1)
                         const panVal = (duoTurn === 'user') ? -1 : 1;
-                        speakPannedResult(translated, targetLang, panVal);
+                        speakPannedResult(translated, targetLang, panVal, () => {
+                            // КРОК 3: Щойно озвучування у навушник завершилося (onend):
+                            // 1. Міняємо мови місцями для діалогу
+                            swapLanguages();
+                            // 2. Перемикаємо ролі
+                            duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
+                            updateDuoStatusDisplay();
+                            
+                            // 3. Автоматично запускаємо мікрофон для наступного учасника після паузи
+                            setTimeout(() => {
+                                if (duoModeActive && !isRecording) {
+                                    try { toggleRecognition(); } catch(e){}
+                                }
+                            }, duoDelaySec * 1000);
+                        });
+                    } else {
+                        speakPannedResult(text, targetLang, 0, null);
                     }
                 }
             } catch (e) {
@@ -870,7 +888,7 @@
             }
         }
 
-        // --- Web Audio API Stereo Panning та Озвучення для Duo ---
+        // --- Web Audio API & Speech Synthesis з callback після завершення ---
         let audioCtx = null;
 
         function getAudioContext() {
@@ -883,12 +901,14 @@
             return audioCtx;
         }
 
-        function speakPannedResult(text, lang, panValue) {
-            if (!text) return;
+        function speakPannedResult(text, lang, panValue, onSpeechEnd) {
+            if (!text) {
+                if (onSpeechEnd) onSpeechEnd();
+                return;
+            }
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 
-                // Використовуємо стандартний speechSynthesis з обгорткою або Web Audio
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = lang;
                 utterance.rate = 0.95;
@@ -902,22 +922,30 @@
                     utterance.voice = matchingVoice;
                 }
 
-                // У деяких браузерах через AudioContext можна пропатрувати, але надійніше застосувати системний SpeechSynthesis
-                // а також додатковий AudioContext StereoPanner для сумісності з каналами навушників
+                // Викликаємо callback щойно навушник закінчив програвати переклад
+                utterance.onend = () => {
+                    if (onSpeechEnd) onSpeechEnd();
+                };
+                utterance.onerror = () => {
+                    if (onSpeechEnd) onSpeechEnd();
+                };
+
                 try {
                     const ctx = getAudioContext();
                     const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
                     if (panner) {
-                        panner.pan.value = panValue; // -1 = лівий навушник, +1 = правий навушник
+                        panner.pan.value = panValue; // -1 = лівий, +1 = правий
                         panner.connect(ctx.destination);
                     }
                 } catch(e) {}
 
                 window.speechSynthesis.speak(utterance);
+            } else {
+                if (onSpeechEnd) onSpeechEnd();
             }
         }
 
-        // Розблокування аудіо при дотику
+        // Розблокування аудіо для мобільних при дотику
         let audioUnlocked = false;
         function unlockAndroidAudio() {
             if (audioUnlocked) return;
@@ -936,7 +964,7 @@
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
             const targetLang = document.getElementById('tgtLang').value;
-            speakPannedResult(text, targetLang, 0); // По центру для Solo
+            speakPannedResult(text, targetLang, 0, null);
         }
 
         if ('speechSynthesis' in window) {
@@ -945,35 +973,31 @@
             };
         }
 
-        // --- Налаштування затримки в Duo (2с / 4с / 6с) ---
+        // --- Керування затримкою та станом Duo ---
         function setDuoDelay(sec) {
             duoDelaySec = sec;
             document.querySelectorAll('.delay-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.innerText.includes(sec + 'с'));
             });
-            if (duoModeActive) {
-                restartDuoCycle();
+        }
+
+        function updateDuoStatusDisplay() {
+            const statusEl = document.getElementById('duoStatusText');
+            if (statusEl) {
+                statusEl.innerText = (duoTurn === 'user') ? 
+                    `🎙️ Ваша черга говорити (Правий навушник)` : 
+                    `🎧 Черга співрозмовника (Лівий навушник)`;
             }
         }
 
-        function restartDuoCycle() {
-            if (duoIntervalTimer) clearInterval(duoIntervalTimer);
-            if (!duoModeActive) return;
-
-            duoIntervalTimer = setInterval(() => {
-                if (!duoModeActive) return;
-                // Автоматичне перемикання ролей у Duo та запуск розпізнавання з урахуванням затримки
-                duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
-                const statusEl = document.getElementById('duoStatusText');
-                if (statusEl) {
-                    statusEl.innerText = (duoTurn === 'user') ? 
-                        `🎙️ Ваша черга говорити (Правий навушник, пауза ${duoDelaySec}с)` : 
-                        `🎧 Черга співрозмовника (Лівий навушник, пауза ${duoDelaySec}с)`;
-                }
-            }, duoDelaySec * 1000);
+        function forceNextDuoTurn() {
+            swapLanguages();
+            duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
+            updateDuoStatusDisplay();
+            if (!isRecording) toggleRecognition();
         }
 
-        // --- Туристичний словник (з динамічним перекладом на мову з ЛІВОГО списку srcLang) ---
+        // --- Туристичний словник (з перекладом на мову з ЛІВОГО списку srcLang) ---
         const tourismPhrases = {
             cafe: [
                 "Could I see the menu, please?",
@@ -1070,11 +1094,11 @@
 
             if (mode === 'duo') {
                 duoModeActive = true;
+                duoTurn = 'user';
+                updateDuoStatusDisplay();
                 document.getElementById('duoModalOverlay').classList.add('active');
-                restartDuoCycle();
             } else {
                 duoModeActive = false;
-                if (duoIntervalTimer) clearInterval(duoIntervalTimer);
             }
         }
 
