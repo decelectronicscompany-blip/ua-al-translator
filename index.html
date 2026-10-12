@@ -223,7 +223,6 @@
             color: var(--switcher-btn-active-text);
         }
 
-        /* Duo Control Panel */
         .duo-control-panel {
             display: none;
             background: var(--card-glass);
@@ -477,7 +476,6 @@
         .history-row { font-size: 12px; padding: 3px 0; cursor: pointer; }
         .history-row-orig { color: var(--text-muted); font-size: 10px; }
 
-        /* Modals & Sheets */
         .duo-modal-overlay, .paywall-modal-overlay, .sheet-overlay, .legal-modal-overlay, .pwa-modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -593,10 +591,10 @@
             </button>
         </div>
 
-        <!-- Duo Control Panel (Панель керування чергою та затримкою) -->
+        <!-- Duo Control Panel -->
         <div class="duo-control-panel" id="duoControlPanel">
             <div class="duo-panel-row">
-                <span id="duoStatusText">🎧 Ваша черга говорить (Правий навушник)</span>
+                <span id="duoStatusText">🎧 Ваша черга говорити</span>
                 <button onclick="vibrate(); forceNextDuoTurn();" style="background:var(--accent-emerald); color:#030706; border:none; border-radius:8px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">Далі ➔</button>
             </div>
             <div class="duo-panel-row" style="font-size:11px; color:var(--text-muted);">
@@ -655,7 +653,7 @@
             <div class="action-row">
                 <button class="icon-btn" onclick="vibrate(); clearInput();" title="Clear">🗑️</button>
                 <div class="action-group">
-                    <button class="icon-btn icon-btn-speak" onclick="vibrate(); speakResult();"><span id="speakTxt">🔊 Озвучити</span></button>
+                    <button class="icon-btn icon-btn-speak" onclick="vibrate(); triggerManualSpeech();"><span id="speakTxt">🔊 Озвучити</span></button>
                     <button class="icon-btn" onclick="vibrate(); copyResult();">📋</button>
                 </div>
             </div>
@@ -673,7 +671,7 @@
             <div class="history-items" id="historyList"></div>
         </div>
 
-        <!-- Legal Footer (One Single Line) -->
+        <!-- Legal Footer -->
         <div class="app-footer-single-line">
             <span class="footer-link" onclick="openLegalModal('terms')">Terms</span> • 
             <span class="footer-link" onclick="openLegalModal('privacy')">Privacy</span> • 
@@ -705,7 +703,7 @@
         </div>
     </div>
 
-    <!-- Paywall Modal (Verifone / 2Checkout) -->
+    <!-- Paywall Modal -->
     <div class="paywall-modal-overlay" id="paywallModal">
         <div class="paywall-card">
             <div class="duo-modal-title">Ваші переклади вичерпано!</div>
@@ -785,8 +783,8 @@
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
-        let duoDelaySec = 2; // За замовчуванням 2с
-        let duoTurn = 'user'; // 'user' або 'partner'
+        let duoDelaySec = 2;
+        let duoTurn = 'user';
         let deferredPrompt = null;
         
         const TESTER_IDS = ['7848', '5231'];
@@ -860,33 +858,29 @@
                     document.getElementById('outputText').innerText = translated;
                     saveToHistory(text, translated);
                     
-                    if (duoModeActive) {
-                        speakPannedResult(translated, targetLang, () => {
-                            // Щойно озвучування завершилося:
-                            // 1. Міняємо мови місцями для діалогу
+                    // Відразу викликом синтез після отримання тексту
+                    speakText(translated, targetLang, () => {
+                        if (duoModeActive) {
+                            // Автоперехід в Duo
                             swapLanguages();
-                            // 2. Перемикаємо ролі
                             duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
                             updateDuoStatusDisplay();
                             
-                            // 3. Автоматично запускаємо мікрофон після заданої паузи
                             setTimeout(() => {
                                 if (duoModeActive && !isRecording) {
                                     try { toggleRecognition(); } catch(e){}
                                 }
                             }, duoDelaySec * 1000);
-                        });
-                    } else {
-                        speakPannedResult(text, targetLang, null);
-                    }
+                        }
+                    });
                 }
             } catch (e) {
                 document.getElementById('outputText').innerText = "Помилка перекладу";
             }
         }
 
-        // --- Стабільне озвучення для мобільних пристроїв ---
-        function speakPannedResult(text, lang, onSpeechEnd) {
+        // --- Гарантована функція озвучення без заблокованих аудио-вузлів ---
+        function speakText(text, lang, onSpeechEnd) {
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) {
                 if (onSpeechEnd) onSpeechEnd();
                 return;
@@ -897,6 +891,7 @@
                 return;
             }
 
+            // Очищення черги мовлення
             window.speechSynthesis.cancel();
 
             const utterance = new SpeechSynthesisUtterance(text);
@@ -909,9 +904,7 @@
                 let matchingVoice = voices.find(v => 
                     v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase())
                 );
-                if (matchingVoice) {
-                    utterance.voice = matchingVoice;
-                }
+                if (matchingVoice) utterance.voice = matchingVoice;
             }
 
             let hasEnded = false;
@@ -925,16 +918,23 @@
             utterance.onend = handleEnd;
             utterance.onerror = () => handleEnd();
 
-            setTimeout(() => {
-                window.speechSynthesis.speak(utterance);
-            }, 50);
+            // Відтворення
+            window.speechSynthesis.speak(utterance);
         }
 
-        // Розблокування аудіо для мобільних при першому дотику
+        function triggerManualSpeech() {
+            const text = document.getElementById('outputText').innerText.trim();
+            if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
+            const targetLang = document.getElementById('tgtLang').value;
+            speakText(text, targetLang, null);
+        }
+
+        // Розблокування звукового движка при першому кліку
         let audioUnlocked = false;
         function unlockMobileAudio() {
             if (audioUnlocked) return;
             if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
                 const dummy = new SpeechSynthesisUtterance('');
                 dummy.volume = 0;
                 window.speechSynthesis.speak(dummy);
@@ -944,20 +944,13 @@
         document.addEventListener('click', unlockMobileAudio, { once: true });
         document.addEventListener('touchstart', unlockMobileAudio, { once: true });
 
-        function speakResult() {
-            const text = document.getElementById('outputText').innerText.trim();
-            if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
-            const targetLang = document.getElementById('tgtLang').value;
-            speakPannedResult(text, targetLang, null);
-        }
-
         if ('speechSynthesis' in window) {
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
             };
         }
 
-        // --- Керування затримкою та станом Duo ---
+        // --- Керування Duo ---
         function setDuoDelay(sec) {
             duoDelaySec = sec;
             document.querySelectorAll('.delay-btn').forEach(btn => {
@@ -981,7 +974,7 @@
             if (!isRecording) toggleRecognition();
         }
 
-        // --- Туристичний словник (з перекладом на мову з ЛІВОГО списку srcLang) ---
+        // --- Туристичний словник ---
         const tourismPhrases = {
             cafe: [
                 "Could I see the menu, please?",
@@ -1207,7 +1200,7 @@
             }
         }
 
-        // --- Історія та Юридичні документи (Underwriting) ---
+        // --- Історія та Юридичні документи ---
         function saveToHistory(orig, trans) {
             let history = JSON.parse(localStorage.getItem('history') || '[]');
             history.unshift({ orig, trans });
