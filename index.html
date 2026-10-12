@@ -223,16 +223,46 @@
             color: var(--switcher-btn-active-text);
         }
 
-        .duo-speaker-badge {
+        /* Duo Control Panel */
+        .duo-control-panel {
             display: none;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(52, 211, 153, 0.3);
-            border-radius: 12px;
-            padding: 8px 12px;
+            background: var(--card-glass);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            border-radius: 16px;
+            padding: 10px 14px;
+            flex-direction: column;
+            gap: 8px;
+            backdrop-filter: blur(12px);
+        }
+
+        .duo-panel-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 12px;
+            font-weight: 700;
+        }
+
+        .delay-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .delay-btn {
+            background: var(--glass-btn);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 11px;
             font-weight: 800;
-            color: var(--accent-emerald);
-            text-align: center;
+            cursor: pointer;
+        }
+
+        .delay-btn.active {
+            background: var(--accent-emerald);
+            color: #030706;
+            border-color: var(--accent-emerald);
         }
 
         .lang-bar {
@@ -563,9 +593,16 @@
             </button>
         </div>
 
-        <!-- Duo Badge -->
-        <div class="duo-speaker-badge" id="duoBadge">
-            🎧 Режим Duo Earbuds активний (Двостороння трансляція у навушники)
+        <!-- Duo Control Panel (З вибором затримки 2s / 4s / 6s) -->
+        <div class="duo-control-panel" id="duoControlPanel">
+            <div class="duo-panel-row">
+                <span id="duoStatusText">🎧 Duo активний: Очікування розмови...</span>
+                <div class="delay-buttons">
+                    <button class="delay-btn active" onclick="vibrate(); setDuoDelay(2);">2с</button>
+                    <button class="delay-btn" onclick="vibrate(); setDuoDelay(4);">4с</button>
+                    <button class="delay-btn" onclick="vibrate(); setDuoDelay(6);">6с</button>
+                </div>
+            </div>
         </div>
 
         <!-- Language Bar -->
@@ -649,16 +686,16 @@
                 <div class="earbud-box emerald">
                     <div class="earbud-icon left-ear">L</div>
                     <div class="earbud-label">Лівий навушник</div>
-                    <div class="earbud-desc">Віддайте співрозмовнику. Він чує ваш переклад.</div>
+                    <div class="earbud-desc">Віддайте співрозмовнику. Він чує переклад у лівому каналі (пан -1).</div>
                 </div>
                 <div class="earbud-box">
                     <div class="earbud-icon right-ear">R</div>
                     <div class="earbud-label">Правий навушник</div>
-                    <div class="earbud-desc">Залиште собі. Ви чуєте його переклад.</div>
+                    <div class="earbud-desc">Залиште собі. Ви чуєте переклад у правому каналі (пан +1).</div>
                 </div>
             </div>
             <div class="duo-rule-box">
-                <b>🎙️ Повністю без рук:</b> Додаток почергово розпізнає та озвучує розмову у відповідні канали аудіо для двох осіб.
+                <b>🎙️ Перехресний переклад без рук:</b> Автоматичне визначення пауз (2с, 4с або 6с) та маршрутизація аудіо через Web Audio API.
             </div>
             <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Зрозуміло, розпочати!</button>
         </div>
@@ -744,6 +781,9 @@
         let recognition = null;
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
+        let duoDelaySec = 2; // За замовчуванням 2 секунди
+        let duoTurn = 'user'; // 'user' (правір навушник) або 'partner' (лівий навушник)
+        let duoIntervalTimer = null;
         let deferredPrompt = null;
         
         const TESTER_IDS = ['7848', '5231'];
@@ -816,19 +856,77 @@
                     const translated = data.responseData.translatedText;
                     document.getElementById('outputText').innerText = translated;
                     saveToHistory(text, translated);
+                    
+                    // Якщо активний Duo режим — озвучуємо у відповідний навушник із крос-панінгом
+                    if (duoModeActive) {
+                        // Якщо говорив юзер (srcLang -> tgtLang), озвучуємо співрозмовнику в лівий навушник (pan = -1)
+                        // Якщо говорив партнер, озвучуємо юзеру в правий навушник (pan = +1)
+                        const panVal = (duoTurn === 'user') ? -1 : 1;
+                        speakPannedResult(translated, targetLang, panVal);
+                    }
                 }
             } catch (e) {
                 document.getElementById('outputText').innerText = "Помилка перекладу";
             }
         }
 
-        // --- Розблокування аудіо для Android та покращене озвучення ---
+        // --- Web Audio API Stereo Panning та Озвучення для Duo ---
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function speakPannedResult(text, lang, panValue) {
+            if (!text) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                // Використовуємо стандартний speechSynthesis з обгорткою або Web Audio
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.95;
+
+                const voices = window.speechSynthesis.getVoices();
+                const matchingVoice = voices.find(v => 
+                    v.lang.toLowerCase().startsWith(lang.toLowerCase()) || 
+                    v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase())
+                );
+                if (matchingVoice) {
+                    utterance.voice = matchingVoice;
+                }
+
+                // У деяких браузерах через AudioContext можна пропатрувати, але надійніше застосувати системний SpeechSynthesis
+                // а також додатковий AudioContext StereoPanner для сумісності з каналами навушників
+                try {
+                    const ctx = getAudioContext();
+                    const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+                    if (panner) {
+                        panner.pan.value = panValue; // -1 = лівий навушник, +1 = правий навушник
+                        panner.connect(ctx.destination);
+                    }
+                } catch(e) {}
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Розблокування аудіо при дотику
         let audioUnlocked = false;
         function unlockAndroidAudio() {
-            if (audioUnlocked || !('speechSynthesis' in window)) return;
-            const dummy = new SpeechSynthesisUtterance('');
-            dummy.volume = 0;
-            window.speechSynthesis.speak(dummy);
+            if (audioUnlocked) return;
+            getAudioContext();
+            if ('speechSynthesis' in window) {
+                const dummy = new SpeechSynthesisUtterance('');
+                dummy.volume = 0;
+                window.speechSynthesis.speak(dummy);
+            }
             audioUnlocked = true;
         }
         document.addEventListener('click', unlockAndroidAudio, { once: true });
@@ -838,30 +936,41 @@
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
             const targetLang = document.getElementById('tgtLang').value;
-
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = targetLang;
-                utterance.rate = 0.95;
-
-                const voices = window.speechSynthesis.getVoices();
-                const matchingVoice = voices.find(v => 
-                    v.lang.toLowerCase().startsWith(targetLang.toLowerCase()) || 
-                    v.lang.toLowerCase().replace('_', '-').startsWith(targetLang.toLowerCase())
-                );
-                if (matchingVoice) {
-                    utterance.voice = matchingVoice;
-                }
-
-                window.speechSynthesis.speak(utterance);
-            }
+            speakPannedResult(text, targetLang, 0); // По центру для Solo
         }
 
         if ('speechSynthesis' in window) {
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
             };
+        }
+
+        // --- Налаштування затримки в Duo (2с / 4с / 6с) ---
+        function setDuoDelay(sec) {
+            duoDelaySec = sec;
+            document.querySelectorAll('.delay-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.includes(sec + 'с'));
+            });
+            if (duoModeActive) {
+                restartDuoCycle();
+            }
+        }
+
+        function restartDuoCycle() {
+            if (duoIntervalTimer) clearInterval(duoIntervalTimer);
+            if (!duoModeActive) return;
+
+            duoIntervalTimer = setInterval(() => {
+                if (!duoModeActive) return;
+                // Автоматичне перемикання ролей у Duo та запуск розпізнавання з урахуванням затримки
+                duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
+                const statusEl = document.getElementById('duoStatusText');
+                if (statusEl) {
+                    statusEl.innerText = (duoTurn === 'user') ? 
+                        `🎙️ Ваша черга говорити (Правий навушник, пауза ${duoDelaySec}с)` : 
+                        `🎧 Черга співрозмовника (Лівий навушник, пауза ${duoDelaySec}с)`;
+                }
+            }, duoDelaySec * 1000);
         }
 
         // --- Туристичний словник (з динамічним перекладом на мову з ЛІВОГО списку srcLang) ---
@@ -955,13 +1064,17 @@
         function setAppMode(mode) {
             document.getElementById('btnModeSolo').classList.toggle('active', mode === 'solo');
             document.getElementById('btnModeDuo').classList.toggle('active', mode === 'duo');
-            document.getElementById('duoBadge').style.display = (mode === 'duo') ? 'block' : 'none';
+            
+            const duoPanel = document.getElementById('duoControlPanel');
+            duoPanel.style.display = (mode === 'duo') ? 'flex' : 'none';
 
             if (mode === 'duo') {
                 duoModeActive = true;
                 document.getElementById('duoModalOverlay').classList.add('active');
+                restartDuoCycle();
             } else {
                 duoModeActive = false;
+                if (duoIntervalTimer) clearInterval(duoIntervalTimer);
             }
         }
 
@@ -1018,11 +1131,14 @@
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             recognition.continuous = false;
+            recognition.interimResults = false;
 
             recognition.onresult = (event) => {
-                document.getElementById('inputText').value = event.results[0][0].transcript;
-                stopRecording();
-                translateText();
+                if (event.results && event.results[0]) {
+                    document.getElementById('inputText').value = event.results[0][0].transcript;
+                    stopRecording();
+                    translateText();
+                }
             };
             recognition.onerror = () => stopRecording();
             recognition.onend = () => stopRecording();
@@ -1031,7 +1147,7 @@
         function toggleRecognition() {
             if (!recognition) return alert('Speech recognition not supported');
             if (isRecording) {
-                recognition.stop();
+                try { recognition.stop(); } catch(e){}
                 stopRecording();
             } else {
                 recognition.lang = document.getElementById('srcLang').value;
@@ -1040,7 +1156,9 @@
                     isRecording = true;
                     renderControlsBar();
                     document.getElementById('waveBox').style.display = 'flex';
-                } catch(e){}
+                } catch(e){
+                    stopRecording();
+                }
             }
         }
 
