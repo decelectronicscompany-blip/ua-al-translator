@@ -690,16 +690,16 @@
                 <div class="earbud-box emerald">
                     <div class="earbud-icon left-ear">L</div>
                     <div class="earbud-label">Лівий навушник</div>
-                    <div class="earbud-desc">Співрозмовник чує переклад у лівому каналі (пан -1).</div>
+                    <div class="earbud-desc">Співрозмовник чує переклад.</div>
                 </div>
                 <div class="earbud-box">
                     <div class="earbud-icon right-ear">R</div>
                     <div class="earbud-label">Правий навушник</div>
-                    <div class="earbud-desc">Ви чуєте переклад у правому каналі (пан +1).</div>
+                    <div class="earbud-desc">Ви чуєте переклад.</div>
                 </div>
             </div>
             <div class="duo-rule-box">
-                <b>🎙️ Повністю автоматичний ланцюжок:</b> Після озвучення перекладу в навушник мікрофон автоматично перемикається на наступного учасника.
+                <b>🎙️ Повністю автоматичний ланцюжок:</b> Після озвучення перекладу мікрофон автоматично перемикається на наступного учасника.
             </div>
             <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Зрозуміло, розпочати!</button>
         </div>
@@ -786,7 +786,7 @@
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
         let duoDelaySec = 2; // За замовчуванням 2с
-        let duoTurn = 'user'; // 'user' (правий) або 'partner' (лівий)
+        let duoTurn = 'user'; // 'user' або 'partner'
         let deferredPrompt = null;
         
         const TESTER_IDS = ['7848', '5231'];
@@ -861,18 +861,15 @@
                     saveToHistory(text, translated);
                     
                     if (duoModeActive) {
-                        // Якщо говорив юзер -> озвучуємо співрозмовнику в лівий навушник (pan = -1)
-                        // Якщо говорив партнер -> озвучуємо юзеру в правий навушник (pan = +1)
-                        const panVal = (duoTurn === 'user') ? -1 : 1;
-                        speakPannedResult(translated, targetLang, panVal, () => {
-                            // КРОК 3: Щойно озвучування у навушник завершилося (onend):
+                        speakPannedResult(translated, targetLang, () => {
+                            // Щойно озвучування завершилося:
                             // 1. Міняємо мови місцями для діалогу
                             swapLanguages();
                             // 2. Перемикаємо ролі
                             duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
                             updateDuoStatusDisplay();
                             
-                            // 3. Автоматично запускаємо мікрофон для наступного учасника після паузи
+                            // 3. Автоматично запускаємо мікрофон після заданої паузи
                             setTimeout(() => {
                                 if (duoModeActive && !isRecording) {
                                     try { toggleRecognition(); } catch(e){}
@@ -880,7 +877,7 @@
                             }, duoDelaySec * 1000);
                         });
                     } else {
-                        speakPannedResult(text, targetLang, 0, null);
+                        speakPannedResult(text, targetLang, null);
                     }
                 }
             } catch (e) {
@@ -888,68 +885,55 @@
             }
         }
 
-        // --- Web Audio API & Speech Synthesis з callback після завершення ---
-        let audioCtx = null;
-
-        function getAudioContext() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            return audioCtx;
-        }
-
-        function speakPannedResult(text, lang, panValue, onSpeechEnd) {
-            if (!text) {
+        // --- Стабільне озвучення для мобільних пристроїв ---
+        function speakPannedResult(text, lang, onSpeechEnd) {
+            if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) {
                 if (onSpeechEnd) onSpeechEnd();
                 return;
             }
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = lang;
-                utterance.rate = 0.95;
 
-                const voices = window.speechSynthesis.getVoices();
-                const matchingVoice = voices.find(v => 
-                    v.lang.toLowerCase().startsWith(lang.toLowerCase()) || 
+            if (!('speechSynthesis' in window)) {
+                if (onSpeechEnd) onSpeechEnd();
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.95;
+            utterance.volume = 1.0;
+
+            let voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                let matchingVoice = voices.find(v => 
                     v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase())
                 );
                 if (matchingVoice) {
                     utterance.voice = matchingVoice;
                 }
-
-                // Викликаємо callback щойно навушник закінчив програвати переклад
-                utterance.onend = () => {
-                    if (onSpeechEnd) onSpeechEnd();
-                };
-                utterance.onerror = () => {
-                    if (onSpeechEnd) onSpeechEnd();
-                };
-
-                try {
-                    const ctx = getAudioContext();
-                    const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-                    if (panner) {
-                        panner.pan.value = panValue; // -1 = лівий, +1 = правий
-                        panner.connect(ctx.destination);
-                    }
-                } catch(e) {}
-
-                window.speechSynthesis.speak(utterance);
-            } else {
-                if (onSpeechEnd) onSpeechEnd();
             }
+
+            let hasEnded = false;
+            const handleEnd = () => {
+                if (!hasEnded) {
+                    hasEnded = true;
+                    if (onSpeechEnd) onSpeechEnd();
+                }
+            };
+
+            utterance.onend = handleEnd;
+            utterance.onerror = () => handleEnd();
+
+            setTimeout(() => {
+                window.speechSynthesis.speak(utterance);
+            }, 50);
         }
 
-        // Розблокування аудіо для мобільних при дотику
+        // Розблокування аудіо для мобільних при першому дотику
         let audioUnlocked = false;
-        function unlockAndroidAudio() {
+        function unlockMobileAudio() {
             if (audioUnlocked) return;
-            getAudioContext();
             if ('speechSynthesis' in window) {
                 const dummy = new SpeechSynthesisUtterance('');
                 dummy.volume = 0;
@@ -957,14 +941,14 @@
             }
             audioUnlocked = true;
         }
-        document.addEventListener('click', unlockAndroidAudio, { once: true });
-        document.addEventListener('touchstart', unlockAndroidAudio, { once: true });
+        document.addEventListener('click', unlockMobileAudio, { once: true });
+        document.addEventListener('touchstart', unlockMobileAudio, { once: true });
 
         function speakResult() {
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
             const targetLang = document.getElementById('tgtLang').value;
-            speakPannedResult(text, targetLang, 0, null);
+            speakPannedResult(text, targetLang, null);
         }
 
         if ('speechSynthesis' in window) {
@@ -985,8 +969,8 @@
             const statusEl = document.getElementById('duoStatusText');
             if (statusEl) {
                 statusEl.innerText = (duoTurn === 'user') ? 
-                    `🎙️ Ваша черга говорити (Правий навушник)` : 
-                    `🎧 Черга співрозмовника (Лівий навушник)`;
+                    `🎙️ Ваша черга говорити` : 
+                    `🎧 Черга співрозмовника`;
             }
         }
 
