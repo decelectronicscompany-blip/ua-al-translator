@@ -608,7 +608,7 @@
             </div>
         </div>
 
-        <!-- Language Bar (Повний набір основних та додаткових мов) -->
+        <!-- Language Bar (Повний набір мов + російська у самому низу без прапора) -->
         <div class="lang-bar">
             <select class="lang-select" id="srcLang" onchange="vibrate();">
                 <option value="uk" selected>🇺🇦 Українська</option>
@@ -624,6 +624,7 @@
                 <option value="tr">🇹🇷 Türkçe (Турецька)</option>
                 <option value="ro">🇷🇴 Română (Румунська)</option>
                 <option value="bg">🇧🇬 Български (Болгарська)</option>
+                <option value="ru">Русский</option>
             </select>
             
             <button class="swap-btn" onclick="vibrate(); swapLanguages();">
@@ -644,6 +645,7 @@
                 <option value="tr">🇹🇷 Türkçe (Турецька)</option>
                 <option value="ro">🇷🇴 Română (Румунська)</option>
                 <option value="bg">🇧🇬 Български (Болгарська)</option>
+                <option value="ru">Русский</option>
             </select>
         </div>
 
@@ -708,7 +710,7 @@
                 </div>
             </div>
             <div class="duo-rule-box">
-                <b>🎙️ Автоматичний ланцюжок:</b> Говоріть у мікрофон. Після озвучення спрацює вибрана пауза (2с, 4с, 6с), мови поміняються місцями і ввімкнеться мікрофон для співрозмовника.
+                <b>🎙️ Покроковий діалог:</b> Після того як переклад повністю пролунає, спрацює пауза (2с, 4с, 6с), черга та мови поміняються місцями автоматично.
             </div>
             <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Зрозуміло, розпочати!</button>
         </div>
@@ -871,7 +873,7 @@
                     saveToHistory(text, translated);
                     
                     if (duoModeActive) {
-                        // У Duo режимі: озвучуємо переклад ➔ після завершення мовлення чекаємо паузу (2с, 4с, 6с) ➔ міняємо мови ➔ вмикаємо мікрофон
+                        // Озвучуємо переклад професійним синтезом, після чого виконуємо паузу та перемикання черги
                         speakText(translated, targetLang, () => {
                             setTimeout(() => {
                                 if (duoModeActive) {
@@ -884,8 +886,6 @@
                                 }
                             }, duoDelaySec * 1000);
                         });
-                    } else {
-                        // У Solo режимі автоматичного озвучення немає (тільки за кнопкою)
                     }
                 }
             } catch (e) {
@@ -893,12 +893,13 @@
             }
         }
 
-        // --- Надійний синтез мови для Android та iOS (з локалями для Android) ---
+        // --- Професійний синтез мови (підтримка повних локалей для Android та iOS) ---
         function getSpeechLang(code) {
             const map = {
                 'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE',
                 'it': 'it-IT', 'pl': 'pl-PL', 'fr': 'fr-FR', 'es': 'es-ES',
-                'nl': 'nl-NL', 'el': 'el-GR', 'tr': 'tr-TR', 'ro': 'ro-RO', 'bg': 'bg-BG'
+                'nl': 'nl-NL', 'el': 'el-GR', 'tr': 'tr-TR', 'ro': 'ro-RO',
+                'bg': 'bg-BG', 'ru': 'ru-RU'
             };
             return map[code] || code;
         }
@@ -923,14 +924,17 @@
 
                 currentUtterance = new SpeechSynthesisUtterance(text);
                 currentUtterance.lang = getSpeechLang(lang);
-                currentUtterance.rate = 0.95;
+                currentUtterance.rate = 0.95; // Професійний темп перекладача
+                currentUtterance.pitch = 1.0;
                 currentUtterance.volume = 1.0;
 
                 let voices = window.speechSynthesis.getVoices();
                 if (voices.length > 0) {
+                    let fullLang = getSpeechLang(lang).toLowerCase();
+                    let shortLang = lang.toLowerCase();
                     let matchingVoice = voices.find(v => 
-                        v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase()) ||
-                        v.lang.toLowerCase().replace('_', '-').startsWith(getSpeechLang(lang).toLowerCase())
+                        v.lang.toLowerCase() === fullLang ||
+                        v.lang.toLowerCase().replace('_', '-').startsWith(shortLang)
                     );
                     if (matchingVoice) currentUtterance.voice = matchingVoice;
                 }
@@ -947,7 +951,7 @@
                 currentUtterance.onerror = () => handleEnd();
 
                 window.speechSynthesis.speak(currentUtterance);
-            }, 50);
+            }, 80);
         }
 
         function triggerManualSpeech() {
@@ -1172,7 +1176,7 @@
                     recognition = new SpeechRecognition();
                     recognition.continuous = false;
                     recognition.interimResults = false;
-                    recognition.lang = document.getElementById('srcLang').value;
+                    recognition.lang = getSpeechLang(document.getElementById('srcLang').value);
 
                     recognition.onstart = () => {
                         isRecording = true;
