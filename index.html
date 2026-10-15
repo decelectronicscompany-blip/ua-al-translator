@@ -595,11 +595,11 @@
         <!-- Duo Control Panel -->
         <div class="duo-control-panel" id="duoControlPanel">
             <div class="duo-panel-row">
-                <span id="duoStatusText">🎧 Ваша черга говорить</span>
+                <span id="duoStatusText">🎧 Ваша черга говорити</span>
                 <button onclick="vibrate(); forceNextDuoTurn();" style="background:var(--accent-emerald); color:#030706; border:none; border-radius:8px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">Далі ➔</button>
             </div>
             <div class="duo-panel-row" style="font-size:11px; color:var(--text-muted);">
-                <span>Пауза очікування:</span>
+                <span>Пауза таймера (2с/4с/6с):</span>
                 <div class="delay-buttons">
                     <button class="delay-btn active" onclick="vibrate(); setDuoDelay(2);">2с</button>
                     <button class="delay-btn" onclick="vibrate(); setDuoDelay(4);">4с</button>
@@ -608,7 +608,7 @@
             </div>
         </div>
 
-        <!-- Language Bar -->
+        <!-- Language Bar (Повний набір основних та додаткових мов) -->
         <div class="lang-bar">
             <select class="lang-select" id="srcLang" onchange="vibrate();">
                 <option value="uk" selected>🇺🇦 Українська</option>
@@ -619,6 +619,11 @@
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
                 <option value="es">🇪🇸 Español (Іспанська)</option>
+                <option value="nl">🇳🇱 Nederlands (Нідерландська)</option>
+                <option value="el">🇬🇷 Ελληνικά (Грецька)</option>
+                <option value="tr">🇹🇷 Türkçe (Турецька)</option>
+                <option value="ro">🇷🇴 Română (Румунська)</option>
+                <option value="bg">🇧🇬 Български (Болгарська)</option>
             </select>
             
             <button class="swap-btn" onclick="vibrate(); swapLanguages();">
@@ -634,6 +639,11 @@
                 <option value="pl">🇵🇱 Polski (Польська)</option>
                 <option value="fr">🇫🇷 Français (Французька)</option>
                 <option value="es">🇪🇸 Español (Іспанська)</option>
+                <option value="nl">🇳🇱 Nederlands (Нідерландська)</option>
+                <option value="el">🇬🇷 Ελληνικά (Грецька)</option>
+                <option value="tr">🇹🇷 Türkçe (Турецька)</option>
+                <option value="ro">🇷🇴 Română (Румунська)</option>
+                <option value="bg">🇧🇬 Български (Болгарська)</option>
             </select>
         </div>
 
@@ -698,7 +708,7 @@
                 </div>
             </div>
             <div class="duo-rule-box">
-                <b>🎙️ Повністю автоматичний ланцюжок:</b> Після озвучення перекладу мікрофон автоматично перемикається на співрозмовника.
+                <b>🎙️ Автоматичний ланцюжок:</b> Співробітники розмовляють за таймером (2с, 4с, 6с) або кнопкою «Далі».
             </div>
             <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Зрозуміло, розпочати!</button>
         </div>
@@ -786,7 +796,8 @@
         let duoModeActive = false;
         let duoDelaySec = 2;
         let duoTurn = 'user';
-        let currentUtterance = null; // Захист від Garbage Collector
+        let duoIntervalTimer = null;
+        let currentUtterance = null;
         let deferredPrompt = null;
         
         const TESTER_IDS = ['7848', '5231'];
@@ -860,27 +871,29 @@
                     document.getElementById('outputText').innerText = translated;
                     saveToHistory(text, translated);
                     
-                    // Озвучування перекладу та запуск Duo-ланцюжка
-                    speakText(translated, targetLang, () => {
-                        if (duoModeActive) {
-                            swapLanguages();
-                            duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
-                            updateDuoStatusDisplay();
-                            
+                    if (duoModeActive) {
+                        // У Duo режимі озвучуємо автоматично, потім запускаємо переключення
+                        speakText(translated, targetLang, () => {
                             setTimeout(() => {
-                                if (duoModeActive && !isRecording) {
-                                    try { toggleRecognition(); } catch(e){}
+                                if (duoModeActive) {
+                                    swapLanguages();
+                                    duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
+                                    updateDuoStatusDisplay();
+                                    if (!isRecording) {
+                                        try { toggleRecognition(); } catch(e){}
+                                    }
                                 }
                             }, duoDelaySec * 1000);
-                        }
-                    });
+                        });
+                    }
+                    // У Solo режимі нічого не озвучуємо автоматично (тільки за кнопкою)
                 }
             } catch (e) {
                 document.getElementById('outputText').innerText = "Помилка перекладу";
             }
         }
 
-        // --- Універсальний та стабільний синтез мови для Android та iOS ---
+        // --- Стабільний синтез мови для Android та iOS ---
         function speakText(text, lang, onSpeechEnd) {
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) {
                 if (onSpeechEnd) onSpeechEnd();
@@ -892,50 +905,57 @@
                 return;
             }
 
-            // Відновлення черги якщо була зупинена
-            if (window.speechSynthesis.paused) {
-                window.speechSynthesis.resume();
-            }
+            // Повне очищення попередніх потоків для Android
+            window.speechSynthesis.cancel();
 
-            currentUtterance = new SpeechSynthesisUtterance(text);
-            currentUtterance.lang = lang;
-            currentUtterance.rate = 0.95;
-            currentUtterance.volume = 1.0;
-
-            let voices = window.speechSynthesis.getVoices();
-            if (voices.length > 0) {
-                let matchingVoice = voices.find(v => 
-                    v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase())
-                );
-                if (matchingVoice) currentUtterance.voice = matchingVoice;
-            }
-
-            let hasEnded = false;
-            const handleEnd = () => {
-                if (!hasEnded) {
-                    hasEnded = true;
-                    if (onSpeechEnd) onSpeechEnd();
+            setTimeout(() => {
+                if (window.speechSynthesis.paused) {
+                    window.speechSynthesis.resume();
                 }
-            };
 
-            currentUtterance.onend = handleEnd;
-            currentUtterance.onerror = () => handleEnd();
+                currentUtterance = new SpeechSynthesisUtterance(text);
+                currentUtterance.lang = lang;
+                currentUtterance.rate = 0.95;
+                currentUtterance.volume = 1.0;
 
-            window.speechSynthesis.speak(currentUtterance);
+                let voices = window.speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    let matchingVoice = voices.find(v => 
+                        v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase())
+                    );
+                    if (matchingVoice) currentUtterance.voice = matchingVoice;
+                }
+
+                let hasEnded = false;
+                const handleEnd = () => {
+                    if (!hasEnded) {
+                        hasEnded = true;
+                        if (onSpeechEnd) onSpeechEnd();
+                    }
+                };
+
+                currentUtterance.onend = handleEnd;
+                currentUtterance.onerror = () => handleEnd();
+
+                window.speechSynthesis.speak(currentUtterance);
+            }, 100);
         }
 
         function triggerManualSpeech() {
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
             const targetLang = document.getElementById('tgtLang').value;
+            speakText(targetLang === document.getElementById('srcLang').value ? document.getElementById('tgtLang').value : targetLang, targetLang, null);
+            // Використовуємо targetLang для озвучення результату перекладу
             speakText(text, targetLang, null);
         }
 
-        // Розблокування аудіо при першому дотику на мобільних
+        // Розблокування аудіо при першому дотику
         let audioUnlocked = false;
         function unlockMobileAudio() {
             if (audioUnlocked) return;
             if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
                 const dummy = new SpeechSynthesisUtterance('');
                 dummy.volume = 0;
                 window.speechSynthesis.speak(dummy);
@@ -951,12 +971,27 @@
             };
         }
 
-        // --- Керування Duo ---
+        // --- Duo Таймер (2с / 4с / 6с) ---
         function setDuoDelay(sec) {
             duoDelaySec = sec;
             document.querySelectorAll('.delay-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.innerText.includes(sec + 'с'));
             });
+            if (duoModeActive) {
+                startDuoTimer();
+            }
+        }
+
+        function startDuoTimer() {
+            if (duoIntervalTimer) clearInterval(duoIntervalTimer);
+            duoIntervalTimer = setInterval(() => {
+                if (!duoModeActive) return;
+                if (!isRecording) {
+                    swapLanguages();
+                    duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
+                    updateDuoStatusDisplay();
+                }
+            }, duoDelaySec * 1000);
         }
 
         function updateDuoStatusDisplay() {
@@ -1075,8 +1110,10 @@
                 duoTurn = 'user';
                 updateDuoStatusDisplay();
                 document.getElementById('duoModalOverlay').classList.add('active');
+                startDuoTimer();
             } else {
                 duoModeActive = false;
+                if (duoIntervalTimer) clearInterval(duoIntervalTimer);
             }
         }
 
@@ -1128,11 +1165,11 @@
         }
         function closePwaModal() { document.getElementById('pwaIosModal').classList.remove('active'); }
 
-        // --- Робастне розпізнавання мови (Підтримка Android Chrome та iOS Safari) ---
+        // --- Робастне розпізнавання мови ---
         function toggleRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                return alert('Розпізнавання мови не підтримується у цьому браузері. На iPhone використовуйте Safari.');
+                return alert('Розпізнавання мови не підтримується у цьому браузері.');
             }
 
             if (isRecording) {
