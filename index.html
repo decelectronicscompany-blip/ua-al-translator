@@ -599,7 +599,7 @@
                 <button onclick="vibrate(); forceNextDuoTurn();" style="background:var(--accent-emerald); color:#030706; border:none; border-radius:8px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">Далі ➔</button>
             </div>
             <div class="duo-panel-row" style="font-size:11px; color:var(--text-muted);">
-                <span>Пауза таймера (2с/4с/6с):</span>
+                <span>Пауза очікування (2с/4с/6с):</span>
                 <div class="delay-buttons">
                     <button class="delay-btn active" onclick="vibrate(); setDuoDelay(2);">2с</button>
                     <button class="delay-btn" onclick="vibrate(); setDuoDelay(4);">4с</button>
@@ -708,7 +708,7 @@
                 </div>
             </div>
             <div class="duo-rule-box">
-                <b>🎙️ Автоматичний ланцюжок:</b> Співробітники розмовляють за таймером (2с, 4с, 6с) або кнопкою «Далі».
+                <b>🎙️ Автоматичний ланцюжок:</b> Говоріть у мікрофон. Після озвучення спрацює вибрана пауза (2с, 4с, 6с), мови поміняються місцями і ввімкнеться мікрофон для співрозмовника.
             </div>
             <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Зрозуміло, розпочати!</button>
         </div>
@@ -796,7 +796,6 @@
         let duoModeActive = false;
         let duoDelaySec = 2;
         let duoTurn = 'user';
-        let duoIntervalTimer = null;
         let currentUtterance = null;
         let deferredPrompt = null;
         
@@ -872,7 +871,7 @@
                     saveToHistory(text, translated);
                     
                     if (duoModeActive) {
-                        // У Duo режимі озвучуємо автоматично, потім запускаємо переключення
+                        // У Duo режимі: озвучуємо переклад ➔ після завершення мовлення чекаємо паузу (2с, 4с, 6с) ➔ міняємо мови ➔ вмикаємо мікрофон
                         speakText(translated, targetLang, () => {
                             setTimeout(() => {
                                 if (duoModeActive) {
@@ -885,15 +884,25 @@
                                 }
                             }, duoDelaySec * 1000);
                         });
+                    } else {
+                        // У Solo режимі автоматичного озвучення немає (тільки за кнопкою)
                     }
-                    // У Solo режимі нічого не озвучуємо автоматично (тільки за кнопкою)
                 }
             } catch (e) {
                 document.getElementById('outputText').innerText = "Помилка перекладу";
             }
         }
 
-        // --- Стабільний синтез мови для Android та iOS ---
+        // --- Надійний синтез мови для Android та iOS (з локалями для Android) ---
+        function getSpeechLang(code) {
+            const map = {
+                'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE',
+                'it': 'it-IT', 'pl': 'pl-PL', 'fr': 'fr-FR', 'es': 'es-ES',
+                'nl': 'nl-NL', 'el': 'el-GR', 'tr': 'tr-TR', 'ro': 'ro-RO', 'bg': 'bg-BG'
+            };
+            return map[code] || code;
+        }
+
         function speakText(text, lang, onSpeechEnd) {
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) {
                 if (onSpeechEnd) onSpeechEnd();
@@ -905,7 +914,6 @@
                 return;
             }
 
-            // Повне очищення попередніх потоків для Android
             window.speechSynthesis.cancel();
 
             setTimeout(() => {
@@ -914,14 +922,15 @@
                 }
 
                 currentUtterance = new SpeechSynthesisUtterance(text);
-                currentUtterance.lang = lang;
+                currentUtterance.lang = getSpeechLang(lang);
                 currentUtterance.rate = 0.95;
                 currentUtterance.volume = 1.0;
 
                 let voices = window.speechSynthesis.getVoices();
                 if (voices.length > 0) {
                     let matchingVoice = voices.find(v => 
-                        v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase())
+                        v.lang.toLowerCase().replace('_', '-').startsWith(lang.toLowerCase()) ||
+                        v.lang.toLowerCase().replace('_', '-').startsWith(getSpeechLang(lang).toLowerCase())
                     );
                     if (matchingVoice) currentUtterance.voice = matchingVoice;
                 }
@@ -938,15 +947,13 @@
                 currentUtterance.onerror = () => handleEnd();
 
                 window.speechSynthesis.speak(currentUtterance);
-            }, 100);
+            }, 50);
         }
 
         function triggerManualSpeech() {
             const text = document.getElementById('outputText').innerText.trim();
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
             const targetLang = document.getElementById('tgtLang').value;
-            speakText(targetLang === document.getElementById('srcLang').value ? document.getElementById('tgtLang').value : targetLang, targetLang, null);
-            // Використовуємо targetLang для озвучення результату перекладу
             speakText(text, targetLang, null);
         }
 
@@ -971,27 +978,12 @@
             };
         }
 
-        // --- Duo Таймер (2с / 4с / 6с) ---
+        // --- Керування Duo ---
         function setDuoDelay(sec) {
             duoDelaySec = sec;
             document.querySelectorAll('.delay-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.innerText.includes(sec + 'с'));
             });
-            if (duoModeActive) {
-                startDuoTimer();
-            }
-        }
-
-        function startDuoTimer() {
-            if (duoIntervalTimer) clearInterval(duoIntervalTimer);
-            duoIntervalTimer = setInterval(() => {
-                if (!duoModeActive) return;
-                if (!isRecording) {
-                    swapLanguages();
-                    duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
-                    updateDuoStatusDisplay();
-                }
-            }, duoDelaySec * 1000);
         }
 
         function updateDuoStatusDisplay() {
@@ -1110,10 +1102,8 @@
                 duoTurn = 'user';
                 updateDuoStatusDisplay();
                 document.getElementById('duoModalOverlay').classList.add('active');
-                startDuoTimer();
             } else {
                 duoModeActive = false;
-                if (duoIntervalTimer) clearInterval(duoIntervalTimer);
             }
         }
 
