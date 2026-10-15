@@ -595,7 +595,7 @@
         <!-- Duo Control Panel -->
         <div class="duo-control-panel" id="duoControlPanel">
             <div class="duo-panel-row">
-                <span id="duoStatusText">🎧 Ваша черга говорити</span>
+                <span id="duoStatusText">🎧 Ваша черга говорить</span>
                 <button onclick="vibrate(); forceNextDuoTurn();" style="background:var(--accent-emerald); color:#030706; border:none; border-radius:8px; padding:4px 10px; font-size:11px; font-weight:800; cursor:pointer;">Далі ➔</button>
             </div>
             <div class="duo-panel-row" style="font-size:11px; color:var(--text-muted);">
@@ -785,9 +785,10 @@
         let handMode = localStorage.getItem('handMode') || 'center';
         let duoModeActive = false;
         let duoDelaySec = 2;
-        let duoTurn = 'user'; // 'user' або 'partner'
-        let currentUtterance = null; // 🟢 Критично: зберігаємо в глобальній змінній від Garbage Collector
-
+        let duoTurn = 'user';
+        let currentUtterance = null; // Захист від Garbage Collector
+        let deferredPrompt = null;
+        
         const TESTER_IDS = ['7848', '5231'];
         let userRawCode = localStorage.getItem('userRawCode') || Math.floor(1000 + Math.random() * 9000).toString();
         localStorage.setItem('userRawCode', userRawCode);
@@ -859,10 +860,9 @@
                     document.getElementById('outputText').innerText = translated;
                     saveToHistory(text, translated);
                     
-                    // Запуск озвучування після перекладу
+                    // Озвучування перекладу та запуск Duo-ланцюжка
                     speakText(translated, targetLang, () => {
                         if (duoModeActive) {
-                            // Автоматична передача черги співрозмовнику після розмови
                             swapLanguages();
                             duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
                             updateDuoStatusDisplay();
@@ -880,7 +880,7 @@
             }
         }
 
-        // 🟢 Надійний синтез мови (з фіксом для Android/iOS)
+        // --- Універсальний та стабільний синтез мови для Android та iOS ---
         function speakText(text, lang, onSpeechEnd) {
             if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) {
                 if (onSpeechEnd) onSpeechEnd();
@@ -892,7 +892,7 @@
                 return;
             }
 
-            // Забігаємо наперед: гарантовано відновлюємо чергу мовлення
+            // Відновлення черги якщо була зупинена
             if (window.speechSynthesis.paused) {
                 window.speechSynthesis.resume();
             }
@@ -921,7 +921,6 @@
             currentUtterance.onend = handleEnd;
             currentUtterance.onerror = () => handleEnd();
 
-            // Відтворюємо без агресивного cancel()
             window.speechSynthesis.speak(currentUtterance);
         }
 
@@ -932,7 +931,7 @@
             speakText(text, targetLang, null);
         }
 
-        // Розблокування мовного движка при першому торканні екрана
+        // Розблокування аудіо при першому дотику на мобільних
         let audioUnlocked = false;
         function unlockMobileAudio() {
             if (audioUnlocked) return;
@@ -1129,37 +1128,52 @@
         }
         function closePwaModal() { document.getElementById('pwaIosModal').classList.remove('active'); }
 
-        // --- Розпізнавання мови ---
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-
-            recognition.onresult = (event) => {
-                if (event.results && event.results[0]) {
-                    document.getElementById('inputText').value = event.results[0][0].transcript;
-                    stopRecording();
-                    translateText();
-                }
-            };
-            recognition.onerror = () => stopRecording();
-            recognition.onend = () => stopRecording();
-        }
-
+        // --- Робастне розпізнавання мови (Підтримка Android Chrome та iOS Safari) ---
         function toggleRecognition() {
-            if (!recognition) return alert('Speech recognition not supported');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                return alert('Розпізнавання мови не підтримується у цьому браузері. На iPhone використовуйте Safari.');
+            }
+
             if (isRecording) {
-                try { recognition.stop(); } catch(e){}
+                if (recognition) {
+                    try { recognition.stop(); } catch(e) {}
+                }
                 stopRecording();
             } else {
-                recognition.lang = document.getElementById('srcLang').value;
                 try {
+                    recognition = new SpeechRecognition();
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = document.getElementById('srcLang').value;
+
+                    recognition.onstart = () => {
+                        isRecording = true;
+                        renderControlsBar();
+                        document.getElementById('waveBox').style.display = 'flex';
+                    };
+
+                    recognition.onresult = (event) => {
+                        if (event.results && event.results[0]) {
+                            const transcript = event.results[0][0].transcript;
+                            document.getElementById('inputText').value = transcript;
+                            stopRecording();
+                            translateText();
+                        }
+                    };
+
+                    recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error);
+                        stopRecording();
+                    };
+
+                    recognition.onend = () => {
+                        stopRecording();
+                    };
+
                     recognition.start();
-                    isRecording = true;
-                    renderControlsBar();
-                    document.getElementById('waveBox').style.display = 'flex';
-                } catch(e){
+                } catch (e) {
+                    console.error('Recognition start error:', e);
                     stopRecording();
                 }
             }
