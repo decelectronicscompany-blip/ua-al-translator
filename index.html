@@ -443,9 +443,10 @@
             justify-content: center;
             box-shadow: var(--emerald-glow);
             justify-self: center;
+            touch-action: manipulation;
         }
 
-        .btn-mic-main svg { width: 26px; height: 26px; fill: white; }
+        .btn-mic-main svg { width: 26px; height: 26px; fill: white; pointer-events: none; }
 
         .btn-translate-main {
             background: var(--grad-primary);
@@ -608,7 +609,7 @@
             </div>
         </div>
 
-        <!-- Language Bar (Повний набір мов + російська у самому низу без прапора) -->
+        <!-- Language Bar -->
         <div class="lang-bar">
             <select class="lang-select" id="srcLang" onchange="vibrate();">
                 <option value="uk" selected>🇺🇦 Українська</option>
@@ -710,7 +711,7 @@
                 </div>
             </div>
             <div class="duo-rule-box">
-                <b>🎙️ Покроковий діалог:</b> Після того як переклад повністю пролунає, спрацює пауза (2с, 4с, 6с), черга та мови поміняються місцями автоматично.
+                <b>🎙️ Покроковий діалог:</b> Після того як переклад повністю пролунає, спрацює пауза (2с, 4с, 6с), черга та мови поміняються місцями. (На iOS через безпеку браузера мікрофон після паузи може потребувати ручного натискання).
             </div>
             <button class="btn-start-duo" onclick="vibrate(); closeDuoModal();">Зрозуміло, розпочати!</button>
         </div>
@@ -827,7 +828,12 @@
             return true;
         }
 
-        function vibrate() { if (navigator.vibrate) navigator.vibrate(12); }
+        // Безпечна вібрація з перевіркою для iOS
+        function vibrate() { 
+            if (navigator.vibrate) {
+                try { navigator.vibrate(12); } catch(e){}
+            } 
+        }
 
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -854,6 +860,17 @@
             document.getElementById('outputText').innerText = "Переклад з'явиться тут...";
         }
 
+        function copyResult() {
+            const text = document.getElementById('outputText').innerText.trim();
+            if (!text || text.includes("з'явиться") || text.includes("Зачекайте")) return;
+            navigator.clipboard.writeText(text).then(() => {
+                vibrate();
+                alert('Переклад успішно скопійовано!');
+            }).catch(err => {
+                console.error('Помилка копіювання:', err);
+            });
+        }
+
         async function translateText() {
             const text = document.getElementById('inputText').value.trim();
             const sourceLang = document.getElementById('srcLang').value;
@@ -873,15 +890,16 @@
                     saveToHistory(text, translated);
                     
                     if (duoModeActive) {
-                        // Озвучуємо переклад професійним синтезом, після чого виконуємо паузу та перемикання черги
                         speakText(translated, targetLang, () => {
                             setTimeout(() => {
                                 if (duoModeActive) {
                                     swapLanguages();
                                     duoTurn = (duoTurn === 'user') ? 'partner' : 'user';
                                     updateDuoStatusDisplay();
-                                    if (!isRecording) {
-                                        try { toggleRecognition(); } catch(e){}
+                                    try {
+                                        if (!isRecording) toggleRecognition();
+                                    } catch(err) {
+                                        console.log("iOS security restriction on auto-mic start");
                                     }
                                 }
                             }, duoDelaySec * 1000);
@@ -893,7 +911,7 @@
             }
         }
 
-        // --- Професійний синтез мови (підтримка повних локалей для Android та iOS) ---
+        // Повні локалі для якісного синтезу та розпізнавання
         function getSpeechLang(code) {
             const map = {
                 'uk': 'uk-UA', 'sq': 'sq-AL', 'en': 'en-US', 'de': 'de-DE',
@@ -924,7 +942,7 @@
 
                 currentUtterance = new SpeechSynthesisUtterance(text);
                 currentUtterance.lang = getSpeechLang(lang);
-                currentUtterance.rate = 0.95; // Професійний темп перекладача
+                currentUtterance.rate = 0.95;
                 currentUtterance.pitch = 1.0;
                 currentUtterance.volume = 1.0;
 
@@ -961,7 +979,7 @@
             speakText(text, targetLang, null);
         }
 
-        // Розблокування аудіо при першому дотику
+        // Розблокування аудіо контексту для iOS Safari
         let audioUnlocked = false;
         function unlockMobileAudio() {
             if (audioUnlocked) return;
@@ -982,7 +1000,6 @@
             };
         }
 
-        // --- Керування Duo ---
         function setDuoDelay(sec) {
             duoDelaySec = sec;
             document.querySelectorAll('.delay-btn').forEach(btn => {
@@ -1006,7 +1023,6 @@
             if (!isRecording) toggleRecognition();
         }
 
-        // --- Туристичний словник ---
         const tourismPhrases = {
             cafe: [
                 "Could I see the menu, please?",
@@ -1075,7 +1091,7 @@
                     } catch(e) {}
                 }
                 html += `
-                    <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${translated.replace(/'/g, "\\'")}')">
+                    <div class="sheet-phrase-item" onclick="vibrate(); selectPhrase('${translated.replace(/'/g, "\'")}')">
                         <div>
                             <b>${translated}</b>
                             <br><span style="color:var(--text-muted); font-size:11px;">${phrase}</span>
@@ -1093,7 +1109,6 @@
             translateText();
         }
 
-        // --- Режими Solo / Duo ---
         function setAppMode(mode) {
             document.getElementById('btnModeSolo').classList.toggle('active', mode === 'solo');
             document.getElementById('btnModeDuo').classList.toggle('active', mode === 'duo');
@@ -1114,7 +1129,6 @@
         function closeDuoModal() { document.getElementById('duoModalOverlay').classList.remove('active'); }
         function closePaywall() { document.getElementById('paywallModal').classList.remove('active'); }
 
-        // --- Оплата через 2Checkout / Verifone ---
         async function selectTariff(plan) {
             vibrate();
             try {
@@ -1134,7 +1148,6 @@
             }
         }
 
-        // --- PWA Install Handling ---
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
         const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -1159,11 +1172,15 @@
         }
         function closePwaModal() { document.getElementById('pwaIosModal').classList.remove('active'); }
 
-        // --- Робастне розпізнавання мови ---
         function toggleRecognition() {
+            // Примусове звільнення аудіосесії для iOS Safari перед запуском мікрофона
+            if (window.speechSynthesis) {
+                try { window.speechSynthesis.cancel(); } catch(e) {}
+            }
+
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) {
-                return alert('Розпізнавання мови не підтримується у цьому браузері.');
+                return alert('Розпізнавання мови не підтримується у цьому браузері (Safari на iOS потребує дозволу мікрофона або налаштувань).');
             }
 
             if (isRecording) {
@@ -1173,9 +1190,15 @@
                 stopRecording();
             } else {
                 try {
+                    // Скидаємо попередній екземпляр для стабільності iOS WebKit
+                    if (recognition) {
+                        try { recognition.abort(); } catch(e) {}
+                    }
+
                     recognition = new SpeechRecognition();
                     recognition.continuous = false;
                     recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
                     recognition.lang = getSpeechLang(document.getElementById('srcLang').value);
 
                     recognition.onstart = () => {
@@ -1196,6 +1219,11 @@
                     recognition.onerror = (event) => {
                         console.error('Speech recognition error:', event.error);
                         stopRecording();
+                        if (event.error === 'not-allowed') {
+                            alert('Доступ до мікрофона заборонено. Увімкніть мікрофон у налаштуваннях Safari для цього сайту.');
+                        } else if (event.error === 'service-not-allowed') {
+                            alert('Голосовий ввід (Dictation) вимкнено в налаштуваннях iPhone (Параметри -> Загальні -> Клавіатура -> Диктування).');
+                        }
                     };
 
                     recognition.onend = () => {
@@ -1234,9 +1262,9 @@
 
             bar.className = `controls-bar hand-${handMode}`;
 
-            const micBtnHTML = `<button class="btn-mic-main ${isRecording ? 'recording' : ''}" onclick="vibrate(); toggleRecognition();">${micSVG}</button>`;
-            const translateBtnHTML = `<button class="btn-translate-main" onclick="vibrate(); translateText();">Перекласти</button>`;
-            const clearBtnHTML = `<button class="btn-action-side" onclick="vibrate(); clearInput();">Очистити</button>`;
+            const micBtnHTML = `<button type="button" class="btn-mic-main ${isRecording ? 'recording' : ''}" onclick="vibrate(); toggleRecognition();">${micSVG}</button>`;
+            const translateBtnHTML = `<button type="button" class="btn-translate-main" onclick="vibrate(); translateText();">Перекласти</button>`;
+            const clearBtnHTML = `<button type="button" class="btn-action-side" onclick="vibrate(); clearInput();">Очистити</button>`;
 
             if (handMode === 'center') {
                 bar.innerHTML = clearBtnHTML + micBtnHTML + translateBtnHTML;
@@ -1247,7 +1275,6 @@
             }
         }
 
-        // --- Історія та Юридичні документи ---
         function saveToHistory(orig, trans) {
             let history = JSON.parse(localStorage.getItem('history') || '[]');
             history.unshift({ orig, trans });
@@ -1261,7 +1288,7 @@
             const list = document.getElementById('historyList');
             if (!list) return;
             list.innerHTML = history.map(item => `
-                <div class="history-row" onclick="vibrate(); document.getElementById('inputText').value='${item.orig.replace(/'/g, "\\'")}'; document.getElementById('outputText').innerText='${item.trans.replace(/'/g, "\\'")}';">
+                <div class="history-row" onclick="vibrate(); document.getElementById('inputText').value='${item.orig.replace(/'/g, "\'")}'; document.getElementById('outputText').innerText='${item.trans.replace(/'/g, "\'")}';">
                     <div class="history-row-orig">${item.orig}</div>
                     <div>${item.trans}</div>
                 </div>
@@ -1320,7 +1347,13 @@
         function openAdminMenu() {
             const currentStatus = isTester() ? 'ТЕСТУВАЛЬНИК (Безліміт)' : `Звичайний (Залишок: ${userBalance})`;
             const action = prompt(
-                `🛠️ АДМІН-ПАНЕЛЬ\nПоточний ID: ${userRawCode}\nСтатус: ${currentStatus}\n\nОберіть дію:\n1 — Змінити ID\n2 — Встановити новий баланс перекладів`,
+                `🛠️ АДМІН-ПАНЕЛЬ
+Поточний ID: ${userRawCode}
+Статус: ${currentStatus}
+
+Оберіть дію:
+1 — Змінити ID
+2 — Встановити новий баланс перекладів`,
                 "1"
             );
 
@@ -1346,7 +1379,8 @@
 
         function showUserCodeInfo() {
             const status = isTester() ? 'Безлімітний тестувальник' : `${userBalance} перекладів`;
-            alert(`Ваш ID: ${userRawCode}\nСтатус: ${status}`);
+            alert(`Ваш ID: ${userRawCode}
+Статус: ${status}`);
         }
 
         updateBalanceDisplay();
